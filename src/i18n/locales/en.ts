@@ -12,6 +12,8 @@ export const en = {
     play: 'Play',
     decorate: 'Decorate',
     settings: 'Settings',
+    workshop: 'Workshop',
+    inventory: 'My Bag',
     back: 'Back',
   },
   room: {
@@ -32,6 +34,7 @@ export const en = {
     wallpaperOn: 'Your walls look brand new!',
     wallpaperOff: 'Back to plain walls.',
     inRoom: 'In room',
+    available: '{n} ready to place',
     move: 'Move',
     turn: 'Turn',
     putAway: 'Put away',
@@ -99,6 +102,7 @@ export const en = {
   },
   regions: {
     acornVillage: 'Acorn Village',
+    moonlightForest: 'Moonlight Forest',
   },
   // 수학 놀이 문장. {total}, {start} 같은 숫자는 src/data/math/lessons.ts 의 값으로 채워진다.
   lessons: {
@@ -165,6 +169,38 @@ export const en = {
   },
   reward: {
     title: 'You discovered something new!',
+    youGot: 'You collected:',
+    firstTimeBonus: 'First-time bonus!',
+    goWorkshop: 'Make something in the Workshop',
+  },
+  workshop: {
+    title: 'Workshop',
+    intro: 'Use your materials to make furniture!',
+    needs: 'Materials needed',
+    make: 'Make it!',
+    needMore: 'Need more materials',
+    youHave: 'You have {n}',
+    made: 'You made a {name}!',
+    placeIt: 'Put it in my room',
+    keepMaking: 'Keep making',
+    lockedRegion: 'You can make this when you can visit {region}.',
+  },
+  inventory: {
+    title: 'My Bag',
+    materials: 'Materials',
+    furniture: 'Furniture',
+    noMaterials: 'Play math games to collect materials!',
+    inRoomOf: '{placed} of {owned} in room',
+    a11y: {
+      haveNeed: '{name}: you have {have}, need {need}',
+    },
+  },
+  resources: {
+    acorn: 'Acorn',
+    apple: 'Sweet Apple',
+    goldenAcorn: 'Golden Acorn',
+    glowBranch: 'Glow Branch',
+    moonDew: 'Moon Dew',
   },
   a11y: {
     openSettings: 'Open settings',

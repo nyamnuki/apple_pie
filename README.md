@@ -27,7 +27,12 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 | `src/features/room/decorate/` | 방 꾸미기 화면 (놓기·옮기기·돌리기·치우기) |
 | `src/features/settings/` | 설정 화면 (언어 선택) |
 | `src/features/math/` | 수학 놀이 (놀이 고르기, 6단계 진행, 힌트, 장면 화면) |
-| `src/data/math/` | 수학 놀이 목록 (수량·정답·선택지)과 물건 그림 |
+| `src/data/math/` | 수학 놀이 목록 (수량·정답·선택지·보상 재료)과 물건 그림 |
+| `src/features/rewards/` | 놀이를 끝냈을 때 보상 화면 |
+| `src/features/workshop/` | 공방 (재료로 가구 만들기) |
+| `src/features/inventory/` | 내 가방 (모은 재료와 가진 가구) |
+| `src/data/resources/`, `src/data/regions/` | 마을별 재료와 마을 목록 |
+| `src/app/gameState.ts` | 플레이어 상태 (재료·가구·끝낸 놀이)와 보상·만들기 규칙 |
 | `src/data/furniture/` | 가구 목록 (크기, 차지하는 칸, 그림 경로, 이름 키) |
 | `src/data/assets/` | Asset Registry — 그림 경로 모음 |
 | `src/types/` | 데이터 모양 정의 (가구, 방 배치) |
@@ -44,9 +49,16 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 3. `src/i18n/locales/en.ts`, `ko.ts` 의 `lessons` 에 같은 id 로 문장 12개 추가
    (빠뜨리면 `npm run build` 가 알려줍니다)
 
+## 보상과 공방
+
+- 놀이를 끝까지 하면 그 마을의 재료를 받습니다 (정답 여부와 상관없음). 처음 끝낸 놀이는 황금 도토리 보너스.
+- 받는 재료는 `src/data/math/lessons.ts` 의 `rewards` / `firstTimeBonus` 에서 바꿉니다.
+- 가구 레시피는 `src/data/furniture/furniture.ts` 의 `unlockCondition` 에 있습니다.
+- 아직 열리지 않은 마을(`src/data/regions/regions.ts` 의 `open: false`)의 재료가 필요한 가구는 자물쇠와 함께 보입니다.
+
 ## 가구 추가하는 법
 
-1. `src/data/furniture/furniture.ts` 에 한 줄 추가
+1. `src/data/furniture/furniture.ts` 에 한 줄 추가 (처음부터 가짐 또는 레시피)
 2. `src/i18n/locales/en.ts`, `ko.ts` 의 `furniture` 에 이름과 설명 추가
 3. (선택) `public/assets/furniture/` 에 그림 넣기 — 없으면 색 상자로 보입니다
 

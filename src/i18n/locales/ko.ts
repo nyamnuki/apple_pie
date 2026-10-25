@@ -13,6 +13,8 @@ export const ko: Messages = {
     play: '놀이하기',
     decorate: '방 꾸미기',
     settings: '설정',
+    workshop: '공방',
+    inventory: '내 가방',
     back: '뒤로',
   },
   room: {
@@ -33,6 +35,7 @@ export const ko: Messages = {
     wallpaperOn: '벽이 새것처럼 바뀌었어요!',
     wallpaperOff: '원래 벽으로 돌아왔어요.',
     inRoom: '방에 있음',
+    available: '놓을 수 있는 것 {n}개',
     move: '옮기기',
     turn: '돌리기',
     putAway: '치우기',
@@ -100,6 +103,7 @@ export const ko: Messages = {
   },
   regions: {
     acornVillage: '도토리 마을',
+    moonlightForest: '달빛 숲',
   },
   // 수학 놀이 문장. {total}, {start} 같은 숫자는 src/data/math/lessons.ts 의 값으로 채워진다.
   // 숫자 바로 뒤에 조사(이/가, 을/를)가 오지 않게 써서 어떤 숫자가 와도 자연스럽게 한다.
@@ -167,6 +171,38 @@ export const ko: Messages = {
   },
   reward: {
     title: '새로운 것을 발견했어요!',
+    youGot: '모은 재료:',
+    firstTimeBonus: '처음 해낸 보너스!',
+    goWorkshop: '공방에서 만들어 보기',
+  },
+  workshop: {
+    title: '공방',
+    intro: '모은 재료로 가구를 만들어 봐요!',
+    needs: '필요한 재료',
+    make: '만들기!',
+    needMore: '재료가 더 필요해요',
+    youHave: '{n}개 가지고 있어요',
+    made: '{name} 완성!',
+    placeIt: '내 방에 놓기',
+    keepMaking: '더 만들기',
+    lockedRegion: '{region}에 갈 수 있게 되면 만들 수 있어요.',
+  },
+  inventory: {
+    title: '내 가방',
+    materials: '재료',
+    furniture: '가구',
+    noMaterials: '수학 놀이를 하면 재료를 모을 수 있어요!',
+    inRoomOf: '{owned}개 중 {placed}개가 방에 있어요',
+    a11y: {
+      haveNeed: '{name}: {have}개 있고, {need}개 필요해요',
+    },
+  },
+  resources: {
+    acorn: '도토리',
+    apple: '달콤 사과',
+    goldenAcorn: '황금 도토리',
+    glowBranch: '빛나는 나뭇가지',
+    moonDew: '달빛 이슬',
   },
   a11y: {
     openSettings: '설정 열기',

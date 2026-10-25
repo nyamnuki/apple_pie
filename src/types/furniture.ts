@@ -1,12 +1,13 @@
 import type { TranslationKey } from '../i18n';
+import type { ResourceBundle } from './resources';
 
 // 가구 종류. 'rug' 는 바닥에 깔리므로 다른 가구가 위에 올라설 수 있다.
 export type FurnitureCategory = 'bed' | 'rug' | 'light' | 'storage' | 'table' | 'plant' | 'wallpaper';
 
-// 잠금 해제 조건 (Phase 4 보상 시스템에서 실제로 적용한다)
+// 얻는 방법
 export type UnlockCondition =
   | { type: 'starter' } // 처음부터 가지고 있음
-  | { type: 'stars'; count: number }; // 별을 이만큼 모으면
+  | { type: 'recipe'; cost: ResourceBundle }; // 공방에서 이 재료로 만든다
 
 // 그림 파일이 없을 때 대신 그리는 임시 그래픽 정보
 export interface PlaceholderStyle {

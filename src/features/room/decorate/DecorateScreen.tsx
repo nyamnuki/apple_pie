@@ -10,6 +10,7 @@ import { GRID } from '../iso';
 import { canPlace } from '../placement';
 import { newUid, useRoom } from '../RoomProvider';
 import { getFurniture } from '../../../data/furniture/furniture';
+import { useGame } from '../../../app/GameProvider';
 import { useI18n, type TranslationKey } from '../../../i18n';
 import type { PlacedFurniture } from '../../../types/furniture';
 
@@ -38,6 +39,7 @@ function findSpots(placed: PlacedFurniture[], furnitureId: string, rotation: 0 |
 export default function DecorateScreen({ onBack }: { onBack: () => void }) {
   const { t } = useI18n();
   const { layout, dispatch } = useRoom();
+  const { game } = useGame();
   const [mode, setMode] = useState<Mode>({ kind: 'idle' });
   // 잠깐 보여주는 안내 (예: '거기는 자리가 없어요'). 상태가 바뀌면 사라진다.
   const [flash, setFlash] = useState<TranslationKey | null>(null);
@@ -66,9 +68,13 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
       change({ kind: 'idle' }, on ? 'decorate.wallpaperOn' : 'decorate.wallpaperOff');
       return;
     }
-    // 이미 방에 있으면 그 가구를 고른 상태로
-    const existing = layout.placed.find((p) => p.furnitureId === furnitureId);
-    if (existing) return change({ kind: 'selected', uid: existing.uid });
+    // 아직 안 놓은 것이 있으면 놓을 자리 고르기, 다 놓았으면 방에 있는 것을 고른 상태로
+    const placedCount = layout.placed.filter((p) => p.furnitureId === furnitureId).length;
+    if ((game.furniture[furnitureId] ?? 0) <= placedCount) {
+      const existing = layout.placed.find((p) => p.furnitureId === furnitureId);
+      if (existing) change({ kind: 'selected', uid: existing.uid });
+      return;
+    }
     if (findSpots(layout.placed, furnitureId, 0).size === 0) return change({ kind: 'idle' }, 'decorate.noSpace');
     change({ kind: 'placing', furnitureId });
   };
@@ -142,7 +148,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
               {t('decorate.cancel')}
             </BigButton>
           ) : (
-            <FurnitureTray layout={layout} onPick={pick} />
+            <FurnitureTray layout={layout} owned={game.furniture} onPick={pick} />
           )}
         </div>
       </div>

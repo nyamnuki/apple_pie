@@ -1,4 +1,4 @@
-import { Puzzle, Sofa, Settings } from 'lucide-react';
+import { Puzzle, Sofa, Settings, Hammer, Backpack } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -9,12 +9,14 @@ import { useI18n } from '../../i18n';
 interface Props {
   onPlay: () => void;
   onDecorate: () => void;
+  onWorkshop: () => void;
+  onInventory: () => void;
   onSettings: () => void;
   onBack: () => void;
 }
 
 // 내 방(홈) 화면: 지금 꾸며진 방을 보여주고, 놀이하기·방 꾸미기로 갈 수 있다.
-export default function RoomScreen({ onPlay, onDecorate, onSettings, onBack }: Props) {
+export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory, onSettings, onBack }: Props) {
   const { t } = useI18n();
   const { layout } = useRoom();
   return (
@@ -34,16 +36,24 @@ export default function RoomScreen({ onPlay, onDecorate, onSettings, onBack }: P
           <RoomView layout={layout} />
         </section>
 
-        {/* 아래 메뉴: 수학 놀이와 꾸미기를 색과 아이콘으로 구분.
+        {/* 아래 메뉴: 수학 놀이(초록)와 꾸미기·만들기(나무색)를 색과 아이콘으로 구분.
             아이콘을 글자 위에 두어 좁은 폰에서도 글자가 한 줄에 들어가게 한다 */}
-        <nav className="grid grid-cols-2 gap-3 [@media(max-height:500px)]:w-56 [@media(max-height:500px)]:grid-cols-1 [@media(max-height:500px)]:content-center">
-          <BigButton size="lg" variant="sage" className="flex-col !gap-1 !px-3" onClick={onPlay}>
+        <nav className="grid grid-cols-2 gap-3 [@media(max-height:500px)]:w-64 [@media(max-height:500px)]:content-center">
+          <BigButton size="lg" variant="sage" className="col-span-2 flex-col !gap-1 !px-3" onClick={onPlay}>
             <Puzzle size={30} aria-hidden />
             {t('menu.play')}
           </BigButton>
-          <BigButton size="lg" variant="primary" className="flex-col !gap-1 !px-3" onClick={onDecorate}>
-            <Sofa size={30} aria-hidden />
+          <BigButton variant="primary" className="flex-col !gap-1 !px-2" onClick={onDecorate}>
+            <Sofa size={26} aria-hidden />
             {t('menu.decorate')}
+          </BigButton>
+          <BigButton variant="primary" className="flex-col !gap-1 !px-2" onClick={onWorkshop}>
+            <Hammer size={26} aria-hidden />
+            {t('menu.workshop')}
+          </BigButton>
+          <BigButton variant="soft" className="col-span-2 !min-h-[52px]" onClick={onInventory}>
+            <Backpack size={24} aria-hidden />
+            {t('menu.inventory')}
           </BigButton>
         </nav>
       </div>

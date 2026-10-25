@@ -5,10 +5,13 @@ import type { TranslationKey } from '../../i18n';
 // 수량·정답·선택지는 여기 한곳에만 둔다. (영어·한국어가 같은 값을 쓴다)
 // 문장은 언어 파일 lessons.<id> 에 있고, 문장 속 숫자는 {start} 처럼 여기 값으로 채운다.
 // 정답은 장면 정보로 자동 계산한다 (src/features/math/answers.ts).
+// rewards: 끝까지 하면 받는 도토리 마을 재료, firstTimeBonus: 처음 끝냈을 때만 더 받는 재료.
 
 export const LESSONS: MathLesson[] = [
   {
     id: 'counting1',
+    rewards: { acorn: 3, apple: 1 },
+    firstTimeBonus: { goldenAcorn: 1 },
     area: 'counting',
     region: 'acornVillage',
     icon: 'apple',
@@ -20,6 +23,8 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'comparing1',
+    rewards: { acorn: 2, apple: 2 },
+    firstTimeBonus: { goldenAcorn: 1 },
     area: 'comparing',
     region: 'acornVillage',
     icon: 'acorn',
@@ -33,6 +38,8 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'addition1',
+    rewards: { acorn: 1, apple: 3 },
+    firstTimeBonus: { goldenAcorn: 1 },
     area: 'addition',
     region: 'acornVillage',
     icon: 'flower',
@@ -44,6 +51,8 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'subtraction1',
+    rewards: { acorn: 2, apple: 2 },
+    firstTimeBonus: { goldenAcorn: 1 },
     area: 'subtraction',
     region: 'acornVillage',
     icon: 'blueberry',

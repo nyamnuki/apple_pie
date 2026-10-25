@@ -2,7 +2,7 @@ import type { FurnitureDef } from '../../types/furniture';
 
 // ===== 가구 목록 =====
 // 새 가구를 추가하려면:
-//  1) 여기에 한 줄 추가  2) en.ts / ko.ts 의 furniture 에 이름·설명 추가
+//  1) 여기에 한 줄 추가 (unlockCondition: 처음부터 가짐 / 공방 레시피)  2) en.ts / ko.ts 의 furniture 에 이름·설명 추가
 //  3) (선택) public/assets/furniture/ 에 그림 넣기 — 없으면 임시 상자로 보인다
 //
 // 그림 규칙 (모든 가구가 같은 각도·조명으로 보이게):
@@ -60,7 +60,7 @@ export const FURNITURE: FurnitureDef[] = [
     height: 260,
     gridWidth: 2,
     gridHeight: 1,
-    unlockCondition: { type: 'stars', count: 3 },
+    unlockCondition: { type: 'recipe', cost: { acorn: 4, apple: 2 } },
     placeholder: { color: '#B9855A', emoji: '📚', height: 150 },
   },
   {
@@ -73,7 +73,7 @@ export const FURNITURE: FurnitureDef[] = [
     height: 170,
     gridWidth: 2,
     gridHeight: 1,
-    unlockCondition: { type: 'stars', count: 5 },
+    unlockCondition: { type: 'recipe', cost: { acorn: 5, goldenAcorn: 1 } },
     placeholder: { color: '#C99A6E', emoji: '✏️', height: 65 },
   },
   {
@@ -99,7 +99,7 @@ export const FURNITURE: FurnitureDef[] = [
     height: 130,
     gridWidth: 1,
     gridHeight: 1,
-    unlockCondition: { type: 'stars', count: 8 },
+    unlockCondition: { type: 'recipe', cost: { acorn: 3, apple: 3 } },
     placeholder: { color: '#A8744A', emoji: '🧸', height: 55 },
   },
   {
@@ -113,7 +113,7 @@ export const FURNITURE: FurnitureDef[] = [
     height: 120,
     gridWidth: 0,
     gridHeight: 0,
-    unlockCondition: { type: 'stars', count: 10 },
+    unlockCondition: { type: 'recipe', cost: { glowBranch: 3, acorn: 2 } },
     placeholder: { color: '#A8C3A0', emoji: '🌿', height: 0 },
   },
 ];

@@ -6,6 +6,8 @@ import DecorateScreen from '../features/room/decorate/DecorateScreen';
 import SettingsScreen from '../features/settings/SettingsScreen';
 import MathMenuScreen from '../features/math/MathMenuScreen';
 import LessonScreen from '../features/math/LessonScreen';
+import WorkshopScreen from '../features/workshop/WorkshopScreen';
+import InventoryScreen from '../features/inventory/InventoryScreen';
 import type { LessonId } from '../types/math';
 
 // 화면 전환. 설정에서 '뒤로'를 누르면 설정을 열기 전 화면으로 돌아간다.
@@ -27,6 +29,8 @@ export default function App() {
         <RoomScreen
           onPlay={() => setScreen('math')}
           onDecorate={() => setScreen('decorate')}
+          onWorkshop={() => setScreen('workshop')}
+          onInventory={() => setScreen('inventory')}
           onSettings={() => openSettings('room')}
           onBack={() => setScreen('title')}
         />
@@ -46,6 +50,10 @@ export default function App() {
         />
       );
     case 'lesson':
-      return <LessonScreen key={lessonId} lessonId={lessonId} onExit={() => setScreen('math')} />;
+      return <LessonScreen key={lessonId} lessonId={lessonId} onExit={() => setScreen('math')} onWorkshop={() => setScreen('workshop')} />;
+    case 'workshop':
+      return <WorkshopScreen onBack={() => setScreen('room')} onDecorate={() => setScreen('decorate')} />;
+    case 'inventory':
+      return <InventoryScreen onBack={() => setScreen('room')} onWorkshop={() => setScreen('workshop')} onDecorate={() => setScreen('decorate')} />;
   }
 }

@@ -1,5 +1,5 @@
-import { useReducer } from 'react';
-import { ArrowRight, RotateCcw, LayoutGrid } from 'lucide-react';
+import { useReducer, useState } from 'react';
+import { ArrowRight } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -7,12 +7,16 @@ import GuideBubble from './components/GuideBubble';
 import StageProgress from './components/StageProgress';
 import ChoiceButtons from './components/ChoiceButtons';
 import SceneField from './fields/SceneField';
+import RewardPanel from '../rewards/RewardPanel';
+import { useGame } from '../../app/GameProvider';
+import { rewardFor } from '../../app/gameState';
 import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
+import type { ResourceBundle } from '../../types/resources';
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
 function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode: FieldMode } {
@@ -37,10 +41,26 @@ function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode:
   }
 }
 
-export default function LessonScreen({ lessonId, onExit }: { lessonId: LessonId; onExit: () => void }) {
+interface Props {
+  lessonId: LessonId;
+  onExit: () => void;
+  onWorkshop: () => void;
+}
+
+export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const { t, formatNumber } = useI18n();
   const lesson = getLesson(lessonId);
   const [state, dispatch] = useReducer(lessonReducer, initialLessonState);
+  const { game, dispatch: gameDispatch } = useGame();
+  // 이번에 받은 보상 (보상 화면에 보여준다)
+  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle } | null>(null);
+
+  // 끝내기: 보상을 계산해 지급하고 보상 화면으로
+  const finish = () => {
+    setEarned(rewardFor(lesson, game));
+    gameDispatch({ type: 'completeLesson', lesson });
+    dispatch({ type: 'next' });
+  };
   const k = (part: Parameters<typeof lessonKey>[1]) => lessonKey(lessonId, part);
   const vars = (scene: MathScene) => sceneVars(scene, formatNumber);
 
@@ -76,9 +96,9 @@ export default function LessonScreen({ lessonId, onExit }: { lessonId: LessonId;
   const fieldKey = `${state.stage}-${field.mode}`;
   const onFieldDone = state.stage === 'manipulate' ? () => dispatch({ type: 'manipulated' }) : state.stage === 'verify' ? () => dispatch({ type: 'verified' }) : undefined;
 
-  const nextButton = (enabled: boolean, label = t('math.next')) => (
+  const nextButton = (enabled: boolean) => (
     <BigButton size="lg" className="w-full" disabled={!enabled} onClick={() => dispatch({ type: 'next' })}>
-      {label}
+      {t('math.next')}
       <ArrowRight size={28} strokeWidth={3} aria-hidden />
     </BigButton>
   );
@@ -87,28 +107,15 @@ export default function LessonScreen({ lessonId, onExit }: { lessonId: LessonId;
     <AppShell background="bg-gradient-to-b from-mist/60 via-cream to-moss">
       <ScreenHeader title={t(k('title'))} onBack={onExit} />
 
-      {state.stage === 'complete' ? (
-        // 다 했을 때: 발견한 원리를 다시 보여준다 (보상은 Phase 4 에서 연결)
-        <main className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-          <span className="text-7xl" aria-hidden>
-            🌟
-          </span>
-          <h2 className="text-4xl font-bold">{t('math.completeTitle')}</h2>
-          <section className="max-w-md rounded-3xl bg-cream p-5 shadow-pop-sm">
-            <h3 className="mb-2 text-lg text-oak">{t('math.learned')}</h3>
-            <p className="text-xl font-semibold">{t(k('discover'))}</p>
-          </section>
-          <div className="grid w-full max-w-md grid-cols-2 gap-3">
-            <BigButton variant="soft" onClick={() => dispatch({ type: 'restart' })}>
-              <RotateCcw size={26} aria-hidden />
-              {t('math.again')}
-            </BigButton>
-            <BigButton onClick={onExit}>
-              <LayoutGrid size={26} aria-hidden />
-              {t('math.moreGames')}
-            </BigButton>
-          </div>
-        </main>
+      {state.stage === 'complete' && earned ? (
+        <RewardPanel
+          rewards={earned.rewards}
+          bonus={earned.bonus}
+          discovery={t(k('discover'))}
+          onWorkshop={onWorkshop}
+          onAgain={() => dispatch({ type: 'restart' })}
+          onMoreGames={onExit}
+        />
       ) : (
         <main className="flex flex-1 flex-col gap-4">
           <StageProgress stage={state.stage} />
@@ -136,7 +143,12 @@ export default function LessonScreen({ lessonId, onExit }: { lessonId: LessonId;
                   chosen={state.solved ? applyAnswer : null}
                   onChoose={(answer) => dispatch({ type: 'answer', answer, correct: applyAnswer })}
                 />
-                {state.solved && nextButton(true, t('math.finish'))}
+                {state.solved && (
+                  <BigButton size="lg" className="w-full" onClick={finish}>
+                    {t('math.finish')}
+                    <ArrowRight size={28} strokeWidth={3} aria-hidden />
+                  </BigButton>
+                )}
               </div>
             )}
           </div>

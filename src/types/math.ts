@@ -1,4 +1,5 @@
 import type { TranslationKey } from '../i18n';
+import type { ResourceBundle } from './resources';
 
 // 수학 놀이에 나오는 물건 종류 (그림은 src/data/math/items.ts)
 export type MathItemId =
@@ -35,6 +36,8 @@ export interface MathLesson {
   predictChoices: MathAnswer[];
   apply: MathScene; // 해 보기 장면
   applyChoices: MathAnswer[];
+  rewards: ResourceBundle; // 끝까지 하면 받는 재료 (정답 여부와 상관없음)
+  firstTimeBonus: ResourceBundle; // 처음 끝냈을 때만 더 받는 재료
   predictLabels?: CompareLabels; // 비교 문제만
   applyLabels?: CompareLabels; // 비교 문제만
 }
