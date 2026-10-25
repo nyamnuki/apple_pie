@@ -12,6 +12,8 @@ interface I18nValue {
   tKey: (key: string, vars?: Record<string, string | number>) => string;
   // 숫자를 언어에 맞게 표시 (예: 1,000)
   formatNumber: (n: number) => string;
+  // 날짜·시각을 언어에 맞게 표시 (예: Oct 25, 2026, 3:04 PM / 2026. 10. 25. 오후 3:04)
+  formatDateTime: (date: Date) => string;
 }
 
 const I18nContext = createContext<I18nValue | null>(null);
@@ -32,12 +34,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<I18nValue>(() => {
     const numberFormat = new Intl.NumberFormat(locale);
+    const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' });
     return {
       locale,
       setLocale,
       t: (key, vars) => translate(locale, key, vars),
       tKey: (key, vars) => translate(locale, key, vars),
       formatNumber: (n) => numberFormat.format(n),
+      formatDateTime: (date) => dateFormat.format(date),
     };
   }, [locale, setLocale]);
 

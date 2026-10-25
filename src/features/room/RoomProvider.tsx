@@ -2,7 +2,7 @@ import { createContext, useContext, useMemo, useReducer, type ReactNode } from '
 import type { PlacedFurniture, RoomLayout } from '../../types/furniture';
 
 // ===== 방 상태 (어떤 가구가 어디에 놓였는지) =====
-// 지금은 메모리에만 보관한다. 새로고침하면 처음 배치로 돌아가며, 저장은 Phase 5 에서 붙인다.
+// 처음 값은 저장본에서 불러온다 (main.tsx). 저장은 SaveManager 가 맡는다.
 
 // 처음 방 모습
 export const DEFAULT_LAYOUT: RoomLayout = {
@@ -44,8 +44,8 @@ interface RoomValue {
 
 const RoomContext = createContext<RoomValue | null>(null);
 
-export function RoomProvider({ children }: { children: ReactNode }) {
-  const [layout, dispatch] = useReducer(roomReducer, DEFAULT_LAYOUT);
+export function RoomProvider({ initial, children }: { initial: RoomLayout; children: ReactNode }) {
+  const [layout, dispatch] = useReducer(roomReducer, initial);
   const value = useMemo(() => ({ layout, dispatch }), [layout]);
   return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;
 }

@@ -9,10 +9,13 @@ import LessonScreen from '../features/math/LessonScreen';
 import WorkshopScreen from '../features/workshop/WorkshopScreen';
 import InventoryScreen from '../features/inventory/InventoryScreen';
 import type { LessonId } from '../types/math';
+import type { LoadStatus } from '../services/storage/gameSave';
 
 // 화면 전환. 설정에서 '뒤로'를 누르면 설정을 열기 전 화면으로 돌아간다.
-export default function App() {
+export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
   const [screen, setScreen] = useState<Screen>('title');
+  // 저장 안내는 한 번 닫으면 이번 실행 동안 다시 보이지 않는다
+  const [notice, setNotice] = useState<LoadStatus | null>(loadStatus);
   const [settingsFrom, setSettingsFrom] = useState<Screen>('title');
   const [lessonId, setLessonId] = useState<LessonId>('counting1');
 
@@ -23,7 +26,7 @@ export default function App() {
 
   switch (screen) {
     case 'title':
-      return <TitleScreen onStart={() => setScreen('room')} onSettings={() => openSettings('title')} />;
+      return <TitleScreen onStart={() => setScreen('room')} onSettings={() => openSettings('title')} notice={notice} onCloseNotice={() => setNotice(null)} />;
     case 'room':
       return (
         <RoomScreen
@@ -38,7 +41,7 @@ export default function App() {
     case 'decorate':
       return <DecorateScreen onBack={() => setScreen('room')} />;
     case 'settings':
-      return <SettingsScreen onBack={() => setScreen(settingsFrom)} />;
+      return <SettingsScreen onBack={() => setScreen(settingsFrom)} canSave={loadStatus !== 'unavailable'} />;
     case 'math':
       return (
         <MathMenuScreen

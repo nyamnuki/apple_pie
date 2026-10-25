@@ -38,7 +38,8 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 | `src/types/` | 데이터 모양 정의 (가구, 방 배치) |
 | `src/components/` | 여러 화면에서 같이 쓰는 버튼·틀 |
 | `src/i18n/` | 다국어 시스템과 언어 파일 |
-| `src/services/` | 브라우저 저장, 그림 파일 확인 도우미 |
+| `src/services/storage/` | 저장·불러오기, 저장본 검사와 복구 |
+| `src/services/assets/` | 그림 파일이 있는지 확인하는 도우미 |
 | `src/styles/` | 색상 변수와 공통 스타일 |
 | `public/assets/` | 그림 파일 넣는 곳 (규칙은 그 폴더의 README) |
 
@@ -62,6 +63,18 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 2. `src/i18n/locales/en.ts`, `ko.ts` 의 `furniture` 에 이름과 설명 추가
 3. (선택) `public/assets/furniture/` 에 그림 넣기 — 없으면 색 상자로 보입니다
 
-## 저장 키
+## 저장
 
-- `mathTown.locale` — 선택한 언어 (게임 진행 데이터와 따로 저장)
+브라우저(localStorage)에 저장합니다. 서버로 보내는 데이터는 없습니다.
+
+| 키 | 내용 |
+|---|---|
+| `mathTown.locale` | 선택한 언어 (게임 데이터와 따로 저장) |
+| `mathTown.save` | 재료, 가구, 끝낸 놀이, 방 배치 + `schemaVersion`, 저장 시각 |
+| `mathTown.save.backup` | 읽을 수 없던 저장본을 버리지 않고 보관한 것 |
+
+- 바뀐 뒤 0.3초 후 저장하고, 창을 닫거나 다른 앱으로 넘어갈 때 바로 저장합니다.
+- 저장본이 깨졌거나 모르는 버전이면 처음 상태로 시작하고 원래 내용은 backup 에 남깁니다.
+- 일부만 이상하면(없는 가구, 음수, 방 밖 위치 등) 그 부분만 버리고 나머지는 살립니다 (`src/services/storage/sanitize.ts`).
+- **저장 데이터 모양을 바꿀 때:** `src/services/storage/gameSave.ts` 의 `SCHEMA_VERSION` 을 1 올리고,
+  `MIGRATIONS` 에 옛 버전 → 새 버전 변환 방법을 추가합니다. 그래야 기존 사용자의 진행 상황이 유지됩니다.

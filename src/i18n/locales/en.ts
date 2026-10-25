@@ -202,6 +202,16 @@ export const en = {
     glowBranch: 'Glow Branch',
     moonDew: 'Moon Dew',
   },
+  save: {
+    title: 'Saving',
+    savedHere: 'Your progress is saved on this device.',
+    lastSaved: 'Last saved: {time}',
+    notSaved: "This browser can't save your progress. It will be gone when you close the game.",
+    recovered: "We couldn't read your saved game, so we started a new one.",
+  },
+  common: {
+    ok: 'OK',
+  },
   a11y: {
     openSettings: 'Open settings',
     goBack: 'Go back',

@@ -204,6 +204,16 @@ export const ko: Messages = {
     glowBranch: '빛나는 나뭇가지',
     moonDew: '달빛 이슬',
   },
+  save: {
+    title: '저장',
+    savedHere: '진행 상황은 이 기기에 저장돼요.',
+    lastSaved: '마지막 저장: {time}',
+    notSaved: '이 브라우저에서는 저장할 수 없어요. 게임을 닫으면 진행 상황이 사라져요.',
+    recovered: '저장된 게임을 읽을 수 없어서 새로 시작했어요.',
+  },
+  common: {
+    ok: '알겠어요',
+  },
   a11y: {
     openSettings: '설정 열기',
     goBack: '뒤로 가기',
