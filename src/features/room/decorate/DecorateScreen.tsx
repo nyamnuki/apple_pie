@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import ZoomableRoom from './ZoomableRoom';
 import AppShell from '../../../components/AppShell';
 import ScreenHeader from '../../../components/ScreenHeader';
 import RoomView, { spotKey, wallKey, type FloorGhost, type WallGhostSpot } from '../RoomView';
@@ -240,7 +241,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
       </p>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 [@media(max-height:500px)]:flex-row">
-        <div className="min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0">
+        <ZoomableRoom className="min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0">
           <RoomView
             layout={layout}
             selectedUid={activeUid}
@@ -256,7 +257,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
             shake={shake}
             celebrate={celebrate}
           />
-        </div>
+        </ZoomableRoom>
 
         <div className="[@media(max-height:500px)]:w-72 [@media(max-height:500px)]:overflow-y-auto">
           {mode.kind === 'selected' && selectedDef ? (

@@ -1,4 +1,14 @@
 import type { Page, BrowserContext } from '@playwright/test';
+import { lessonForPlay } from '../src/features/math/variation';
+import { answerOf } from '../src/features/math/answers';
+import { getLesson } from '../src/data/math/lessons';
+import type { LessonId } from '../src/types/math';
+
+// play 번째 판(0 = 처음)의 예상하기 첫 선택지와 해 보기 정답 — 다시 할 때는 수가 바뀌므로 앱과 같은 규칙으로 계산한다
+export function answersFor(id: LessonId, play = 0) {
+  const lesson = lessonForPlay(getLesson(id), play);
+  return { firstPredict: String(lesson.predictChoices[0]), apply: String(answerOf(lesson.apply)), lesson };
+}
 
 // ===== 테스트 도우미 =====
 
@@ -92,18 +102,19 @@ export async function playLesson(page: Page, title: RegExp, tapLabel: string, ri
   await page.getByRole('button', { name: 'Finish' }).click();
 }
 
-// '사과 세기' 놀이를 처음부터 끝까지 (예상은 일부러 틀리게, 해 보기는 정답)
-export async function playCountingApples(page: Page, fromMenu = true) {
+// '사과 세기' 놀이를 처음부터 끝까지 (예상은 첫 선택지, 해 보기는 정답). play: 몇 번째 판인지 (0 = 처음)
+export async function playCountingApples(page: Page, fromMenu = true, play = 0) {
+  const { firstPredict, apply } = answersFor('counting1', play);
   if (fromMenu) await page.getByRole('button', { name: /Counting Apples/ }).click();
   await page.getByRole('button', { name: 'Next' }).click();
   const apple = page.getByRole('button', { name: 'Count this one' });
   while (await apple.count()) await apple.first().click();
   await waitLastButtonEnabled(page);
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: '12', exact: true }).click();
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: firstPredict, exact: true }).click();
   await waitLastButtonEnabled(page);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: '17', exact: true }).click();
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: apply, exact: true }).click();
   await page.getByRole('button', { name: 'Finish' }).click();
 }

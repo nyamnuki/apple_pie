@@ -5,7 +5,7 @@ import { REGIONS, getRegion } from '../../data/regions/regions';
 import { useGame } from '../../app/GameProvider';
 import { isRegionOpen, regionProgress } from '../../utils/regions';
 import { useI18n } from '../../i18n';
-import RegionIcon from '../../components/RegionIcon';
+import RegionLandmark from '../../components/art/RegionLandmark';
 import type { RegionId } from '../../types/resources';
 
 // 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲, 수정 동굴: 푸른 동굴)
@@ -14,6 +14,23 @@ const CARD_STYLE: Record<RegionId, string> = {
   moonlightForest: 'bg-lavender',
   crystalCave: 'bg-mist',
 };
+
+// 마을 사이 오솔길: 세로 화면은 위아래로, 높이가 낮은 가로 화면은 옆으로 구불구불
+function Trail() {
+  const steps = [0.18, 0.42, 0.66, 0.88];
+  return (
+    <span aria-hidden="true" className="mx-auto block h-16 w-16 [@media(max-height:500px)]:h-16 [@media(max-height:500px)]:w-12 [@media(max-height:500px)]:-rotate-90">
+      <svg viewBox="0 0 40 64" className="h-full w-full overflow-visible">
+        <path d="M20 0 C4 16 36 28 20 40 C8 50 28 58 20 64" fill="none" stroke="#F1DDBC" strokeWidth="12" strokeLinecap="round" />
+        <path d="M20 0 C4 16 36 28 20 40 C8 50 28 58 20 64" fill="none" stroke="#B9855A" strokeOpacity="0.35" strokeWidth="2" strokeDasharray="1 7" strokeLinecap="round" />
+        {/* 작은 발자국 */}
+        {steps.map((t, i) => (
+          <ellipse key={t} cx={i % 2 ? 24 : 16} cy={t * 64} rx="2.2" ry="3" fill="#946539" opacity="0.45" />
+        ))}
+      </svg>
+    </span>
+  );
+}
 
 // 마을 지도: 가고 싶은 마을을 고른다. 잠긴 마을은 열리는 조건과 진행 정도를 보여준다.
 export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: RegionId) => void; onBack: () => void }) {
@@ -35,26 +52,19 @@ export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: Regio
           const need = unlock.type === 'lessons' ? regionProgress(unlock.region, game.completedLessons).done : 0;
           return (
             <li key={region.id} className="flex flex-col items-stretch [@media(max-height:500px)]:flex-1 [@media(max-height:500px)]:flex-row-reverse [@media(max-height:500px)]:items-center">
-              {/* 마을 사이를 잇는 점선 길 (첫 카드 위에는 없음) */}
-              {index > 0 && (
-                <span
-                  aria-hidden="true"
-                  className="mx-auto h-14 border-l-[6px] border-dotted border-wood/40 [@media(max-height:500px)]:h-0 [@media(max-height:500px)]:w-10 [@media(max-height:500px)]:border-l-0 [@media(max-height:500px)]:border-t-[6px]"
-                />
-              )}
+              {/* 마을 사이를 잇는 구불구불한 오솔길과 발자국 (첫 카드 위에는 없음) */}
+              {index > 0 && <Trail />}
               <button
                 type="button"
                 disabled={!open}
                 onClick={() => onPick(region.id)}
                 // 잠긴 마을: 투명하게 하지 않고 점선 테두리로 구분 (글자가 흐려지지 않게)
-                className={`flex min-h-[112px] w-full items-center gap-4 rounded-[2rem] border-4 p-4 text-left transition-transform ${CARD_STYLE[region.id]} ${
+                className={`flex min-h-[112px] w-full items-center gap-4 rounded-[2rem] border-4 p-4 text-left transition-transform [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-3 ${CARD_STYLE[region.id]} ${
                   open ? 'border-transparent shadow-pop active:translate-y-1 active:shadow-pop-sm' : 'border-dashed border-bark/30'
                 }`}
               >
-                <span className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-cream text-5xl" aria-hidden="true">
-                  <span className={open ? '' : 'opacity-60 grayscale'}>
-                    <RegionIcon id={region.id} size={60} />
-                  </span>
+                <span className="relative h-[4.4rem] w-24 shrink-0 overflow-visible rounded-[22px] min-[400px]:h-[5.5rem] min-[400px]:w-32 [@media(max-height:500px)]:!h-16 [@media(max-height:500px)]:!w-24 shadow-[inset_0_0_0_2px_rgb(89_72_60/0.12)]" aria-hidden="true">
+                  <RegionLandmark id={region.id} locked={!open} />
                   {!open && (
                     <span className="absolute -bottom-1 -right-1 rounded-full bg-bark p-1.5 text-cream">
                       <Lock size={18} />

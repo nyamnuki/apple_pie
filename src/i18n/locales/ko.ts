@@ -34,6 +34,8 @@ export const ko: Messages = {
     turned: '빙글 돌렸어요!',
     tryHere: '거기는 자리가 없어요. 옆에 반짝이는 자리는 어때요?',
     putHere: '여기에 놓기',
+    zoomIn: '방 크게 보기',
+    zoomOut: '방 전체 보기',
     placingFor: '{name}, 어디에 놓을까요?',
     movingFor: '{name}, 어디로 옮길까요?',
     noSpace: '방이 꽉 찼어요. 먼저 물건 하나를 치워 봐요.',

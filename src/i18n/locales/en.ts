@@ -33,6 +33,8 @@ export const en = {
     turned: 'It turned around!',
     tryHere: 'That spot is busy. How about the glowing spot next to it?',
     putHere: 'Put it here',
+    zoomIn: 'Make the room bigger',
+    zoomOut: 'Show the whole room',
     placingFor: 'Where should the {name} go?',
     movingFor: 'Where should the {name} move?',
     noSpace: 'The room is full. Put something away first.',

@@ -1,4 +1,4 @@
-import { useReducer, useRef, useState } from 'react';
+import { useMemo, useReducer, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
@@ -15,6 +15,7 @@ import { isRegionOpen } from '../../utils/regions';
 import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
+import { lessonForPlay } from './variation';
 import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
@@ -56,9 +57,12 @@ interface Props {
 
 export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const { t, formatNumber } = useI18n();
-  const lesson = getLesson(lessonId);
   const [state, dispatch] = useReducer(lessonReducer, initialLessonState);
   const { game, dispatch: gameDispatch } = useGame();
+  // 몇 번째 판인지 (처음 = 0). 다시 하면 예상하기·해 보기의 수가 바뀐다 (variation.ts)
+  const playsSoFar = game.lessonStats[lessonId]?.plays ?? 0;
+  const [playNo, setPlayNo] = useState(playsSoFar);
+  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo), [lessonId, playNo]);
   const { play } = useSound();
   // 이번에 받은 보상 (보상 화면에 보여준다)
   const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; newRegion: RegionId | null } | null>(null);
@@ -161,7 +165,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           newRegion={earned.newRegion}
           onWorkshop={onWorkshop}
           onAgain={() => {
-            rewarded.current = false; // 다시 하면 새 판
+            rewarded.current = false; // 다시 하면 새 판 (새 수)
+            setPlayNo(playsSoFar);
             dispatch({ type: 'restart' });
           }}
           onMoreGames={onExit}

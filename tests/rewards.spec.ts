@@ -24,7 +24,7 @@ test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', as
 
   // 두 번째: 보너스 없음
   await page.getByRole('button', { name: 'Play again' }).click();
-  await playCountingApples(page, false);
+  await playCountingApples(page, false, 1); // 두 번째 판은 수가 바뀐다
   await expect(page.getByText('First-time bonus!')).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Make something in the Workshop' }).click();
