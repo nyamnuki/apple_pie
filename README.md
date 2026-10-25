@@ -24,7 +24,8 @@ npm run dev      # 개발 서버 실행 → 터미널에 나오는 주소를 브
 | `npm run preview` | 만든 배포용 파일을 미리 보기 |
 | `npm test` | 자동 테스트 (아래 '테스트' 참고) |
 
-배포(인터넷에 올리기) 방법은 [docs/DEPLOY.md](docs/DEPLOY.md) 를 보세요.
+**공개 주소: https://nyamnuki.github.io/apple_pie/** — `main` 이 바뀌면 GitHub Actions 가 자동으로 다시 배포합니다.
+배포 방법 자세히: [docs/DEPLOY.md](docs/DEPLOY.md)
 
 ## 게임 구성
 

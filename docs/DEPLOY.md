@@ -13,10 +13,10 @@
 1. GitHub 에서 `nyamnuki/apple_pie` 저장소 → **Settings** → 왼쪽 **Pages**
 2. **Build and deployment → Source** 를 **GitHub Actions** 로 바꿉니다.
 
-### ② 자동 배포 설정 파일 넣기
-아래 내용을 `.github/workflows/deploy.yml` 로 저장해 `main` 에 올립니다.
-이후 `main` 이 바뀔 때마다 자동으로 빌드해 위 주소에 올립니다.
-(공개 저장소는 GitHub Actions 사용 시간이 무료입니다. ①을 하기 전에 올리면 배포가 실패로 표시됩니다.)
+### ② 자동 배포 설정 파일 (이미 들어 있음)
+`.github/workflows/deploy.yml` 이 저장소에 들어 있습니다. 아래는 그 내용입니다.
+`main` 이 바뀔 때마다 자동으로 빌드해 위 주소에 올립니다.
+(공개 저장소는 GitHub Actions 사용 시간이 무료입니다. ①이 꺼져 있으면 배포가 실패로 표시됩니다.)
 
 ```yaml
 name: Deploy to GitHub Pages
