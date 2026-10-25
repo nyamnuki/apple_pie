@@ -1,4 +1,4 @@
-import { audio } from './sound';
+import { audio, existingAudio } from './sound';
 
 // ===== 배경 음악 (Web Audio API) =====
 // 음원 파일 없이 코드로 연주한다. 8마디가 끝없이 반복되는 잔잔한 곡 2개.
@@ -117,7 +117,7 @@ export function playMusic(track: TrackId) {
 
 // 곡 멈춤 (fade 초 동안 줄였다가 끊는다)
 export function stopMusic(fade = 0.6) {
-  const ac = audio();
+  const ac = existingAudio(); // 멈출 때는 오디오를 새로 만들지 않는다 (아이가 누르기 전에는 만들면 안 된다)
   if (timer !== null) window.clearInterval(timer);
   timer = null;
   current = null;

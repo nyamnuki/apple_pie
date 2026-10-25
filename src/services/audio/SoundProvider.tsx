@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { SOUNDS } from './sound';
+import { SOUNDS, audio } from './sound';
 import { readString, writeString } from '../storage/localStore';
 
 // 설정은 게임 데이터·언어와 따로 저장한다
@@ -46,16 +46,18 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const setSoundOn = useCallback((on: boolean) => update({ sound: on }), [update]);
   const setMusicOn = useCallback((on: boolean) => update({ music: on }), [update]);
 
-  // 첫 터치·클릭·키 입력을 기다린다
+  // 첫 터치·클릭·키 입력을 기다린다.
+  // 브라우저는 손가락을 '뗄 때'(pointerup·touchend·click)나 키를 누를 때만 소리를 허락하므로
+  // 그 순간에 바로 오디오를 만들고 깨운다. (pointerdown 은 휴대폰에서 허락으로 치지 않는다)
   useEffect(() => {
     if (interacted) return;
-    const mark = () => setInteracted(true);
-    window.addEventListener('pointerdown', mark, { once: true });
-    window.addEventListener('keydown', mark, { once: true });
-    return () => {
-      window.removeEventListener('pointerdown', mark);
-      window.removeEventListener('keydown', mark);
+    const events = ['pointerup', 'touchend', 'click', 'keydown'] as const;
+    const mark = () => {
+      audio();
+      setInteracted(true);
     };
+    events.forEach((e) => window.addEventListener(e, mark));
+    return () => events.forEach((e) => window.removeEventListener(e, mark));
   }, [interacted]);
 
   const play = useMemo(() => {

@@ -19,6 +19,9 @@ export function audio(): AudioContext | null {
   }
 }
 
+// 이미 만들어진 오디오만 돌려준다 (없으면 null — 새로 만들지 않는다. 멈출 때 쓴다)
+export const existingAudio = (): AudioContext | null => ctx;
+
 // 음 하나: 주파수(Hz), 시작 지연(초), 길이(초), 파형, 크기
 function tone(freq: number, delay = 0, duration = 0.18, type: OscillatorType = 'sine', volume = 0.16) {
   const ac = audio();
