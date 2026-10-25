@@ -5,6 +5,7 @@ import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
 import AssetThumb from '../../components/AssetThumb';
 import ResourceChip from '../../components/ResourceChip';
+import Character from '../../components/characters/Character';
 import { FURNITURE, getFurniture } from '../../data/furniture/furniture';
 import { RESOURCES } from '../../data/resources/resources';
 import { getRegion } from '../../data/regions/regions';
@@ -30,7 +31,10 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
       {/* 방금 만든 가구 안내 */}
       {madeDef ? (
         <section aria-live="polite" className="mb-4 flex flex-col items-center gap-3 rounded-3xl bg-cream p-5 text-center shadow-pop-sm">
-          <AssetThumb def={madeDef} size={96} />
+          <div className="flex items-end gap-2">
+            <Character expression="happy" size={88} />
+            <AssetThumb def={madeDef} size={88} />
+          </div>
           <p className="text-2xl font-bold">{t('workshop.made', { name: tKey(madeDef.nameKey) })}</p>
           <div className="grid w-full max-w-sm grid-cols-2 gap-3">
             <BigButton onClick={onDecorate}>

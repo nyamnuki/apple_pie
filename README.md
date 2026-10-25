@@ -37,6 +37,9 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 | `src/data/assets/` | Asset Registry — 그림 경로 모음 |
 | `src/types/` | 데이터 모양 정의 (가구, 방 배치) |
 | `src/components/` | 여러 화면에서 같이 쓰는 버튼·틀 |
+| `src/components/characters/` | 캐릭터 (루루 그림과 표정 5가지) |
+| `src/data/characters/` | 캐릭터 목록 (루루, 도토, 모모) |
+| `src/features/room/placeholders/` | 그림 파일이 없을 때 코드로 그리는 가구 모양 |
 | `src/i18n/` | 다국어 시스템과 언어 파일 |
 | `src/services/storage/` | 저장·불러오기, 저장본 검사와 복구 |
 | `src/services/assets/` | 그림 파일이 있는지 확인하는 도우미 |

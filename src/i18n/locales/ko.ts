@@ -51,6 +51,22 @@ export const ko: Messages = {
     flowerPot: { name: '꽃 화분', description: '작은 꽃이 방긋 핀 화분이에요.' },
     toyChest: { name: '장난감 상자', description: '장난감을 소중히 넣어 두는 상자예요.' },
     woodlandWallpaper: { name: '숲속 벽지', description: '나뭇잎과 작은 별이 그려진 벽지예요.' },
+    mushroomStool: { name: '버섯 의자', description: '앉을 수 있는 작은 버섯이에요.' },
+    appleBasket: { name: '사과 바구니', description: '달콤한 사과가 가득 든 바구니예요.' },
+    moonLantern: { name: '달빛 등불', description: '달처럼 은은하게 빛나는 등불이에요.' },
+  },
+  characters: {
+    label: '{name} ({mood})',
+    lulu: { name: '루루', description: '잎사귀 망토를 두르고 작은 꽃을 단 크림색 토끼예요.' },
+    doto: { name: '도토', description: '도토리 가방을 멘 고슴도치예요.' },
+    momo: { name: '모모', description: '세이지색 스카프를 두른 다람쥐예요.' },
+    moods: {
+      default: '웃는 얼굴',
+      happy: '기쁜 얼굴',
+      thinking: '생각하는 얼굴',
+      cheer: '응원하는 얼굴',
+      surprised: '놀란 얼굴',
+    },
   },
   settings: {
     title: '설정',
@@ -217,7 +233,6 @@ export const ko: Messages = {
   a11y: {
     openSettings: '설정 열기',
     goBack: '뒤로 가기',
-    mascot: '다정한 토끼 친구',
     floorSpot: '바닥 {row}번째 줄 {col}번째 칸',
     furnitureInRoom: '방에 있는 {name}',
     furnitureSelected: '{name}, 선택됨',

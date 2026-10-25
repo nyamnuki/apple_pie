@@ -1,6 +1,7 @@
 import { Hammer, LayoutGrid, RotateCcw } from 'lucide-react';
 import BigButton from '../../components/BigButton';
 import ResourceChip from '../../components/ResourceChip';
+import Character from '../../components/characters/Character';
 import { bundleEntries } from '../../utils/bundles';
 import { useI18n } from '../../i18n';
 import type { ResourceBundle } from '../../types/resources';
@@ -21,6 +22,7 @@ export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onA
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
+      <Character expression="happy" size={110} bob />
       <h2 className="text-3xl font-bold sm:text-4xl">{t('reward.title')}</h2>
 
       <section aria-labelledby="reward-got" className="w-full max-w-md rounded-3xl bg-cream p-5 shadow-pop-sm">
@@ -28,12 +30,14 @@ export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onA
           {t('reward.youGot')}
         </h3>
         <div className="flex flex-wrap justify-center gap-3">
-          {bundleEntries(rewards).map(([id, n]) => (
-            <ResourceChip key={id} id={id} amount={n} prefix="+" size="lg" />
+          {bundleEntries(rewards).map(([id, n], i) => (
+            <span key={id} className="animate-rise" style={{ animationDelay: `${i * 150}ms` }}>
+              <ResourceChip id={id} amount={n} prefix="+" size="lg" />
+            </span>
           ))}
         </div>
         {bonusEntries.length > 0 && (
-          <div className="mt-4 rounded-2xl border-4 border-dashed border-oak/50 p-3">
+          <div className="mt-4 animate-rise rounded-2xl border-4 border-dashed border-oak/50 p-3" style={{ animationDelay: '450ms' }}>
             <p className="mb-2 text-lg font-bold text-oak">{t('reward.firstTimeBonus')}</p>
             <div className="flex flex-wrap justify-center gap-3">
               {bonusEntries.map(([id, n]) => (

@@ -2,18 +2,22 @@ import type { TranslationKey } from '../i18n';
 import type { ResourceBundle } from './resources';
 
 // 가구 종류. 'rug' 는 바닥에 깔리므로 다른 가구가 위에 올라설 수 있다.
-export type FurnitureCategory = 'bed' | 'rug' | 'light' | 'storage' | 'table' | 'plant' | 'wallpaper';
+export type FurnitureCategory = 'bed' | 'rug' | 'light' | 'storage' | 'table' | 'seat' | 'plant' | 'decor' | 'wallpaper';
 
 // 얻는 방법
 export type UnlockCondition =
   | { type: 'starter' } // 처음부터 가지고 있음
   | { type: 'recipe'; cost: ResourceBundle }; // 공방에서 이 재료로 만든다
 
-// 그림 파일이 없을 때 대신 그리는 임시 그래픽 정보
+// 그림 파일이 없을 때 코드로 그리는 모양 (src/features/room/placeholders/)
+export type PlaceholderShape = 'bed' | 'rug' | 'lamp' | 'shelf' | 'desk' | 'pot' | 'chest' | 'stool' | 'basket' | 'lantern' | 'box';
+
+// 그림 파일이 없을 때 대신 쓰는 임시 그래픽 정보
 export interface PlaceholderStyle {
-  color: string; // 상자 색 (#RRGGBB)
-  emoji: string; // 상자 위에 올릴 그림 문자
-  height: number; // 상자 높이 (방 좌표 단위)
+  shape: PlaceholderShape; // 방에 그릴 모양
+  color: string; // 목록 썸네일 배경색 (#RRGGBB)
+  emoji: string; // 목록 썸네일 그림 문자
+  height: number; // 대략적인 높이 (선택 화살표 위치에 쓴다, 방 좌표 단위)
 }
 
 // 가구 한 종류의 정의 (Asset Registry 의 한 줄)

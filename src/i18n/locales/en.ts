@@ -50,6 +50,22 @@ export const en = {
     flowerPot: { name: 'Flower Pot', description: 'A pot of happy little flowers.' },
     toyChest: { name: 'Toy Chest', description: 'A chest to keep your toys safe.' },
     woodlandWallpaper: { name: 'Woodland Wallpaper', description: 'Wallpaper with leaves and tiny stars.' },
+    mushroomStool: { name: 'Mushroom Stool', description: 'A little mushroom you can sit on.' },
+    appleBasket: { name: 'Apple Basket', description: 'A basket full of sweet apples.' },
+    moonLantern: { name: 'Moon Lantern', description: 'A lantern that shines like the moon.' },
+  },
+  characters: {
+    label: '{name} ({mood})',
+    lulu: { name: 'Lulu', description: 'A cream bunny with a leaf cape and a little flower.' },
+    doto: { name: 'Doto', description: 'A hedgehog with an acorn backpack.' },
+    momo: { name: 'Momo', description: 'A squirrel with a sage scarf.' },
+    moods: {
+      default: 'smiling',
+      happy: 'happy',
+      thinking: 'thinking',
+      cheer: 'cheering you on',
+      surprised: 'surprised',
+    },
   },
   settings: {
     title: 'Settings',
@@ -215,7 +231,6 @@ export const en = {
   a11y: {
     openSettings: 'Open settings',
     goBack: 'Go back',
-    mascot: 'A friendly bunny',
     floorSpot: 'Floor spot, row {row}, column {col}',
     furnitureInRoom: '{name} in your room',
     furnitureSelected: '{name}, selected',

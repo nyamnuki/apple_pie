@@ -17,6 +17,7 @@ import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { ResourceBundle } from '../../types/resources';
+import type { Expression } from '../../data/characters/characters';
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
 function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode: FieldMode } {
@@ -91,6 +92,25 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     }
   })();
 
+  // 루루의 표정: 예상할 땐 생각 중, 틀렸을 땐 응원, 맞혔을 땐 기쁨, 예상과 다르면 '와!' 놀람
+  const expression: Expression = (() => {
+    switch (state.stage) {
+      case 'manipulate':
+        return state.manipulated ? 'happy' : 'cheer';
+      case 'predict':
+        return 'thinking';
+      case 'verify':
+        if (!state.verified) return 'thinking';
+        return state.guess === predictAnswer ? 'happy' : 'surprised';
+      case 'discover':
+        return 'happy';
+      case 'apply':
+        return state.solved ? 'happy' : level > 0 ? 'cheer' : 'default';
+      default:
+        return 'default';
+    }
+  })();
+
   const field = fieldFor(lesson, state);
   // 장면이나 방식이 바뀌면 새로 그린다 (센 숫자 초기화)
   const fieldKey = `${state.stage}-${field.mode}`;
@@ -119,7 +139,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
       ) : (
         <main className="flex flex-1 flex-col gap-4">
           <StageProgress stage={state.stage} />
-          <GuideBubble text={guide} />
+          <GuideBubble text={guide} expression={expression} />
 
           <section className="flex min-h-[220px] flex-1 items-center justify-center rounded-[2rem] bg-cream/60 p-4">
             <SceneField key={fieldKey} scene={field.scene} mode={field.mode} onDone={onFieldDone} />

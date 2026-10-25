@@ -71,12 +71,19 @@
   }
 }
 
+/* SVG 안의 가구가 자기 바닥을 기준으로 내려앉도록 */
+.animate-settle {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
 /* 움직임 줄이기 설정을 켠 기기에서는 애니메이션을 끈다 */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

@@ -24,9 +24,18 @@ export default {
       keyframes: {
         // 숫자 배지가 톡 나타나는 짧은 효과
         pop: { '0%': { transform: 'scale(0.4)', opacity: '0' }, '100%': { transform: 'scale(1)', opacity: '1' } },
+        // 캐릭터가 살짝 위아래로 숨 쉬듯 움직이기
+        bob: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-4px)' } },
+        // 가구가 방에 톡 내려앉기
+        settle: { '0%': { transform: 'translateY(-10px) scale(0.94)', opacity: '0' }, '100%': { transform: 'translateY(0) scale(1)', opacity: '1' } },
+        // 보상 재료가 아래에서 살며시 나타나기
+        rise: { '0%': { transform: 'translateY(8px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
       },
       animation: {
         pop: 'pop 0.25s ease-out both',
+        bob: 'bob 2.8s ease-in-out infinite',
+        settle: 'settle 0.3s ease-out both',
+        rise: 'rise 0.35s ease-out both',
       },
       boxShadow: {
         // 눌리는 느낌의 입체 버튼 그림자
