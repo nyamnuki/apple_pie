@@ -23,11 +23,23 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 | 폴더 | 내용 |
 |---|---|
 | `src/app/` | 화면 전환, 타이틀 화면 |
-| `src/features/` | 기능별 화면 (room: 내 방, settings: 설정) |
+| `src/features/room/` | 내 방 화면, 아이소메트릭 방 그리기, 배치 규칙 |
+| `src/features/room/decorate/` | 방 꾸미기 화면 (놓기·옮기기·돌리기·치우기) |
+| `src/features/settings/` | 설정 화면 (언어 선택) |
+| `src/data/furniture/` | 가구 목록 (크기, 차지하는 칸, 그림 경로, 이름 키) |
+| `src/data/assets/` | Asset Registry — 그림 경로 모음 |
+| `src/types/` | 데이터 모양 정의 (가구, 방 배치) |
 | `src/components/` | 여러 화면에서 같이 쓰는 버튼·틀 |
 | `src/i18n/` | 다국어 시스템과 언어 파일 |
-| `src/services/storage/` | 브라우저 저장(localStorage) 도우미 |
+| `src/services/` | 브라우저 저장, 그림 파일 확인 도우미 |
 | `src/styles/` | 색상 변수와 공통 스타일 |
+| `public/assets/` | 그림 파일 넣는 곳 (규칙은 그 폴더의 README) |
+
+## 가구 추가하는 법
+
+1. `src/data/furniture/furniture.ts` 에 한 줄 추가
+2. `src/i18n/locales/en.ts`, `ko.ts` 의 `furniture` 에 이름과 설명 추가
+3. (선택) `public/assets/furniture/` 에 그림 넣기 — 없으면 색 상자로 보입니다
 
 ## 저장 키
 

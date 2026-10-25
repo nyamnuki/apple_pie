@@ -50,6 +50,15 @@
     outline: 4px solid rgb(var(--color-oak));
     outline-offset: 3px;
   }
+  /* 방 그림(SVG) 안의 가구·바닥: 손가락이나 마우스로 누를 때는 테두리를 숨기고,
+     키보드로 움직일 때만 점선 테두리를 보여준다 */
+  svg [tabindex]:focus {
+    outline: none;
+  }
+  svg [tabindex]:focus-visible {
+    outline: 4px dashed rgb(var(--color-oak));
+    outline-offset: 2px;
+  }
 }
 
 @layer components {

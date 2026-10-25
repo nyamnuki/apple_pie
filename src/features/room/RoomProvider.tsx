@@ -1,0 +1,61 @@
+import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react';
+import type { PlacedFurniture, RoomLayout } from '../../types/furniture';
+
+// ===== 방 상태 (어떤 가구가 어디에 놓였는지) =====
+// 지금은 메모리에만 보관한다. 새로고침하면 처음 배치로 돌아가며, 저장은 Phase 5 에서 붙인다.
+
+// 처음 방 모습
+export const DEFAULT_LAYOUT: RoomLayout = {
+  placed: [
+    { uid: 'leafBed-1', furnitureId: 'leafBed', gx: 0, gy: 0, rotation: 0 },
+    { uid: 'mushroomLamp-1', furnitureId: 'mushroomLamp', gx: 2, gy: 0, rotation: 0 },
+    { uid: 'petalRug-1', furnitureId: 'petalRug', gx: 2, gy: 2, rotation: 0 },
+    { uid: 'flowerPot-1', furnitureId: 'flowerPot', gx: 5, gy: 0, rotation: 0 },
+  ],
+  wallpaperId: null,
+};
+
+type Action =
+  | { type: 'place'; item: PlacedFurniture }
+  | { type: 'move'; uid: string; gx: number; gy: number }
+  | { type: 'rotate'; uid: string }
+  | { type: 'remove'; uid: string }
+  | { type: 'setWallpaper'; wallpaperId: string | null };
+
+function roomReducer(state: RoomLayout, action: Action): RoomLayout {
+  switch (action.type) {
+    case 'place':
+      return { ...state, placed: [...state.placed, action.item] };
+    case 'move':
+      return { ...state, placed: state.placed.map((p) => (p.uid === action.uid ? { ...p, gx: action.gx, gy: action.gy } : p)) };
+    case 'rotate':
+      return { ...state, placed: state.placed.map((p) => (p.uid === action.uid ? { ...p, rotation: p.rotation === 0 ? 1 : 0 } : p)) };
+    case 'remove':
+      return { ...state, placed: state.placed.filter((p) => p.uid !== action.uid) };
+    case 'setWallpaper':
+      return { ...state, wallpaperId: action.wallpaperId };
+  }
+}
+
+interface RoomValue {
+  layout: RoomLayout;
+  dispatch: (action: Action) => void;
+}
+
+const RoomContext = createContext<RoomValue | null>(null);
+
+export function RoomProvider({ children }: { children: ReactNode }) {
+  const [layout, dispatch] = useReducer(roomReducer, DEFAULT_LAYOUT);
+  const value = useMemo(() => ({ layout, dispatch }), [layout]);
+  return <RoomContext.Provider value={value}>{children}</RoomContext.Provider>;
+}
+
+export function useRoom(): RoomValue {
+  const ctx = useContext(RoomContext);
+  if (!ctx) throw new Error('useRoom 은 RoomProvider 안에서만 쓸 수 있어요');
+  return ctx;
+}
+
+// 새로 놓는 가구의 고유 번호 만들기
+let counter = 0;
+export const newUid = (furnitureId: string) => `${furnitureId}-${Date.now().toString(36)}-${(counter++).toString(36)}`;
