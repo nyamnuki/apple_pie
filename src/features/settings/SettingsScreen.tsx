@@ -18,7 +18,7 @@ export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: 
     <AppShell>
       <ScreenHeader title={t('settings.title')} onBack={onBack} />
 
-      <section aria-labelledby="language-heading" className="rounded-[2rem] bg-moss/60 p-5">
+      <section aria-labelledby="language-heading" className="rounded-[2rem] border-2 border-bark/10 bg-moss/60 p-5 shadow-[inset_0_2px_0_rgb(255_255_255/0.5)]">
         <h2 id="language-heading" className="mb-1 flex items-center gap-2 text-2xl font-bold">
           <Languages size={28} aria-hidden />
           {t('settings.language')}
@@ -49,7 +49,7 @@ export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: 
         onToggle={() => setMusicOn(!musicOn)}
       />
 
-      <section aria-labelledby="save-heading" className="selectable mt-4 rounded-[2rem] bg-moss/60 p-5">
+      <section aria-labelledby="save-heading" className="selectable mt-4 rounded-[2rem] border-2 border-bark/10 bg-moss/60 p-5 shadow-[inset_0_2px_0_rgb(255_255_255/0.5)]">
         <h2 id="save-heading" className="mb-1 flex items-center gap-2 text-2xl font-bold">
           <Save size={28} aria-hidden />
           {t('save.title')}

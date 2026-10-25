@@ -7,7 +7,7 @@
 | 폴더 | 내용 | 지금 쓰는 파일 이름 |
 |---|---|---|
 | `backgrounds/` | 방 배경 (760×640, 바닥+벽) | `room-base.png` |
-| `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png`, `crystal-lamp.png` / 벽 장식: `leaf-frame.png`, `acorn-garland.png`, `starry-frame.png`, `mithril-mirror.png`, `gem-garland.png` |
+| `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png`, `crystal-lamp.png`, `mushroom-bed.png`, `clover-cushion.png`, `crafting-bench.png` / 벽 장식: `leaf-frame.png`, `acorn-garland.png`, `starry-frame.png`, `mithril-mirror.png`, `gem-garland.png` |
 | `characters/` | 캐릭터 표정별 그림 | `lulu-default.png`, `lulu-happy.png`, `lulu-thinking.png`, `lulu-cheer.png`, `lulu-surprised.png` (도토: `doto-…`, 모모: `momo-…`) |
 | `items/` | 수학 놀이 물건, 재료 | 물건: `apple.png`, `pear.png`, `mushroom.png`, `moon.png`, `star.png`, `owl.png`, `gem.png`, `pebble.png`, `bat.png`, `candle.png` … / 재료: `res-acorn.png`, `res-apple.png`, `res-golden-acorn.png`, `res-glow-branch.png`, `res-moon-dew.png`, `res-crystal.png`, `res-mithril.png` |
 | `pets/`, `ui/`, `effects/` | 나중에 쓸 자리 | — |

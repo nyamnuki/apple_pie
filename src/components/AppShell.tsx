@@ -6,7 +6,9 @@ import type { ReactNode } from 'react';
 export default function AppShell({ children, background = 'bg-cream' }: { children: ReactNode; background?: string }) {
   return (
     <div className={`fixed inset-0 flex justify-center overflow-y-auto ${background}`}>
-      <main className="safe-pad flex min-h-full w-full max-w-3xl flex-col">{children}</main>
+      {/* 수채화 종이 결 (화면 전체에 아주 옅게, 누르기에는 영향 없음) */}
+      <div aria-hidden="true" className="paper-grain pointer-events-none fixed inset-0" />
+      <main className="safe-pad relative flex min-h-full w-full max-w-3xl flex-col">{children}</main>
     </div>
   );
 }

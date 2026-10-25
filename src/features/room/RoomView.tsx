@@ -59,130 +59,135 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
   };
 
   return (
-    <svg
-      viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
-      preserveAspectRatio="xMidYMid meet"
-      className="h-full w-full"
-      role={onTileClick ? 'group' : 'img'}
-      onPointerLeave={() => onTileHover?.(null)}
-      aria-label={`${t('room.viewLabel')}: ${names.join(', ')}`}
-    >
-      <RoomBackground wallpaperId={layout.wallpaperId} />
+    // 바닥·벽은 뒤쪽 그림(SVG)에 따로 그린다: 수채화 효과가 무거워서, 가구를 고르거나 옮길 때마다
+    // 배경까지 다시 그리지 않게 한다. 두 그림은 같은 좌표·같은 크기로 정확히 겹친다.
+    <div className="relative h-full w-full">
+      <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" aria-hidden="true">
+        <RoomBackground wallpaperId={layout.wallpaperId} />
+      </svg>
+      <svg
+        viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
+        preserveAspectRatio="xMidYMid meet"
+        className="absolute inset-0 h-full w-full"
+        role={onTileClick ? 'group' : 'img'}
+        onPointerLeave={() => onTileHover?.(null)}
+        aria-label={`${t('room.viewLabel')}: ${names.join(', ')}`}
+      >
+        {/* 벽 장식 (바닥 가구보다 뒤) */}
+        {layout.wallItems.map((item) => {
+          const def = getFurniture(item.furnitureId);
+          if (!def) return null;
+          return (
+            <WallItemSprite
+              key={item.uid}
+              item={item}
+              def={def}
+              label={t(item.uid === selectedUid ? 'a11y.furnitureSelected' : 'a11y.furnitureInRoom', { name: tKey(def.nameKey) })}
+              selected={item.uid === selectedUid}
+              onClick={onFurnitureClick && !picking ? () => onFurnitureClick(item.uid) : undefined}
+            />
+          );
+        })}
 
-      {/* 벽 장식 (바닥 가구보다 뒤) */}
-      {layout.wallItems.map((item) => {
-        const def = getFurniture(item.furnitureId);
-        if (!def) return null;
-        return (
-          <WallItemSprite
-            key={item.uid}
-            item={item}
-            def={def}
-            label={t(item.uid === selectedUid ? 'a11y.furnitureSelected' : 'a11y.furnitureInRoom', { name: tKey(def.nameKey) })}
-            selected={item.uid === selectedUid}
-            onClick={onFurnitureClick && !picking ? () => onFurnitureClick(item.uid) : undefined}
-          />
-        );
-      })}
+        {/* 벽 칸 고르기: 벽마다 6칸을 누를 수 있고, 걸 수 있는 칸에는 '+' */}
+        {validWallSpots &&
+          WALLS.map((wall) =>
+            Array.from({ length: GRID }, (_, slot) => {
+              const [z0, z1] = WALL_BANDS[wallBand];
+              const quad = [wallPoint(wall, slot, z1 + 10), wallPoint(wall, slot + 1, z1 + 10), wallPoint(wall, slot + 1, z0 - 10), wallPoint(wall, slot, z0 - 10)];
+              const center = wallPoint(wall, slot + 0.5, (z0 + z1) / 2);
+              const valid = validWallSpots.has(wallKey(wall, slot));
+              return (
+                <g key={wallKey(wall, slot)}>
+                  <polygon
+                    points={toPoints(quad)}
+                    fill={valid ? '#A8C3A0' : 'transparent'}
+                    fillOpacity={valid ? 0.45 : undefined}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={t(wall === 'left' ? 'a11y.leftWallSpot' : 'a11y.rightWallSpot', { n: slot + 1 })}
+                    onClick={() => onWallClick?.(wall, slot)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onWallClick?.(wall, slot);
+                      }
+                    }}
+                  />
+                  {valid && (
+                    <g pointerEvents="none" aria-hidden="true">
+                      <circle cx={center.x} cy={center.y} r="17" fill="#FFF5DF" stroke="#946539" strokeWidth="4" />
+                      <path d={`M${center.x - 8} ${center.y}h16M${center.x} ${center.y - 8}v16`} stroke="#946539" strokeWidth="5" strokeLinecap="round" />
+                    </g>
+                  )}
+                </g>
+              );
+            }),
+          )}
 
-      {/* 벽 칸 고르기: 벽마다 6칸을 누를 수 있고, 걸 수 있는 칸에는 '+' */}
-      {validWallSpots &&
-        WALLS.map((wall) =>
-          Array.from({ length: GRID }, (_, slot) => {
-            const [z0, z1] = WALL_BANDS[wallBand];
-            const quad = [wallPoint(wall, slot, z1 + 10), wallPoint(wall, slot + 1, z1 + 10), wallPoint(wall, slot + 1, z0 - 10), wallPoint(wall, slot, z0 - 10)];
-            const center = wallPoint(wall, slot + 0.5, (z0 + z1) / 2);
-            const valid = validWallSpots.has(wallKey(wall, slot));
-            return (
-              <g key={wallKey(wall, slot)}>
-                <polygon
-                  points={toPoints(quad)}
-                  fill={valid ? '#A8C3A0' : 'transparent'}
-                  fillOpacity={valid ? 0.45 : undefined}
-                  role="button"
-                  tabIndex={0}
-                  aria-label={t(wall === 'left' ? 'a11y.leftWallSpot' : 'a11y.rightWallSpot', { n: slot + 1 })}
-                  onClick={() => onWallClick?.(wall, slot)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      onWallClick?.(wall, slot);
-                    }
-                  }}
-                />
-                {valid && (
-                  <g pointerEvents="none" aria-hidden="true">
-                    <circle cx={center.x} cy={center.y} r="17" fill="#FFF5DF" stroke="#946539" strokeWidth="4" />
-                    <path d={`M${center.x - 8} ${center.y}h16M${center.x} ${center.y - 8}v16`} stroke="#946539" strokeWidth="5" strokeLinecap="round" />
-                  </g>
-                )}
-              </g>
-            );
-          }),
+        {/* 바닥 칸: 꾸미기 화면에서 누를 수 있다 */}
+        {!validWallSpots && tiles.map(({ gx, gy }) => {
+          const c = footprintCorners(gx, gy, 1, 1);
+          // 바닥을 고를 때만 키보드로 칸에 갈 수 있게 한다 (평소에는 가구만)
+          return (
+            <polygon
+              key={spotKey(gx, gy)}
+              points={toPoints([c.top, c.right, c.bottom, c.left])}
+              // 놓을 수 있는 칸은 연한 초록으로 칠한다 (+ 표시도 함께 있어 색만으로 알리지 않는다)
+              fill={validSpots?.has(spotKey(gx, gy)) ? '#A8C3A0' : 'transparent'}
+              fillOpacity={validSpots?.has(spotKey(gx, gy)) ? 0.45 : undefined}
+              stroke={validSpots?.has(spotKey(gx, gy)) ? '#FFF5DF' : undefined}
+              strokeWidth={validSpots?.has(spotKey(gx, gy)) ? 3 : undefined}
+              onPointerEnter={(e) => e.pointerType === 'mouse' && onTileHover?.({ gx, gy })}
+              onFocus={() => onTileHover?.({ gx, gy })}
+              role={validSpots ? 'button' : undefined}
+              tabIndex={validSpots ? 0 : -1}
+              aria-label={validSpots ? t('a11y.floorSpot', { row: gy + 1, col: gx + 1 }) : undefined}
+              onClick={() => onTileClick?.(gx, gy)}
+              onKeyDown={(e) => tileKeyDown(e, gx, gy)}
+            />
+          );
+        })}
+
+        {items.map((item) => {
+          const def = getFurniture(item.furnitureId);
+          if (!def) return null;
+          return (
+            <FurnitureSprite
+              key={item.uid}
+              item={item}
+              def={def}
+              label={t(item.uid === selectedUid ? 'a11y.furnitureSelected' : 'a11y.furnitureInRoom', { name: tKey(def.nameKey) })}
+              selected={item.uid === selectedUid}
+              shake={shake?.uid === item.uid ? shake.n : 0}
+              celebrate={celebrate?.uid === item.uid ? celebrate.n : 0}
+              // 바닥을 고르는 중에는 가구를 눌러도 바닥 칸이 눌리도록 가구 누르기를 끈다
+              onClick={onFurnitureClick && !picking ? () => onFurnitureClick(item.uid) : undefined}
+            />
+          );
+        })}
+
+        {/* 미리 보기 (반투명 가구) */}
+        {ghost && <FurnitureGhost def={ghost.def} spot={ghost} suggested={ghost.suggested} />}
+        {wallGhost && <WallGhost def={wallGhost.def} wall={wallGhost.wall} slot={wallGhost.slot} suggested={wallGhost.suggested} />}
+
+        {/* 놓을 수 있는 칸에 '+' 표시 (가구에 가려지지 않게 맨 위에, 누르기는 아래 칸이 받는다) */}
+        {validSpots && (
+          <g pointerEvents="none" aria-hidden="true">
+            {[...validSpots].filter((key) => !ghostCells.has(key)).map((key) => {
+              const [gx, gy] = key.split(',').map(Number);
+              const c = footprintCorners(gx, gy, 1, 1);
+              const cy = c.top.y + TILE_H / 2;
+              return (
+                <g key={key}>
+                  <circle cx={c.top.x} cy={cy} r="19" fill="#FFF5DF" stroke="#946539" strokeWidth="4" />
+                  <path d={`M${c.top.x - 9} ${cy}h18M${c.top.x} ${cy - 9}v18`} stroke="#946539" strokeWidth="5" strokeLinecap="round" />
+                </g>
+              );
+            })}
+          </g>
         )}
-
-      {/* 바닥 칸: 꾸미기 화면에서 누를 수 있다 */}
-      {!validWallSpots && tiles.map(({ gx, gy }) => {
-        const c = footprintCorners(gx, gy, 1, 1);
-        // 바닥을 고를 때만 키보드로 칸에 갈 수 있게 한다 (평소에는 가구만)
-        return (
-          <polygon
-            key={spotKey(gx, gy)}
-            points={toPoints([c.top, c.right, c.bottom, c.left])}
-            // 놓을 수 있는 칸은 연한 초록으로 칠한다 (+ 표시도 함께 있어 색만으로 알리지 않는다)
-            fill={validSpots?.has(spotKey(gx, gy)) ? '#A8C3A0' : 'transparent'}
-            fillOpacity={validSpots?.has(spotKey(gx, gy)) ? 0.45 : undefined}
-            stroke={validSpots?.has(spotKey(gx, gy)) ? '#FFF5DF' : undefined}
-            strokeWidth={validSpots?.has(spotKey(gx, gy)) ? 3 : undefined}
-            onPointerEnter={(e) => e.pointerType === 'mouse' && onTileHover?.({ gx, gy })}
-            onFocus={() => onTileHover?.({ gx, gy })}
-            role={validSpots ? 'button' : undefined}
-            tabIndex={validSpots ? 0 : -1}
-            aria-label={validSpots ? t('a11y.floorSpot', { row: gy + 1, col: gx + 1 }) : undefined}
-            onClick={() => onTileClick?.(gx, gy)}
-            onKeyDown={(e) => tileKeyDown(e, gx, gy)}
-          />
-        );
-      })}
-
-      {items.map((item) => {
-        const def = getFurniture(item.furnitureId);
-        if (!def) return null;
-        return (
-          <FurnitureSprite
-            key={item.uid}
-            item={item}
-            def={def}
-            label={t(item.uid === selectedUid ? 'a11y.furnitureSelected' : 'a11y.furnitureInRoom', { name: tKey(def.nameKey) })}
-            selected={item.uid === selectedUid}
-            shake={shake?.uid === item.uid ? shake.n : 0}
-            celebrate={celebrate?.uid === item.uid ? celebrate.n : 0}
-            // 바닥을 고르는 중에는 가구를 눌러도 바닥 칸이 눌리도록 가구 누르기를 끈다
-            onClick={onFurnitureClick && !picking ? () => onFurnitureClick(item.uid) : undefined}
-          />
-        );
-      })}
-
-      {/* 미리 보기 (반투명 가구) */}
-      {ghost && <FurnitureGhost def={ghost.def} spot={ghost} suggested={ghost.suggested} />}
-      {wallGhost && <WallGhost def={wallGhost.def} wall={wallGhost.wall} slot={wallGhost.slot} suggested={wallGhost.suggested} />}
-
-      {/* 놓을 수 있는 칸에 '+' 표시 (가구에 가려지지 않게 맨 위에, 누르기는 아래 칸이 받는다) */}
-      {validSpots && (
-        <g pointerEvents="none" aria-hidden="true">
-          {[...validSpots].filter((key) => !ghostCells.has(key)).map((key) => {
-            const [gx, gy] = key.split(',').map(Number);
-            const c = footprintCorners(gx, gy, 1, 1);
-            const cy = c.top.y + TILE_H / 2;
-            return (
-              <g key={key}>
-                <circle cx={c.top.x} cy={cy} r="19" fill="#FFF5DF" stroke="#946539" strokeWidth="4" />
-                <path d={`M${c.top.x - 9} ${cy}h18M${c.top.x} ${cy - 9}v18`} stroke="#946539" strokeWidth="5" strokeLinecap="round" />
-              </g>
-            );
-          })}
-        </g>
-      )}
-    </svg>
+      </svg>
+    </div>
   );
 }

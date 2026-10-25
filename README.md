@@ -51,6 +51,16 @@ npm run dev      # 개발 서버 실행 → 터미널에 나오는 주소를 브
 - 만드는 곳: `public/manifest.webmanifest`(이름·아이콘), `public/icons/`(아이콘, 원본 `icon.svg`), `build/offline.ts`(빌드할 때 `sw.js` 를 만들어 이번 빌드 파일을 모두 저장해 둠)
 - 진행 상황은 여전히 이 기기(localStorage)에만 저장됩니다. 서버로 보내는 것은 없습니다.
 
+## 그림 (수채화 동화책 스타일)
+- 그림 규칙: [docs/ART_BIBLE.md](docs/ART_BIBLE.md) · 화면 사진: `docs/art/`
+- 모든 그림을 한 화면에서 보기: 앱 주소 끝에 `#gallery` (예: `npm run dev` 후 `http://localhost:5173/#gallery`)
+- 그림은 코드로 그린 SVG + 수채화 효과(`src/components/art/WatercolorDefs.tsx`)입니다.
+  - 캐릭터: `src/components/characters/`
+  - 가구: `src/features/room/placeholders/`
+  - 물건·재료: `src/components/art/itemArt.tsx`
+  - 타이틀 풍경: `src/components/art/TitleScene.tsx`
+- `public/assets/` 에 같은 이름의 PNG 를 넣으면 그 그림이 우선합니다.
+
 ## 자주 하는 작업
 
 ### 문구(번역) 고치기

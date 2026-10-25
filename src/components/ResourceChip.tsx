@@ -33,9 +33,9 @@ export default function ResourceChip({ id, amount, need, prefix = '', size = 'md
         <AssetIcon path={def.assetPath} emoji={def.placeholder.emoji} size={big ? 40 : 26} />
         {/* 드문 재료 표시: 반짝이 (색만으로 구분하지 않도록) */}
         {def.rare && (
-          <span aria-hidden="true" className={`absolute -right-1.5 -top-1.5 ${big ? 'text-lg' : 'text-xs'}`}>
-            ✨
-          </span>
+          <svg aria-hidden="true" viewBox="0 0 20 20" className={`absolute -right-1.5 -top-1.5 ${big ? 'h-5 w-5' : 'h-3.5 w-3.5'}`}>
+            <path d="M10 1 l2.4 6.2 l6.2 2.4 l-6.2 2.4 l-2.4 6.2 l-2.4 -6.2 l-6.2 -2.4 l6.2 -2.4 z" fill="#FFF0B8" stroke="#946539" strokeWidth="1.4" strokeLinejoin="round" />
+          </svg>
         )}
       </span>
       <span className={`font-bold tabular-nums ${big ? 'text-2xl' : 'text-lg'} ${lacking ? 'text-bark/85' : ''}`}>

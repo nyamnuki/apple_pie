@@ -4,6 +4,7 @@ import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';
 import { bundleEntries } from '../../utils/bundles';
 import { getRegion } from '../../data/regions/regions';
+import RegionIcon from '../../components/RegionIcon';
 import { useI18n } from '../../i18n';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 
@@ -31,7 +32,7 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, onWo
           <h2 className="text-3xl font-bold sm:text-4xl [@media(max-height:500px)]:text-2xl">{t('reward.title')}</h2>
         </div>
 
-        <section aria-labelledby="reward-got" className="w-full max-w-md rounded-3xl bg-cream p-5 shadow-pop-sm">
+        <section aria-labelledby="reward-got" className="storybook-card w-full max-w-md rounded-3xl p-5">
           <h3 id="reward-got" className="mb-3 text-xl font-semibold">
             {t('reward.youGot')}
           </h3>
@@ -56,7 +57,7 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, onWo
 
         {newRegion && (
           <p role="status" className="w-full max-w-md animate-rise rounded-3xl bg-lavender p-4 text-xl font-bold" style={{ animationDelay: '600ms' }}>
-            {getRegion(newRegion).emoji} {t('reward.newRegion', { region: tKey(getRegion(newRegion).nameKey) })}
+            <RegionIcon id={newRegion} size={36} inline /> {t('reward.newRegion', { region: tKey(getRegion(newRegion).nameKey) })}
           </p>
         )}
       </div>

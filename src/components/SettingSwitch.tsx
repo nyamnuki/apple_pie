@@ -13,7 +13,7 @@ interface Props {
 // 설정의 켜기/끄기 스위치. 켜짐/꺼짐을 색만이 아니라 글자와 위치로도 보여준다.
 export default function SettingSwitch({ id, title, icon, on, onLabel, offLabel, onToggle }: Props) {
   return (
-    <section aria-labelledby={id} className="mt-4 rounded-[2rem] bg-moss/60 p-5">
+    <section aria-labelledby={id} className="mt-4 rounded-[2rem] border-2 border-bark/10 bg-moss/60 p-5 shadow-[inset_0_2px_0_rgb(255_255_255/0.5)]">
       <h2 id={id} className="mb-3 flex items-center gap-2 text-2xl font-bold">
         {icon}
         {title}

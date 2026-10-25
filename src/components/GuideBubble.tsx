@@ -18,7 +18,7 @@ export default function GuideBubble({ text, expression = 'default', speaker = 'l
       <span key={expression} className={expression === 'happy' || expression === 'surprised' ? 'animate-hop' : undefined}>
         <Character id={speaker} expression={expression} size={72} bob />
       </span>
-      <p aria-live="polite" aria-label={`${t('math.a11y.guide', { name: tKey(CHARACTERS[speaker].nameKey) })}: ${text}`} className="min-h-[3.5rem] flex-1 rounded-3xl rounded-tl-none bg-cream px-4 py-3 text-xl font-semibold shadow-pop-sm">
+      <p aria-live="polite" aria-label={`${t('math.a11y.guide', { name: tKey(CHARACTERS[speaker].nameKey) })}: ${text}`} className="storybook-card min-h-[3.5rem] flex-1 rounded-3xl rounded-tl-none px-4 py-3 pr-12 text-xl font-semibold">
         {text}
       </p>
     </div>

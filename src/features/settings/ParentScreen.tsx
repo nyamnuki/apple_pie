@@ -7,6 +7,7 @@ import { useGame } from '../../app/GameProvider';
 import { useRoom } from '../room/RoomProvider';
 import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { REGIONS } from '../../data/regions/regions';
+import RegionIcon from '../../components/RegionIcon';
 import { useI18n } from '../../i18n';
 
 // 부모 설정: 개인정보 안내, 진행 요약, 진행 상황 지우기 (언어 설정은 그대로 둔다)
@@ -23,7 +24,7 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
     setStep('done');
   };
 
-  const card = 'rounded-[2rem] bg-moss/60 p-5';
+  const card = 'rounded-[2rem] border-2 border-bark/10 bg-moss/60 p-5 shadow-[inset_0_2px_0_rgb(255_255_255/0.5)]';
   const heading = 'mb-2 flex items-center gap-2 text-2xl font-bold';
 
   return (
@@ -60,7 +61,7 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
           {REGIONS.map((region) => (
             <div key={region.id} className="mb-3 last:mb-0">
               <h3 className="mb-1 text-xl font-bold">
-                <span aria-hidden="true">{region.emoji}</span> {tKey(region.nameKey)}
+                <RegionIcon id={region.id} size={28} inline /> {tKey(region.nameKey)}
               </h3>
               <ul className="flex flex-col gap-2">
                 {LESSONS.filter((l) => l.region === region.id).map((lesson) => {

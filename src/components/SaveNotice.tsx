@@ -8,7 +8,7 @@ export default function SaveNotice({ status, onClose }: { status: LoadStatus; on
   const { t } = useI18n();
   if (status !== 'recovered' && status !== 'unavailable') return null;
   return (
-    <div role="status" className="mb-3 flex items-center gap-3 rounded-3xl bg-cream p-3 shadow-pop-sm">
+    <div role="status" className="mb-3 flex items-center gap-3 rounded-3xl border-2 border-bark/10 bg-cream p-3 shadow-pop-sm">
       <Info size={28} className="shrink-0 text-wood" aria-hidden />
       <p className="flex-1 text-base font-semibold">{t(status === 'recovered' ? 'save.recovered' : 'save.notSaved')}</p>
       <BigButton variant="soft" className="!min-h-[48px] !px-4 !text-lg" onClick={onClose}>

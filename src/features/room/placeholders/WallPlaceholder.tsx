@@ -4,7 +4,7 @@ import type { FurnitureDef } from '../../../types/furniture';
 // 정면에서 본 그림처럼 그리면, 바깥에서 wallTransform 으로 벽 각도에 맞게 비스듬히 바뀐다.
 // 좌표: x = 0 ~ w (가로), y = 0 ~ h (위 → 아래)
 
-const LINE = { stroke: '#59483C', strokeOpacity: 0.45, strokeWidth: 2.5, strokeLinejoin: 'round' as const };
+const LINE = { stroke: '#6B5444', strokeOpacity: 0.6, strokeWidth: 2.5, strokeLinejoin: 'round' as const };
 
 function LeafFrame({ w, h }: { w: number; h: number }) {
   return (
@@ -97,6 +97,10 @@ function Garland({ w, h }: { w: number; h: number }) {
 }
 
 export default function WallPlaceholder({ def, w, h }: { def: FurnitureDef; w: number; h: number }) {
+  return <g filter="url(#wc-furniture)">{wallArt(def, w, h)}</g>;
+}
+
+function wallArt(def: FurnitureDef, w: number, h: number) {
   switch (def.placeholder.shape) {
     case 'garland':
       return <Garland w={w} h={h} />;

@@ -49,8 +49,9 @@ export default {
       },
       boxShadow: {
         // 눌리는 느낌의 입체 버튼 그림자
-        pop: '0 5px 0 0 rgb(var(--color-text) / 0.18)',
-        'pop-sm': '0 2px 0 0 rgb(var(--color-text) / 0.18)',
+        // 눌리는 느낌의 입체 버튼: 아래 그림자 + 위쪽 안쪽의 빛 한 줄 (손으로 만질 수 있을 것 같은 느낌)
+        pop: '0 5px 0 0 rgb(var(--color-text) / 0.18), inset 0 2px 0 0 rgb(255 255 255 / 0.28)',
+        'pop-sm': '0 2px 0 0 rgb(var(--color-text) / 0.18), inset 0 1px 0 0 rgb(255 255 255 / 0.28)',
         soft: '0 10px 30px -12px rgb(var(--color-text) / 0.35)',
       },
     },

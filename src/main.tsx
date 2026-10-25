@@ -9,6 +9,8 @@ import ErrorBoundary from './app/ErrorBoundary';
 import { SoundProvider } from './services/audio/SoundProvider';
 import { loadGame } from './services/storage/gameSave';
 import './styles/index.css';
+import WatercolorDefs from './components/art/WatercolorDefs';
+import ArtGallery from './features/dev/ArtGallery';
 
 // 배포된 앱만: 인터넷 없이도 열리도록 서비스 워커를 등록한다 (개발 중에는 하지 않는다)
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
@@ -24,13 +26,15 @@ const save = loadGame();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
+    {/* 모든 그림이 같이 쓰는 수채화 효과 */}
+    <WatercolorDefs />
     <I18nProvider>
       <SoundProvider>
         <ErrorBoundary>
           <GameProvider initial={save.game}>
             <RoomProvider initial={save.room}>
               <SaveManager />
-              <App loadStatus={save.status} />
+              {location.hash === '#gallery' ? <ArtGallery /> : <App loadStatus={save.status} />}
             </RoomProvider>
           </GameProvider>
         </ErrorBoundary>

@@ -1,6 +1,6 @@
 import type { Expression } from '../../data/characters/characters';
 
-const LINE = '#59483C';
+const LINE = '#59483C'; // 눈은 또렷하게 가장 진한 갈색
 
 // 눈과 입 — 루루·도토·모모가 같이 쓴다 (머리 가운데가 (60, 72) 근처인 그림 기준)
 export default function Face({ expression }: { expression: Expression }) {

@@ -3,7 +3,7 @@ import type { ShapeSpec } from '../../../types/math';
 // 도형 그림 (동그라미·네모·세모). 크기·색·돌림이 달라도 같은 도형이다.
 export default function ShapeIcon({ spec, box = 56 }: { spec: ShapeSpec; box?: number }) {
   const s = 40 * spec.size; // 도형 크기 (상자 100 기준)
-  const line = { stroke: '#59483C', strokeWidth: 4, strokeLinejoin: 'round' as const, fill: spec.color };
+  const line = { stroke: '#6B5444', strokeWidth: 4, strokeLinejoin: 'round' as const, fill: spec.color };
   const shape =
     spec.shape === 'circle' ? (
       <circle cx="50" cy="50" r={s} {...line} />
@@ -14,7 +14,9 @@ export default function ShapeIcon({ spec, box = 56 }: { spec: ShapeSpec; box?: n
     );
   return (
     <svg viewBox="0 0 100 100" width={box} height={box} aria-hidden="true">
-      <g transform={spec.rotate ? `rotate(${spec.rotate} 50 50)` : undefined}>{shape}</g>
+      <g filter="url(#wc-small)" transform={spec.rotate ? `rotate(${spec.rotate} 50 50)` : undefined}>
+        {shape}
+      </g>
     </svg>
   );
 }

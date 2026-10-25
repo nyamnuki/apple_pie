@@ -13,7 +13,10 @@ interface Area {
 }
 
 const SHADE = '#59483C';
-const LINE = { stroke: SHADE, strokeOpacity: 0.35, strokeWidth: 2, strokeLinejoin: 'round' as const };
+// 색연필 선: 진한 갈색, 반투명 (검은 선은 쓰지 않는다)
+const LINE = { stroke: '#6B5444', strokeOpacity: 0.55, strokeWidth: 2, strokeLinejoin: 'round' as const };
+// 나무 색이면 면에 나뭇결을 그린다
+const WOOD = new Set(['#B9855A', '#A8744A', '#C99A6E', '#D9A66B', '#8F613C']);
 
 // 바닥 영역(a)을 가운데 기준으로 s 배 줄인 영역
 const inset = (a: Area, s: number): Area => ({ gx: a.gx + (a.w * (1 - s)) / 2, gy: a.gy + (a.d * (1 - s)) / 2, w: a.w * s, d: a.d * s });
@@ -32,6 +35,19 @@ function Box({ area, z = 0, h, color }: { area: Area; z?: number; h: number; col
       <polygon points={toPoints(rightFace)} fill={color} />
       <polygon points={toPoints(rightFace)} fill={SHADE} fillOpacity="0.26" stroke="none" />
       <polygon points={toPoints([lift(top, h), lift(right, h), lift(bottom, h), lift(left, h)])} fill={color} />
+      {/* 윗면 왼쪽 위의 빛 */}
+      <polygon points={toPoints([lift(top, h), lift(lerp(top, right, 0.5), h), lift(lerp(left, bottom, 0.5), h), lift(left, h)])} fill="#FFFFFF" fillOpacity="0.12" stroke="none" />
+      {WOOD.has(color) && h >= 12 && (
+        // 나뭇결: 옆면을 따라 가늘게 흔들리는 선 두세 줄
+        <g stroke="#6B4A2E" strokeOpacity="0.22" strokeWidth="1.3" fill="none">
+          {[0.3, 0.62, 0.85].filter((t) => h * t > 6).map((t) => (
+            <g key={t}>
+              <path d={`M${lerp(left, bottom, 0.05).x} ${lift(lerp(left, bottom, 0.05), h * t).y} Q${lerp(left, bottom, 0.5).x} ${lift(lerp(left, bottom, 0.5), h * t + 3).y} ${lerp(left, bottom, 0.95).x} ${lift(lerp(left, bottom, 0.95), h * t - 1).y}`} />
+              <path d={`M${lerp(bottom, right, 0.05).x} ${lift(lerp(bottom, right, 0.05), h * t - 1).y} Q${lerp(bottom, right, 0.5).x} ${lift(lerp(bottom, right, 0.5), h * t + 3).y} ${lerp(bottom, right, 0.95).x} ${lift(lerp(bottom, right, 0.95), h * t).y}`} />
+            </g>
+          ))}
+        </g>
+      )}
     </g>
   );
 }
@@ -252,6 +268,63 @@ const PAINTERS: Partial<Record<PlaceholderShape, Painter>> = {
       </g>
     );
   },
+  // 버섯 침대: 낮은 나무 틀 + 매트리스 + 분홍 이불 + 머리 쪽에 점박이 버섯 갓 머리판
+  mushroomBed: (a) => {
+    const long = a.d >= a.w;
+    const head = long ? { gx: a.gx + 0.05, gy: a.gy + 0.02, w: a.w - 0.1, d: 0.28 } : { gx: a.gx + 0.02, gy: a.gy + 0.05, w: 0.28, d: a.d - 0.1 };
+    const cap = long ? { gx: a.gx - 0.12, gy: a.gy - 0.25, w: a.w + 0.24, d: 0.8 } : { gx: a.gx - 0.25, gy: a.gy - 0.12, w: 0.8, d: a.d + 0.24 };
+    const blanket = long ? { gx: a.gx + 0.08, gy: a.gy + 1.0, w: a.w - 0.16, d: a.d - 1.08 } : { gx: a.gx + 1.0, gy: a.gy + 0.08, w: a.w - 1.08, d: a.d - 0.16 };
+    const pillow = long ? { gx: a.gx + 0.3, gy: a.gy + 0.35, w: a.w - 0.6, d: 0.5 } : { gx: a.gx + 0.35, gy: a.gy + 0.3, w: 0.5, d: a.d - 0.6 };
+    return (
+      <g>
+        <Box area={head} h={58} color="#FBF1DF" />
+        <Dome area={cap} z={56} height={46} color="#E0796B" />
+        <Box area={a} h={16} color="#B9855A" />
+        <Box area={inset(a, 0.94)} z={16} h={12} color="#FFF5DF" />
+        <Box area={pillow} z={28} h={8} color="#FBF1DF" />
+        <Box area={blanket} z={28} h={6} color="#F3C6D2" />
+      </g>
+    );
+  },
+  // 클로버 방석: 동그랗고 폭신한 방석 + 위에 클로버 잎 세 장
+  cushion: (a) => {
+    const e = flatEllipse(inset(a, 0.5), 16);
+    return (
+      <g>
+        <Dome area={inset(a, 0.78)} z={0} height={16} color="#A8C3A0" />
+        {[-90, 30, 150].map((deg) => {
+          const r = (deg * Math.PI) / 180;
+          return <circle key={deg} cx={e.cx + Math.cos(r) * 7} cy={e.cy - 4 + Math.sin(r) * 4} r="6" fill="#D5E4C8" {...LINE} strokeWidth={1.4} />;
+        })}
+        <path d={`M${e.cx} ${e.cy - 2} l4 7`} stroke="#6F9468" strokeWidth="2" strokeLinecap="round" />
+      </g>
+    );
+  },
+  // 만들기 작업대: 다리 넷 + 두꺼운 판 + 나무 조각, 못 병, 작은 망치
+  bench: (a) => {
+    const leg = 0.14;
+    const legs = [
+      { gx: a.gx + 0.06, gy: a.gy + 0.06 },
+      { gx: a.gx + a.w - 0.06 - leg, gy: a.gy + 0.06 },
+      { gx: a.gx + 0.06, gy: a.gy + a.d - 0.06 - leg },
+      { gx: a.gx + a.w - 0.06 - leg, gy: a.gy + a.d - 0.06 - leg },
+    ];
+    const f = frontFace(a);
+    const hammerA = f(0.62, 76);
+    return (
+      <g>
+        {legs.map((l, i) => (
+          <Box key={i} area={{ ...l, w: leg, d: leg }} h={50} color="#A8744A" />
+        ))}
+        <Box area={{ gx: a.gx + 0.1, gy: a.gy + 0.1, w: a.w - 0.2, d: a.d - 0.2 }} z={14} h={5} color="#C99A6E" />
+        <Box area={a} z={50} h={12} color="#B9855A" />
+        <Box area={{ gx: a.gx + 0.15, gy: a.gy + 0.3, w: 0.8, d: 0.25 }} z={62} h={6} color="#F5D0AD" />
+        <Box area={{ gx: a.gx + a.w - 0.4, gy: a.gy + 0.25, w: 0.22, d: 0.22 }} z={62} h={18} color="#C8DFE8" />
+        <path d={`M${hammerA.x - 14} ${hammerA.y + 4} L${hammerA.x + 10} ${hammerA.y - 6}`} stroke="#B9855A" strokeWidth="4" strokeLinecap="round" />
+        <rect x={hammerA.x + 6} y={hammerA.y - 13} width="8" height="12" rx="2" fill="#9A9AA6" {...LINE} transform={`rotate(-20 ${hammerA.x + 10} ${hammerA.y - 7})`} />
+      </g>
+    );
+  },
   // 기본 상자 (모양을 아직 정하지 않은 가구)
   box: (a) => <Box area={a} h={40} color="#D5E4C8" />,
 };
@@ -262,7 +335,8 @@ export default function FurniturePlaceholder({ def, area }: { def: FurnitureDef;
     <g>
       {/* 바닥 그림자 */}
       {def.placeholder.shape !== 'rug' && <polygon points={toPoints([c.top, c.right, c.bottom, c.left])} fill={SHADE} fillOpacity="0.12" />}
-      {(PAINTERS[def.placeholder.shape] ?? PAINTERS.box!)(area)}
+      {/* 수채화 효과 (src/components/art/WatercolorDefs.tsx) */}
+      <g filter="url(#wc-furniture)">{(PAINTERS[def.placeholder.shape] ?? PAINTERS.box!)(area)}</g>
     </g>
   );
 }

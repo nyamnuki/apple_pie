@@ -13,6 +13,7 @@ export interface RegionDef {
   nameKey: TranslationKey;
   topicsKey: TranslationKey; // 이 마을의 수학 영역 (지도에 표시)
   emoji: string;
+  art: string; // 마을 상징 그림 (src/components/art/itemArt.tsx 의 경로)
   unlock: RegionUnlock;
 }
 

@@ -177,7 +177,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
             <GuideBubble text={guide} expression={expression} speaker={speaker} />
           </div>
 
-          <section className="flex min-h-[220px] items-center justify-center overflow-auto rounded-[2rem] bg-cream/60 p-4 [grid-area:field] [@media(max-height:500px)]:min-h-0">
+          <section className="flex min-h-[220px] items-center justify-center overflow-auto rounded-[2rem] border-2 border-bark/10 bg-cream/85 p-4 shadow-[inset_0_2px_10px_rgb(89_72_60/0.08)] [grid-area:field] [@media(max-height:500px)]:min-h-0">
             <SceneField key={fieldKey} scene={field.scene} mode={field.mode} onDone={onFieldDone} />
           </section>
 

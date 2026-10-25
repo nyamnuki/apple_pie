@@ -7,6 +7,7 @@ import ResourceChip from '../../components/ResourceChip';
 import { FURNITURE } from '../../data/furniture/furniture';
 import { RESOURCES } from '../../data/resources/resources';
 import { getRegion } from '../../data/regions/regions';
+import RegionIcon from '../../components/RegionIcon';
 import { useGame } from '../../app/GameProvider';
 import { useRoom } from '../room/RoomProvider';
 import { useI18n } from '../../i18n';
@@ -33,7 +34,7 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
     <AppShell background="bg-gradient-to-b from-cream to-moss">
       <ScreenHeader title={t('inventory.title')} onBack={onBack} />
 
-      <section aria-labelledby="inv-materials" className="mb-5 rounded-3xl bg-cream/80 p-4 shadow-pop-sm">
+      <section aria-labelledby="inv-materials" className="storybook-card mb-5 rounded-3xl p-4">
         <h2 id="inv-materials" className="mb-3 text-2xl font-bold">
           {t('inventory.materials')}
         </h2>
@@ -47,7 +48,7 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
                 <span>
                   <span className="block text-lg font-semibold">{tKey(r.nameKey)}</span>
                   <span className="block text-sm text-bark/85">
-                    {getRegion(r.region).emoji} {tKey(getRegion(r.region).nameKey)}
+                    <RegionIcon id={r.region} size={24} inline /> {tKey(getRegion(r.region).nameKey)}
                   </span>
                 </span>
               </li>
@@ -56,7 +57,7 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
         )}
       </section>
 
-      <section aria-labelledby="inv-furniture" className="mb-5 rounded-3xl bg-cream/80 p-4 shadow-pop-sm">
+      <section aria-labelledby="inv-furniture" className="storybook-card mb-5 rounded-3xl p-4">
         <h2 id="inv-furniture" className="mb-3 text-2xl font-bold">
           {t('inventory.furniture')}
         </h2>

@@ -66,6 +66,24 @@
 }
 
 @layer components {
+  /* 종이 질감 바탕: 옅은 크림색 위에 아주 고운 물감 종이 결 (그림 파일 없이 SVG 노이즈로) */
+  .paper {
+    background-color: rgb(var(--color-cream));
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.22 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .paper-grain {
+    background-image: ;
+    mix-blend-mode: multiply;
+  }
+  /* 동화책 카드: 크림색 종이 + 아주 옅은 테두리 + 부드러운 그림자 + 오른쪽 위 작은 풀잎 */
+  .storybook-card {
+    background-color: rgb(var(--color-cream));
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='34'%3E%3Cpath d='M40 30 C34 22 30 12 32 4' fill='none' stroke='%23A8C3A0' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M33 16 C27 15 24 11 25 8 C30 9 33 12 33 16Z M34 10 C38 6 42 6 43 8 C41 12 37 12 34 10Z' fill='%23C5D8BB'/%3E%3Ccircle cx='32' cy='4' r='2' fill='%23F3C6D2'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px top 6px;
+    border: 2px solid rgb(var(--color-text) / 0.1);
+    box-shadow: 0 6px 18px -10px rgb(var(--color-text) / 0.35), inset 0 2px 0 rgb(255 255 255 / 0.6);
+  }
   /* 글자를 고르고 복사할 수 있는 안내 영역 (버튼 글자는 계속 선택되지 않는다) */
   .selectable {
     -webkit-user-select: text;

@@ -5,6 +5,7 @@ import { REGIONS, getRegion } from '../../data/regions/regions';
 import { useGame } from '../../app/GameProvider';
 import { isRegionOpen, regionProgress } from '../../utils/regions';
 import { useI18n } from '../../i18n';
+import RegionIcon from '../../components/RegionIcon';
 import type { RegionId } from '../../types/resources';
 
 // 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲, 수정 동굴: 푸른 동굴)
@@ -51,7 +52,9 @@ export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: Regio
                 }`}
               >
                 <span className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-3xl bg-cream text-5xl" aria-hidden="true">
-                  <span className={open ? '' : 'opacity-60 grayscale'}>{region.emoji}</span>
+                  <span className={open ? '' : 'opacity-60 grayscale'}>
+                    <RegionIcon id={region.id} size={60} />
+                  </span>
                   {!open && (
                     <span className="absolute -bottom-1 -right-1 rounded-full bg-bark p-1.5 text-cream">
                       <Lock size={18} />

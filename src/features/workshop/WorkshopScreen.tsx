@@ -34,7 +34,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
 
       {/* 방금 만든 가구 안내 */}
       {madeDef ? (
-        <section aria-live="polite" className="mb-4 flex flex-col items-center gap-3 rounded-3xl bg-cream p-5 text-center shadow-pop-sm">
+        <section aria-live="polite" className="storybook-card mb-4 flex flex-col items-center gap-3 rounded-3xl p-5 text-center">
           <div className="flex items-end gap-2">
             <Character id="doto" expression="happy" size={88} />
             <AssetThumb def={madeDef} size={88} />
@@ -72,7 +72,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
           const affordable = !locked && canAfford(game.resources, cost);
           const owned = game.furniture[def.id] ?? 0;
           return (
-            <li key={def.id} className={`flex flex-col gap-3 rounded-3xl bg-cream p-4 shadow-pop-sm ${locked ? 'opacity-80' : ''}`}>
+            <li key={def.id} className={`storybook-card flex flex-col gap-3 rounded-3xl p-4 ${locked ? 'opacity-80' : ''}`}>
               <div className="flex items-center gap-3">
                 <span className="relative">
                   <AssetThumb def={def} size={64} />

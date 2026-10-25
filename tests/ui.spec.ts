@@ -112,3 +112,33 @@ test('움직임 줄이기를 켠 기기에서는 애니메이션이 사실상 �
   expect(parseFloat(duration)).toBeLessThan(0.001);
   await context.close();
 });
+
+test('주요 화면에 그림 문자(이모지)가 남아 있지 않다 (물건·재료·마을은 그린 그림)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ resources: { acorn: 5, apple: 2, goldenAcorn: 1 }, furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 }, completedLessons: ['counting1', 'comparing1'] }) });
+  const emoji = () => page.evaluate(() => document.body.innerText.match(/\p{Extended_Pictographic}/gu));
+  await page.goto('/');
+  expect(await emoji(), 'title').toBeNull();
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Workshop' }).click();
+  expect(await emoji(), 'workshop').toBeNull();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'My Bag' }).click();
+  expect(await emoji(), 'bag').toBeNull();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  expect(await emoji(), 'map').toBeNull();
+  await page.getByRole('button', { name: /^Acorn Village/ }).click();
+  expect(await emoji(), 'menu').toBeNull();
+  await page.getByRole('button', { name: /Counting Apples/ }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  expect(await emoji(), 'lesson').toBeNull();
+  // 사과는 그린 그림(SVG)
+  await expect(page.getByRole('button', { name: 'Count this one' }).first().locator('svg')).toBeVisible();
+});
+
+test('그림 모아 보기(#gallery)에 캐릭터 15장, 가구, 물건·재료가 모두 그려진다', async ({ page }) => {
+  await page.goto('/#gallery');
+  await expect(page.getByRole('heading', { name: 'Characters' })).toBeVisible();
+  await expect(page.getByRole('img', { name: /Lulu|Doto|Momo/ })).toHaveCount(15);
+  expect(await page.evaluate(() => document.body.innerText.match(/\p{Extended_Pictographic}/gu))).toBeNull();
+});

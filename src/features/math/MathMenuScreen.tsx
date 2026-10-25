@@ -5,6 +5,7 @@ import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { MATH_ITEMS } from '../../data/math/items';
 import { useI18n, type TranslationKey } from '../../i18n';
 import { getRegion } from '../../data/regions/regions';
+import RegionIcon from '../../components/RegionIcon';
 import type { LessonId, MathArea } from '../../types/math';
 import type { RegionId } from '../../types/resources';
 
@@ -34,7 +35,7 @@ export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
     <AppShell background="bg-gradient-to-b from-mist/60 via-cream to-moss">
       <ScreenHeader title={t('math.title')} onBack={onBack} />
       <p className="mb-1 text-lg font-semibold text-wood">
-        {region.emoji} {tKey(region.nameKey)}
+        <RegionIcon id={region.id} size={34} inline /> {tKey(region.nameKey)}
       </p>
       <p className="mb-4 text-xl">{t('math.chooseLesson')}</p>
 
