@@ -68,6 +68,27 @@ export function collectProblems(page: Page) {
   return problems;
 }
 
+// 지도에서 마을 고르기 (놀이하기 버튼 다음)
+export async function goToRegion(page: Page, regionName: RegExp | string) {
+  await page.getByRole('button', { name: regionName }).click();
+}
+
+// 놀이 하나를 빠르게 끝까지: 만져 보기에서 tapLabel 을 모두 누르고, 예상은 첫 번째, 해 보기는 right 를 고른다
+export async function playLesson(page: Page, title: RegExp, tapLabel: string, right: string) {
+  await page.getByRole('button', { name: title }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  const item = page.getByRole('button', { name: tapLabel });
+  while (await item.count()) await item.first().click();
+  await waitLastButtonEnabled(page);
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button').first().click();
+  await waitLastButtonEnabled(page);
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: right, exact: true }).click();
+  await page.getByRole('button', { name: 'Finish' }).click();
+}
+
 // '사과 세기' 놀이를 처음부터 끝까지 (예상은 일부러 틀리게, 해 보기는 정답)
 export async function playCountingApples(page: Page, fromMenu = true) {
   if (fromMenu) await page.getByRole('button', { name: /Counting Apples/ }).click();

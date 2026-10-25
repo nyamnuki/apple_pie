@@ -11,6 +11,10 @@ export function answerOf(scene: MathScene): MathAnswer {
       return scene.start + scene.add;
     case 'subtract':
       return scene.start - scene.remove;
+    case 'pattern':
+      return scene.unit[scene.shown % scene.unit.length];
+    case 'shapes':
+      return scene.shapes.filter((s) => s.shape === scene.target).length;
   }
 }
 
@@ -27,5 +31,9 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return { ...vars, start: formatNumber(scene.start), add: formatNumber(scene.add), total: formatNumber(scene.start + scene.add) };
     case 'subtract':
       return { ...vars, start: formatNumber(scene.start), remove: formatNumber(scene.remove), left: formatNumber(scene.start - scene.remove) };
+    case 'pattern':
+      return vars;
+    case 'shapes':
+      return { ...vars, total: formatNumber(scene.shapes.length) };
   }
 }

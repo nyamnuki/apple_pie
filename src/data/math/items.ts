@@ -13,4 +13,10 @@ export const MATH_ITEMS: Record<MathItemId, { emoji: string; assetPath: string }
   frog: { emoji: '🐸', assetPath: 'items/frog.png' },
   blueberry: { emoji: '🫐', assetPath: 'items/blueberry.png' },
   cookie: { emoji: '🍪', assetPath: 'items/cookie.png' },
+  moon: { emoji: '🌙', assetPath: 'items/moon.png' },
+  star: { emoji: '⭐', assetPath: 'items/star.png' },
+  owl: { emoji: '🦉', assetPath: 'items/owl.png' },
 };
+
+// 물건 이름 번역 키 (규칙 문제의 답 버튼, 화면 읽기용)
+export const itemNameKey = (id: MathItemId) => `mathItems.${id}` as const;

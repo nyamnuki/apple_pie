@@ -1,6 +1,10 @@
 import { Check, X } from 'lucide-react';
+import AssetIcon from '../../../components/AssetIcon';
+import { MATH_ITEMS, itemNameKey } from '../../../data/math/items';
 import { useI18n } from '../../../i18n';
-import type { CompareLabels, MathAnswer } from '../../../types/math';
+import type { CompareLabels, MathAnswer, MathItemId } from '../../../types/math';
+
+const isItem = (c: MathAnswer): c is MathItemId => typeof c === 'string' && c in MATH_ITEMS;
 
 interface Props {
   choices: MathAnswer[];
@@ -14,11 +18,18 @@ interface Props {
 export default function ChoiceButtons({ choices, labels, tried = [], chosen = null, onChoose }: Props) {
   const { t, formatNumber } = useI18n();
   const labelOf = (c: MathAnswer) =>
-    typeof c === 'number' ? formatNumber(c) : c === 'same' ? t('math.same') : t(c === 'a' ? labels!.a : labels!.b);
+    typeof c === 'number'
+      ? formatNumber(c)
+      : isItem(c)
+        ? t(itemNameKey(c))
+        : c === 'same'
+          ? t('math.same')
+          : t(c === 'a' ? labels!.a : labels!.b);
   const numeric = typeof choices[0] === 'number';
+  const items = isItem(choices[0]);
 
   return (
-    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric ? 'grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'}`}>
+    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric ? 'grid-cols-4' : items ? 'grid-cols-3' : 'grid-cols-1 sm:grid-cols-3'}`}>
       {choices.map((c) => {
         const isTried = tried.includes(c);
         const isChosen = chosen === c;
@@ -34,7 +45,15 @@ export default function ChoiceButtons({ choices, labels, tried = [], chosen = nu
               numeric ? 'text-4xl' : 'text-xl'
             } ${isChosen ? 'bg-sage ring-4 ring-wood' : 'bg-cream'} ${isTried ? 'opacity-40 shadow-none line-through' : ''}`}
           >
-            {label}
+            {/* 물건 답은 그림 + 작은 이름 */}
+            {isItem(c) ? (
+              <span className="flex flex-col items-center">
+                <AssetIcon path={MATH_ITEMS[c].assetPath} emoji={MATH_ITEMS[c].emoji} size={44} />
+                <span className="text-base">{label}</span>
+              </span>
+            ) : (
+              label
+            )}
             {isTried && <X size={24} strokeWidth={3} aria-hidden className="absolute right-2 top-2" />}
             {isChosen && <Check size={28} strokeWidth={3} aria-hidden className="absolute right-2 top-2" />}
           </button>

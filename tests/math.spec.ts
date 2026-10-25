@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { seed, makeSave, guide, waitLastButtonEnabled, collectProblems } from './helpers';
+import { seed, makeSave, guide, waitLastButtonEnabled, collectProblems, goToRegion } from './helpers';
 
 // 수학 놀이 4종: 6단계 진행, 예상 비교, 힌트 3단계, 정답, 보상 화면
 interface Case {
@@ -62,6 +62,7 @@ for (const c of CASES) {
     await page.goto('/');
     await page.getByRole('button', { name: 'Start' }).click();
     await page.getByRole('button', { name: 'Play' }).click();
+    await goToRegion(page, /^Acorn Village/);
     await page.getByRole('button', { name: new RegExp(c.title.replace('?', '\\?')) }).click();
     const choices = page.getByRole('group', { name: 'Answer choices' });
 
@@ -107,6 +108,7 @@ test('한국어로도 놀이가 자연스럽게 진행된다 (빼기)', async ({
   await page.goto('/');
   await page.getByRole('button', { name: '시작하기' }).click();
   await page.getByRole('button', { name: '놀이하기' }).click();
+  await goToRegion(page, /^도토리 마을/);
   await page.getByRole('button', { name: /빼기/ }).click();
   await expect(guide(page)).toHaveText('블루베리가 5개 있어요. 배고픈 루루가 2개를 먹고 싶대요!');
   await page.getByRole('button', { name: '다음' }).click();

@@ -2,6 +2,8 @@ import CountField from './CountField';
 import CompareField from './CompareField';
 import AddField from './AddField';
 import SubtractField from './SubtractField';
+import PatternField from './PatternField';
+import ShapesField from './ShapesField';
 import type { FieldMode } from './useSequence';
 import type { MathScene } from '../../../types/math';
 
@@ -16,5 +18,9 @@ export default function SceneField({ scene, mode, onDone }: { scene: MathScene; 
       return <AddField scene={scene} mode={mode} onDone={onDone} />;
     case 'subtract':
       return <SubtractField scene={scene} mode={mode} onDone={onDone} />;
+    case 'pattern':
+      return <PatternField scene={scene} mode={mode} onDone={onDone} />;
+    case 'shapes':
+      return <ShapesField scene={scene} mode={mode} onDone={onDone} />;
   }
 }

@@ -11,6 +11,7 @@ import { RESOURCES } from '../../data/resources/resources';
 import { getRegion } from '../../data/regions/regions';
 import { useGame } from '../../app/GameProvider';
 import { bundleEntries, canAfford, lockedRegionOf } from '../../utils/bundles';
+import { isRegionOpen } from '../../utils/regions';
 import { useI18n } from '../../i18n';
 
 // 공방: 모은 재료로 레시피대로 가구를 만든다
@@ -20,7 +21,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
   const [made, setMade] = useState<string | null>(null); // 방금 만든 가구
   const recipes = FURNITURE.filter((f) => f.unlockCondition.type === 'recipe');
   // 지금 가진 재료 (열린 마을 재료는 0개여도 보여준다)
-  const shownResources = RESOURCES.filter((r) => getRegion(r.region).open || (game.resources[r.id] ?? 0) > 0);
+  const shownResources = RESOURCES.filter((r) => isRegionOpen(r.region, game.completedLessons) || (game.resources[r.id] ?? 0) > 0);
 
   const madeDef = made ? getFurniture(made) : undefined;
 
@@ -62,7 +63,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
         {recipes.map((def) => {
           if (def.unlockCondition.type !== 'recipe') return null;
           const { cost } = def.unlockCondition;
-          const locked = lockedRegionOf(cost);
+          const locked = lockedRegionOf(cost, game.completedLessons);
           const affordable = !locked && canAfford(game.resources, cost);
           const owned = game.furniture[def.id] ?? 0;
           return (

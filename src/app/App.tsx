@@ -10,6 +10,9 @@ import WorkshopScreen from '../features/workshop/WorkshopScreen';
 import InventoryScreen from '../features/inventory/InventoryScreen';
 import ParentGate from '../features/settings/ParentGate';
 import ParentScreen from '../features/settings/ParentScreen';
+import RegionMapScreen from '../features/map/RegionMapScreen';
+import { getLesson } from '../data/math/lessons';
+import type { RegionId } from '../types/resources';
 import type { LessonId } from '../types/math';
 import type { LoadStatus } from '../services/storage/gameSave';
 
@@ -20,6 +23,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
   const [notice, setNotice] = useState<LoadStatus | null>(loadStatus);
   const [settingsFrom, setSettingsFrom] = useState<Screen>('title');
   const [lessonId, setLessonId] = useState<LessonId>('counting1');
+  const [regionId, setRegionId] = useState<RegionId>('acornVillage');
 
   const openSettings = (from: Screen) => {
     setSettingsFrom(from);
@@ -32,7 +36,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
     case 'room':
       return (
         <RoomScreen
-          onPlay={() => setScreen('math')}
+          onPlay={() => setScreen('map')}
           onDecorate={() => setScreen('decorate')}
           onWorkshop={() => setScreen('workshop')}
           onInventory={() => setScreen('inventory')}
@@ -48,18 +52,39 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
       return <ParentGate onPass={() => setScreen('parent')} onBack={() => setScreen('settings')} />;
     case 'parent':
       return <ParentScreen onBack={() => setScreen('settings')} />;
-    case 'math':
+    case 'map':
       return (
-        <MathMenuScreen
+        <RegionMapScreen
           onPick={(id) => {
-            setLessonId(id);
-            setScreen('lesson');
+            setRegionId(id);
+            setScreen('math');
           }}
           onBack={() => setScreen('room')}
         />
       );
+    case 'math':
+      return (
+        <MathMenuScreen
+          regionId={regionId}
+          onPick={(id) => {
+            setLessonId(id);
+            setScreen('lesson');
+          }}
+          onBack={() => setScreen('map')}
+        />
+      );
     case 'lesson':
-      return <LessonScreen key={lessonId} lessonId={lessonId} onExit={() => setScreen('math')} onWorkshop={() => setScreen('workshop')} />;
+      return (
+        <LessonScreen
+          key={lessonId}
+          lessonId={lessonId}
+          onExit={() => {
+            setRegionId(getLesson(lessonId).region);
+            setScreen('math');
+          }}
+          onWorkshop={() => setScreen('workshop')}
+        />
+      );
     case 'workshop':
       return <WorkshopScreen onBack={() => setScreen('room')} onDecorate={() => setScreen('decorate')} />;
     case 'inventory':

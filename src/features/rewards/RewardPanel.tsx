@@ -3,21 +3,23 @@ import BigButton from '../../components/BigButton';
 import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';
 import { bundleEntries } from '../../utils/bundles';
+import { getRegion } from '../../data/regions/regions';
 import { useI18n } from '../../i18n';
-import type { ResourceBundle } from '../../types/resources';
+import type { RegionId, ResourceBundle } from '../../types/resources';
 
 interface Props {
   rewards: ResourceBundle;
   bonus: ResourceBundle; // 처음 끝냈을 때 보너스 (없으면 빈 묶음)
   discovery: string; // 이번 놀이에서 발견한 원리
+  newRegion?: RegionId | null; // 이번에 새로 열린 마을
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
 }
 
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onAgain, onMoreGames }: Props) {
-  const { t } = useI18n();
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, onWorkshop, onAgain, onMoreGames }: Props) {
+  const { t, tKey } = useI18n();
   const bonusEntries = bundleEntries(bonus);
 
   return (
@@ -51,6 +53,12 @@ export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onA
             </div>
           )}
         </section>
+
+        {newRegion && (
+          <p role="status" className="w-full max-w-md animate-rise rounded-3xl bg-lavender p-4 text-xl font-bold" style={{ animationDelay: '600ms' }}>
+            {getRegion(newRegion).emoji} {t('reward.newRegion', { region: tKey(getRegion(newRegion).nameKey) })}
+          </p>
+        )}
       </div>
 
       <div className="flex w-full flex-col items-center gap-4">

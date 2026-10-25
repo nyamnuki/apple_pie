@@ -31,12 +31,15 @@ export default {
         settle: { '0%': { transform: 'translateY(-10px) scale(0.94)', opacity: '0' }, '100%': { transform: 'translateY(0) scale(1)', opacity: '1' } },
         // 보상 재료가 아래에서 살며시 나타나기
         rise: { '0%': { transform: 'translateY(8px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
+        // 찾는 도형이 아닐 때 살짝 좌우로 흔들기 (벌칙이 아니라 '그건 아니야' 신호)
+        shake: { '0%, 100%': { transform: 'translateX(0)' }, '25%': { transform: 'translateX(-5px)' }, '75%': { transform: 'translateX(5px)' } },
       },
       animation: {
         pop: 'pop 0.25s ease-out both',
         bob: 'bob 2.8s ease-in-out infinite',
         settle: 'settle 0.3s ease-out both',
         rise: 'rise 0.35s ease-out both',
+        shake: 'shake 0.4s ease-in-out',
       },
       boxShadow: {
         // 눌리는 느낌의 입체 버튼 그림자

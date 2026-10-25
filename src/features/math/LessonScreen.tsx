@@ -10,13 +10,15 @@ import SceneField from './fields/SceneField';
 import RewardPanel from '../rewards/RewardPanel';
 import { useGame } from '../../app/GameProvider';
 import { rewardFor } from '../../app/gameState';
+import { REGIONS } from '../../data/regions/regions';
+import { isRegionOpen } from '../../utils/regions';
 import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
-import type { ResourceBundle } from '../../types/resources';
+import type { RegionId, ResourceBundle } from '../../types/resources';
 import type { Expression } from '../../data/characters/characters';
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
@@ -54,11 +56,13 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const [state, dispatch] = useReducer(lessonReducer, initialLessonState);
   const { game, dispatch: gameDispatch } = useGame();
   // 이번에 받은 보상 (보상 화면에 보여준다)
-  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle } | null>(null);
+  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; newRegion: RegionId | null } | null>(null);
 
-  // 끝내기: 보상을 계산해 지급하고 보상 화면으로
+  // 끝내기: 보상을 계산해 지급하고 보상 화면으로. 이 놀이로 새 마을이 열리면 함께 알려준다.
   const finish = () => {
-    setEarned(rewardFor(lesson, game));
+    const after = game.completedLessons.includes(lesson.id) ? game.completedLessons : [...game.completedLessons, lesson.id];
+    const newRegion = REGIONS.find((r) => !isRegionOpen(r.id, game.completedLessons) && isRegionOpen(r.id, after))?.id ?? null;
+    setEarned({ ...rewardFor(lesson, game), newRegion });
     gameDispatch({ type: 'completeLesson', lesson });
     dispatch({ type: 'next' });
   };
@@ -132,6 +136,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           rewards={earned.rewards}
           bonus={earned.bonus}
           discovery={t(k('discover'))}
+          newRegion={earned.newRegion}
           onWorkshop={onWorkshop}
           onAgain={() => dispatch({ type: 'restart' })}
           onMoreGames={onExit}

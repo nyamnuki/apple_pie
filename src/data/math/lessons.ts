@@ -62,6 +62,75 @@ export const LESSONS: MathLesson[] = [
     apply: { kind: 'subtract', item: 'cookie', start: 5, remove: 1 },
     applyChoices: [3, 4, 5, 6],
   },
+
+  // ===== 달빛 숲 =====
+  {
+    id: 'patterns1',
+    rewards: { glowBranch: 2 },
+    firstTimeBonus: { moonDew: 1 },
+    area: 'patterns',
+    region: 'moonlightForest',
+    icon: 'moon',
+    explore: { kind: 'pattern', unit: ['moon', 'star'], shown: 6 }, // 달 별 달 별 달 별 → 달
+    predict: { kind: 'pattern', unit: ['star', 'star', 'moon'], shown: 6 }, // 별 별 달 별 별 달 → 별
+    predictChoices: ['star', 'moon', 'owl'],
+    apply: { kind: 'pattern', unit: ['leaf', 'mushroom', 'acorn'], shown: 6 }, // 잎 버섯 도토리 ×2 → 잎
+    applyChoices: ['leaf', 'mushroom', 'acorn'],
+  },
+  {
+    id: 'shapes1',
+    rewards: { glowBranch: 1, moonDew: 1 },
+    firstTimeBonus: { moonDew: 1 },
+    area: 'shapes',
+    region: 'moonlightForest',
+    icon: 'star',
+    // 동그라미 3개 (크기·색이 다르다)
+    explore: {
+      kind: 'shapes',
+      target: 'circle',
+      shapes: [
+        { shape: 'circle', color: '#A8C3A0', size: 1.1 },
+        { shape: 'square', color: '#F5D0AD', size: 0.9 },
+        { shape: 'circle', color: '#F3C6D2', size: 0.65 },
+        { shape: 'triangle', color: '#C8DFE8', size: 1 },
+        { shape: 'circle', color: '#D9D0EC', size: 0.85 },
+        { shape: 'square', color: '#A8C3A0', size: 0.7 },
+      ],
+    },
+    // 세모 4개 (하나는 돌아가 있다)
+    predict: {
+      kind: 'shapes',
+      target: 'triangle',
+      shapes: [
+        { shape: 'triangle', color: '#F3C6D2', size: 1 },
+        { shape: 'circle', color: '#C8DFE8', size: 0.8 },
+        { shape: 'triangle', color: '#A8C3A0', size: 0.7 },
+        { shape: 'square', color: '#D9D0EC', size: 0.9 },
+        { shape: 'triangle', color: '#F5D0AD', size: 1.1, rotate: 180 },
+        { shape: 'circle', color: '#F3C6D2', size: 1 },
+        { shape: 'square', color: '#F5D0AD', size: 0.65 },
+        { shape: 'triangle', color: '#D9D0EC', size: 0.85, rotate: 90 },
+      ],
+    },
+    predictChoices: [3, 4, 5, 6],
+    // 네모 3개 (하나는 45도 돌아가 있다)
+    apply: {
+      kind: 'shapes',
+      target: 'square',
+      shapes: [
+        { shape: 'circle', color: '#F5D0AD', size: 0.9 },
+        { shape: 'square', color: '#C8DFE8', size: 1 },
+        { shape: 'triangle', color: '#F3C6D2', size: 0.8 },
+        { shape: 'square', color: '#F3C6D2', size: 0.75, rotate: 45 },
+        { shape: 'circle', color: '#A8C3A0', size: 0.65 },
+        { shape: 'triangle', color: '#D9D0EC', size: 1.1, rotate: 180 },
+        { shape: 'square', color: '#A8C3A0', size: 0.6 },
+        { shape: 'triangle', color: '#F5D0AD', size: 0.7 },
+        { shape: 'circle', color: '#D9D0EC', size: 1.05 },
+      ],
+    },
+    applyChoices: [2, 3, 4, 5],
+  },
 ];
 
 export const getLesson = (id: LessonId) => LESSONS.find((l) => l.id === id)!;

@@ -59,6 +59,8 @@ for (const locale of ['en', 'ko'] as const) {
       await back();
       await back();
       await nav(0).click();
+      await check(page, 'map');
+      await page.locator('ol li button').last().click(); // 지도 아래쪽 = 도토리 마을
       await check(page, 'math-menu');
       await page.locator('li button').first().click();
       await check(page, 'lesson');

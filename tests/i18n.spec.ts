@@ -46,6 +46,8 @@ test.describe('언어', () => {
       await page.getByRole('button', { name: '뒤로 가기' }).click();
     }
     await page.getByRole('button', { name: '놀이하기' }).click();
-    expect(await englishWords(page)).toBeNull();
+    expect(await englishWords(page), '지도').toBeNull();
+    await page.getByRole('button', { name: /^도토리 마을/ }).click();
+    expect(await englishWords(page), '놀이 고르기').toBeNull();
   });
 });

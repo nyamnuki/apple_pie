@@ -54,7 +54,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (!def || def.unlockCondition.type !== 'recipe') return state;
       const { cost } = def.unlockCondition;
       // 재료가 모자라거나 아직 못 가는 마을 재료가 필요하면 만들지 않는다
-      if (!canAfford(state.resources, cost) || lockedRegionOf(cost)) return state;
+      if (!canAfford(state.resources, cost) || lockedRegionOf(cost, state.completedLessons)) return state;
       return {
         ...state,
         resources: addBundle(state.resources, cost, -1),

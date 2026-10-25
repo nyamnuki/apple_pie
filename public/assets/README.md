@@ -9,7 +9,7 @@
 | `backgrounds/` | 방 배경 (760×640, 바닥+벽) | `room-base.png` |
 | `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png` |
 | `characters/` | 캐릭터 표정별 그림 | `lulu-default.png`, `lulu-happy.png`, `lulu-thinking.png`, `lulu-cheer.png`, `lulu-surprised.png` (도토: `doto-…`, 모모: `momo-…`) |
-| `items/` | 수학 놀이 물건, 재료 | 물건: `apple.png`, `pear.png`, `mushroom.png` … / 재료: `res-acorn.png`, `res-apple.png`, `res-golden-acorn.png`, `res-glow-branch.png`, `res-moon-dew.png` |
+| `items/` | 수학 놀이 물건, 재료 | 물건: `apple.png`, `pear.png`, `mushroom.png`, `moon.png`, `star.png`, `owl.png` … / 재료: `res-acorn.png`, `res-apple.png`, `res-golden-acorn.png`, `res-glow-branch.png`, `res-moon-dew.png` |
 | `pets/`, `ui/`, `effects/` | 나중에 쓸 자리 | — |
 
 - 그림이 없으면: 가구는 코드로 그린 모양, 루루는 코드로 그린 토끼, 나머지는 그림 문자로 보입니다.

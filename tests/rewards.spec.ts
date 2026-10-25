@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { seed, makeSave, playCountingApples } from './helpers';
+import { seed, makeSave, playCountingApples, goToRegion } from './helpers';
 
 // 보상 → 공방 → 방에 놓기 → 가방
 test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', async ({ page, context }) => {
@@ -15,6 +15,7 @@ test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', as
 
   // 첫 번째: 처음 보너스(황금 도토리) 포함
   await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
   await playCountingApples(page);
   await expect(page.getByRole('img', { name: 'Acorn +3' })).toBeVisible();
   await expect(page.getByRole('img', { name: 'Sweet Apple +1' })).toBeVisible();
