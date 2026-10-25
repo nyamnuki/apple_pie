@@ -17,7 +17,7 @@ export default function CompareField({ scene, mode, onDone }: { scene: Scene; mo
   const showLeftover = finished && mode !== 'static';
 
   const bowl = (item: MathItemId, count: number) => (
-    <div className="relative flex min-h-[96px] flex-1 flex-wrap content-start justify-center gap-2 rounded-3xl bg-moss/70 p-3">
+    <div className={`relative flex flex-1 flex-wrap content-start justify-center gap-2 rounded-3xl bg-moss/70 p-3 ${compact ? 'min-h-[64px]' : 'min-h-[96px]'}`}>
       {range(count - pairs).map((i) => (
         <ItemToken compact={compact} key={i} item={item} onClick={makePair} label={t('math.a11y.pairItem')} />
       ))}
@@ -29,7 +29,8 @@ export default function CompareField({ scene, mode, onDone }: { scene: Scene; mo
 
   return (
     <div className="flex w-full max-w-lg flex-col items-center gap-4">
-      <div className="flex w-full gap-3">
+      {/* 물건이 많으면 두 그릇을 위아래로 놓아 한 줄에 더 많이 들어가게 한다 */}
+      <div className={`flex w-full gap-3 ${compact ? 'flex-col' : ''}`}>
         {bowl(scene.itemA, scene.a)}
         {bowl(scene.itemB, scene.b)}
       </div>
