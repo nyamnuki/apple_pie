@@ -26,6 +26,8 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 | `src/features/room/` | 내 방 화면, 아이소메트릭 방 그리기, 배치 규칙 |
 | `src/features/room/decorate/` | 방 꾸미기 화면 (놓기·옮기기·돌리기·치우기) |
 | `src/features/settings/` | 설정 화면 (언어 선택) |
+| `src/features/math/` | 수학 놀이 (놀이 고르기, 6단계 진행, 힌트, 장면 화면) |
+| `src/data/math/` | 수학 놀이 목록 (수량·정답·선택지)과 물건 그림 |
 | `src/data/furniture/` | 가구 목록 (크기, 차지하는 칸, 그림 경로, 이름 키) |
 | `src/data/assets/` | Asset Registry — 그림 경로 모음 |
 | `src/types/` | 데이터 모양 정의 (가구, 방 배치) |
@@ -34,6 +36,13 @@ npm run preview  # 만든 배포용 파일을 미리 보기
 | `src/services/` | 브라우저 저장, 그림 파일 확인 도우미 |
 | `src/styles/` | 색상 변수와 공통 스타일 |
 | `public/assets/` | 그림 파일 넣는 곳 (규칙은 그 폴더의 README) |
+
+## 수학 놀이 추가하는 법
+
+1. `src/types/math.ts` 의 `LessonId` 에 새 id 추가
+2. `src/data/math/lessons.ts` 에 장면(수량)과 선택지 추가 — 정답은 자동 계산
+3. `src/i18n/locales/en.ts`, `ko.ts` 의 `lessons` 에 같은 id 로 문장 12개 추가
+   (빠뜨리면 `npm run build` 가 알려줍니다)
 
 ## 가구 추가하는 법
 
