@@ -22,7 +22,7 @@ export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onA
 
   return (
     // 세로 화면: 위에서 아래로 / 높이가 낮은 가로 화면: 왼쪽 받은 재료, 오른쪽 발견한 것과 버튼
-    <main className="flex flex-1 flex-col items-center justify-center gap-5 text-center [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-4">
+    <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-4">
       <div className="flex w-full flex-col items-center gap-4">
         <div className="flex items-center gap-3">
           <Character expression="happy" size={96} bob />
@@ -76,6 +76,6 @@ export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onA
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

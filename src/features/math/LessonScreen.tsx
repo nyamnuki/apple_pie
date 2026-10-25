@@ -139,7 +139,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
       ) : (
         // 세로 화면: 단계 → 말풍선 → 장면 → 버튼 (위에서 아래로)
         // 높이가 낮은 가로 화면: 왼쪽에 장면, 오른쪽에 단계·말풍선·버튼
-        <main className="grid flex-1 grid-rows-[auto_auto_1fr_auto] gap-4 [grid-template-areas:'progress'_'guide'_'field'_'controls'] [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:grid-rows-[auto_1fr_auto] [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:[grid-template-areas:'field_progress'_'field_guide'_'field_controls']">
+        <div className="grid flex-1 grid-rows-[auto_auto_1fr_auto] gap-4 [grid-template-areas:'progress'_'guide'_'field'_'controls'] [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:grid-rows-[auto_1fr_auto] [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:[grid-template-areas:'field_progress'_'field_guide'_'field_controls']">
           <div className="[grid-area:progress]">
             <StageProgress stage={state.stage} />
           </div>
@@ -178,7 +178,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
               </div>
             )}
           </div>
-        </main>
+        </div>
       )}
     </AppShell>
   );

@@ -2,8 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <!-- 아이가 실수로 화면을 확대하지 않도록 확대를 막는다 -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <!-- 두 번 톡 눌러 확대되는 것은 CSS(touch-action: manipulation)로 막고,
+         두 손가락 확대는 시력이 약한 사용자를 위해 허용한다 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#FFF5DF" />
     <title>Math Town</title>
     <!-- 탭 아이콘: 별도 파일 없이 SVG 로 넣는다 (나중에 public/assets/ui/ 그림으로 바꿔도 된다) -->

@@ -27,9 +27,10 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     saveLocale(next);
   }, []);
 
-  // 화면 읽기 프로그램과 브라우저가 현재 언어를 알 수 있게 <html lang> 을 맞춘다
+  // 화면 읽기 프로그램과 브라우저가 현재 언어를 알 수 있게 <html lang> 과 탭 제목을 맞춘다
   useEffect(() => {
     document.documentElement.lang = locale;
+    document.title = translate(locale, 'app.title');
   }, [locale]);
 
   const value = useMemo<I18nValue>(() => {

@@ -25,7 +25,7 @@ export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice
         </BigButton>
       </div>
 
-      <main className="flex flex-1 flex-col items-center justify-center gap-6 text-center [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-10">
+      <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-10">
         <Character expression="cheer" size={150} bob />
         <div className="flex w-full max-w-xs flex-col items-center gap-6">
           <div>
@@ -37,7 +37,7 @@ export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice
             {t('menu.start')}
           </BigButton>
         </div>
-      </main>
+      </div>
 
       <p className="pt-4 text-center text-sm text-bark/85">{t('app.promise')}</p>
     </AppShell>

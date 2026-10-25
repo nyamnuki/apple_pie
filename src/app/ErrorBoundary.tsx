@@ -28,7 +28,7 @@ function ErrorScreen() {
   const { t } = useI18n();
   return (
     <AppShell>
-      <main role="alert" className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
+      <div role="alert" className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
         <Character expression="surprised" size={130} />
         <h1 className="text-3xl font-bold">{t('error.title')}</h1>
         <p className="max-w-sm text-xl">{t('error.body')}</p>
@@ -36,7 +36,7 @@ function ErrorScreen() {
           <RotateCcw size={28} aria-hidden />
           {t('error.restart')}
         </BigButton>
-      </main>
+      </div>
     </AppShell>
   );
 }
