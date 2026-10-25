@@ -29,7 +29,8 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
   return (
     <AppShell>
       <ScreenHeader title={t('parent.title')} onBack={onBack} />
-      <div className="flex flex-col gap-4 pb-4">
+      {/* 어른용 안내 화면: 글을 복사할 수 있게 글자 선택을 허용한다 (버튼은 그대로) */}
+      <div className="selectable flex flex-col gap-4 pb-4">
         <section aria-labelledby="privacy-h" className={card}>
           <h2 id="privacy-h" className={heading}>
             <ShieldCheck size={28} aria-hidden />

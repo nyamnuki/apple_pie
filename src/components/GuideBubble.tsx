@@ -14,7 +14,10 @@ export default function GuideBubble({ text, expression = 'default', speaker = 'l
   const { t, tKey } = useI18n();
   return (
     <div className="flex items-start gap-2">
-      <Character id={speaker} expression={expression} size={72} bob />
+      {/* 기쁘거나 놀랄 때 한 번 폴짝 (표정이 바뀔 때마다 다시) */}
+      <span key={expression} className={expression === 'happy' || expression === 'surprised' ? 'animate-hop' : undefined}>
+        <Character id={speaker} expression={expression} size={72} bob />
+      </span>
       <p aria-live="polite" aria-label={`${t('math.a11y.guide', { name: tKey(CHARACTERS[speaker].nameKey) })}: ${text}`} className="min-h-[3.5rem] flex-1 rounded-3xl rounded-tl-none bg-cream px-4 py-3 text-xl font-semibold shadow-pop-sm">
         {text}
       </p>

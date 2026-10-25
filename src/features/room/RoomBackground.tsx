@@ -2,6 +2,7 @@ import { GRID, WALL_H, VIEW_W, VIEW_H, toScreen, toPoints, lift } from './iso';
 import { assetUrl, BACKGROUNDS } from '../../data/assets/assetRegistry';
 import { getFurniture } from '../../data/furniture/furniture';
 import { useAssetStatus } from '../../services/assets/useAssetStatus';
+import WallpaperPattern from './placeholders/WallpaperPattern';
 
 // 방의 바닥과 벽. 배경 그림(room-base.png)이 있으면 그 그림을, 없으면 아래 도형으로 그린다.
 // 벽지는 벽 위에 무늬로 덧칠한다.
@@ -34,13 +35,7 @@ export default function RoomBackground({ wallpaperId }: { wallpaperId: string | 
           </pattern>
         )}
         {/* 벽지 그림이 없을 때: 나뭇잎과 작은 별 무늬로 대신 그린다 */}
-        <pattern id="wallpaper-leaf" patternUnits="userSpaceOnUse" width="60" height="60">
-          <rect width="60" height="60" fill="#A8C3A0" />
-          <ellipse cx="15" cy="18" rx="7" ry="4" fill="#D5E4C8" transform="rotate(-35 15 18)" />
-          <ellipse cx="45" cy="45" rx="7" ry="4" fill="#D5E4C8" transform="rotate(35 45 45)" />
-          <circle cx="45" cy="14" r="2.5" fill="#FFF5DF" />
-          <circle cx="14" cy="46" r="2" fill="#FFF5DF" />
-        </pattern>
+        <WallpaperPattern id="wallpaper-leaf" />
       </defs>
 
       {baseStatus === 'ok' ? (

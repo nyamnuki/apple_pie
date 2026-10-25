@@ -33,6 +33,10 @@ export default {
         rise: { '0%': { transform: 'translateY(8px)', opacity: '0' }, '100%': { transform: 'translateY(0)', opacity: '1' } },
         // 찾는 도형이 아닐 때 살짝 좌우로 흔들기 (벌칙이 아니라 '그건 아니야' 신호)
         shake: { '0%, 100%': { transform: 'translateX(0)' }, '25%': { transform: 'translateX(-5px)' }, '75%': { transform: 'translateX(5px)' } },
+        // 가구를 놓은 자리에서 둥근 빛이 한 번 퍼지고 사라진다
+        ring: { '0%': { transform: 'scale(0.7)', opacity: '0.9' }, '100%': { transform: 'scale(1.35)', opacity: '0' } },
+        // 캐릭터가 기쁘거나 놀랄 때 한 번 폴짝
+        hop: { '0%, 100%': { transform: 'translateY(0)' }, '40%': { transform: 'translateY(-10px)' } },
       },
       animation: {
         pop: 'pop 0.25s ease-out both',
@@ -40,6 +44,8 @@ export default {
         settle: 'settle 0.3s ease-out both',
         rise: 'rise 0.35s ease-out both',
         shake: 'shake 0.4s ease-in-out',
+        ring: 'ring 0.6s ease-out both',
+        hop: 'hop 0.45s ease-out',
       },
       boxShadow: {
         // 눌리는 느낌의 입체 버튼 그림자

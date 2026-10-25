@@ -129,8 +129,11 @@ test('벽 장식: 걸기, 창문 피하기, 옮기기, 떼기', async ({ page, c
   await page.getByRole('button', { name: /Leaf Picture/ }).click();
   await expect(guide(page)).toHaveText('Tap a spot with a + on the wall.');
   await expect(page.getByRole('button', { name: /Floor spot/ })).toHaveCount(0); // 바닥 칸은 고를 수 없다
-  // 오른쪽 벽 3번째 자리 = 창문 → 바로 옆(2번째)에 걸린다
+  // 오른쪽 벽 3번째 자리 = 창문 → 바로 걸지 않고 옆 자리(2번째)를 미리 보여준 뒤 '여기에 놓기'
   await page.getByRole('button', { name: 'Right wall, spot 3' }).click({ force: true });
+  await expect(guide(page)).toHaveText('That spot is busy. How about the glowing spot next to it?');
+  await expect(page.locator('[data-ghost="suggested"]')).toHaveCount(1);
+  await page.getByRole('button', { name: 'Put it here' }).click();
   await expect(guide(page)).toHaveText('Nice! It fits just right.');
   await expect(page.getByRole('button', { name: 'Turn' })).toHaveCount(0); // 벽 장식은 돌리지 않는다
   await page.getByRole('button', { name: 'Move' }).click();

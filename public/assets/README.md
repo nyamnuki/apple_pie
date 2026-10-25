@@ -7,12 +7,15 @@
 | 폴더 | 내용 | 지금 쓰는 파일 이름 |
 |---|---|---|
 | `backgrounds/` | 방 배경 (760×640, 바닥+벽) | `room-base.png` |
-| `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png` / 벽 장식: `leaf-frame.png`, `acorn-garland.png`, `starry-frame.png` |
+| `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png`, `crystal-lamp.png` / 벽 장식: `leaf-frame.png`, `acorn-garland.png`, `starry-frame.png`, `mithril-mirror.png`, `gem-garland.png` |
 | `characters/` | 캐릭터 표정별 그림 | `lulu-default.png`, `lulu-happy.png`, `lulu-thinking.png`, `lulu-cheer.png`, `lulu-surprised.png` (도토: `doto-…`, 모모: `momo-…`) |
-| `items/` | 수학 놀이 물건, 재료 | 물건: `apple.png`, `pear.png`, `mushroom.png`, `moon.png`, `star.png`, `owl.png` … / 재료: `res-acorn.png`, `res-apple.png`, `res-golden-acorn.png`, `res-glow-branch.png`, `res-moon-dew.png` |
+| `items/` | 수학 놀이 물건, 재료 | 물건: `apple.png`, `pear.png`, `mushroom.png`, `moon.png`, `star.png`, `owl.png`, `gem.png`, `pebble.png`, `bat.png`, `candle.png` … / 재료: `res-acorn.png`, `res-apple.png`, `res-golden-acorn.png`, `res-glow-branch.png`, `res-moon-dew.png`, `res-crystal.png`, `res-mithril.png` |
 | `pets/`, `ui/`, `effects/` | 나중에 쓸 자리 | — |
 
-- 그림이 없으면: 가구는 코드로 그린 모양, 루루는 코드로 그린 토끼, 나머지는 그림 문자로 보입니다.
+- 그림이 없으면: 방·가구·벽 장식·목록 썸네일은 코드로 그린 아이소메트릭 모양, 루루·도토·모모는 코드로 그린 그림, 수학 물건·재료는 그림 문자로 보입니다.
+- **지금(2026-10) 들어 있는 그림 파일은 없습니다.** 모든 그림이 위의 대체 그래픽으로 보입니다. 현황은 `npm run test:unit` 의 '그림 현황' 줄에 나옵니다.
+- 앱은 빌드할 때 이 폴더에 **실제로 있는 파일 목록**을 만들어(`build/assetIndex.ts`) 목록에 없는 그림은 요청하지 않습니다. 그림을 넣은 뒤에는 개발 서버를 다시 켜거나 다시 빌드하세요.
+- 이름을 잘못 지어 넣으면 `npm run test:unit` 이 '쓰이지 않는 그림'으로 알려 줍니다.
 - 캐릭터는 표정 그림이 없으면 `-default.png` 를, 그것도 없으면 코드로 그린 그림을 씁니다.
   그래서 `lulu-default.png` 하나만 먼저 넣어도 됩니다.
 

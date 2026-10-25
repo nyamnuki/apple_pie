@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite';
+import { listAssets } from './assetIndex';
 
 // ===== 인터넷 없이 실행 (서비스 워커) =====
 // 빌드할 때 dist/sw.js 를 만든다. 그 안에 이번 빌드의 모든 파일 목록을 넣어 두면,
@@ -10,8 +11,10 @@ export function offline(): Plugin {
     apply: 'build',
     generateBundle(_options, bundle) {
       const built = Object.keys(bundle).filter((f) => !f.endsWith('.map'));
-      const files = ['./', ...built.map((f) => `./${f}`), './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
-      const version = built.filter((f) => f.startsWith('assets/')).sort().join('|');
+      // public/assets/ 의 그림도 함께 저장해 둔다 (그림을 바꾸면 목록이 바뀌어 새 버전이 된다)
+      const pictures = listAssets().map((f) => `./assets/${f}`);
+      const files = ['./', ...built.map((f) => `./${f}`), ...pictures, './manifest.webmanifest', './icons/icon-192.png', './icons/icon-512.png', './icons/apple-touch-icon.png'];
+      const version = [...built.filter((f) => f.startsWith('assets/')).sort(), ...pictures].join('|');
       this.emitFile({ type: 'asset', fileName: 'sw.js', source: serviceWorker(files, version) });
     },
   };

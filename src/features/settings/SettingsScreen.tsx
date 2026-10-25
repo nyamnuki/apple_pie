@@ -49,7 +49,7 @@ export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: 
         onToggle={() => setMusicOn(!musicOn)}
       />
 
-      <section aria-labelledby="save-heading" className="mt-4 rounded-[2rem] bg-moss/60 p-5">
+      <section aria-labelledby="save-heading" className="selectable mt-4 rounded-[2rem] bg-moss/60 p-5">
         <h2 id="save-heading" className="mb-1 flex items-center gap-2 text-2xl font-bold">
           <Save size={28} aria-hidden />
           {t('save.title')}

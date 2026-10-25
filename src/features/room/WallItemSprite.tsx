@@ -58,3 +58,21 @@ export default function WallItemSprite({ item, def, label, selected, onClick }: 
     </g>
   );
 }
+
+// 걸기 전 미리 보기 (반투명). suggested 면 '여기는 어때요?' 하고 천천히 빛난다.
+export function WallGhost({ def, wall, slot, suggested }: { def: FurnitureDef; wall: WallItem['wall']; slot: number; suggested: boolean }) {
+  const [zBottom, zTop] = WALL_BANDS[def.wallBand ?? 'middle'];
+  const w = def.gridWidth * 100;
+  const h = zTop - zBottom;
+  const outline = [wallPoint(wall, slot, zTop + 4), wallPoint(wall, slot + def.gridWidth, zTop + 4), wallPoint(wall, slot + def.gridWidth, zBottom - 4), wallPoint(wall, slot, zBottom - 4)];
+  const url = assetUrl(def.assetPath);
+  const status = useAssetStatus(url);
+  return (
+    <g pointerEvents="none" aria-hidden="true" data-ghost={suggested ? 'suggested' : 'preview'}>
+      <polygon points={toPoints(outline)} fill={suggested ? '#F5D0AD' : '#FFF5DF'} fillOpacity="0.9" stroke="#946539" strokeWidth={suggested ? 7 : 5} strokeDasharray="10 7" className={suggested ? 'animate-pulse' : undefined} />
+      <g opacity="0.7" transform={wallTransform(wall, slot, def.gridWidth, zTop)}>
+        {status === 'ok' ? <image href={url} width={w} height={h} preserveAspectRatio="none" /> : <WallPlaceholder def={def} w={w} h={h} />}
+      </g>
+    </g>
+  );
+}

@@ -1,5 +1,6 @@
 import { Move, RotateCw, PackageOpen, Check } from 'lucide-react';
 import BigButton from '../../../components/BigButton';
+import AssetThumb from '../../../components/AssetThumb';
 import { useI18n } from '../../../i18n';
 import type { FurnitureDef } from '../../../types/furniture';
 
@@ -16,9 +17,14 @@ export default function SelectedActions({ def, onMove, onTurn, onPutAway, onDone
   const { t, tKey } = useI18n();
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-center text-lg">
-        <strong>{tKey(def.nameKey)}</strong> · {tKey(def.descriptionKey)}
-      </p>
+      {/* 지금 고른 물건: 그림 + 이름 (방에서도 화살표로 가리킨다) */}
+      <div className="flex items-center gap-3 rounded-3xl bg-cream/90 p-2 pr-4 shadow-pop-sm">
+        <AssetThumb def={def} size={56} />
+        <p className="min-w-0 flex-1 text-base leading-snug">
+          <strong className="block text-lg">{tKey(def.nameKey)}</strong>
+          {tKey(def.descriptionKey)}
+        </p>
+      </div>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 [@media(max-height:500px)]:grid-cols-2">
         <BigButton variant="sage" onClick={onMove}>
           <Move size={26} aria-hidden />

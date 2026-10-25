@@ -20,7 +20,8 @@ export default function FurnitureTray({ layout, owned, onPick }: Props) {
   return (
     <ul
       aria-label={t('decorate.trayLabel')}
-      className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:thin] [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:overflow-y-auto"
+      // 옆으로 밀면 카드가 한 장씩 딱 멈춘다 (좁은 화면에서 보기 쉽게)
+      className="flex snap-x snap-mandatory scroll-px-1 gap-3 overflow-x-auto px-1 pb-2 pt-1 [scrollbar-width:thin] [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:overflow-y-auto"
     >
       {items.map((def) => {
         const placed =
@@ -29,13 +30,13 @@ export default function FurnitureTray({ layout, owned, onPick }: Props) {
             : (def.category === 'wall' ? layout.wallItems : layout.placed).filter((p) => p.furnitureId === def.id).length;
         const available = def.category === 'wallpaper' ? 0 : owned[def.id] - placed;
         return (
-          <li key={def.id} className="shrink-0">
+          <li key={def.id} className="shrink-0 snap-start">
             <button
               type="button"
               onClick={() => onPick(def.id)}
               className="flex h-full w-[6.5rem] flex-col items-center gap-1 rounded-3xl bg-cream p-2 text-center shadow-pop-sm transition-transform active:translate-y-0.5"
             >
-              <AssetThumb def={def} size={56} />
+              <AssetThumb def={def} size={64} />
               <span className="text-base font-semibold leading-tight">{tKey(def.nameKey)}</span>
               {available > 0 ? (
                 <span className="mt-auto rounded-full bg-apricot px-2 text-sm font-bold" aria-label={t('decorate.available', { n: formatNumber(available) })}>

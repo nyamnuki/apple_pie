@@ -1,0 +1,16 @@
+{
+  // 빌드 설정 파일(vite.config.ts 등)과 build/ 폴더 검사용. 여기서만 Node 기능(파일 읽기)을 쓸 수 있다.
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["build", "vite.config.ts", "vitest.config.ts"]
+}

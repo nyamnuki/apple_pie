@@ -1,4 +1,5 @@
 import { useCallback, useSyncExternalStore } from 'react';
+import { hasAsset } from '../../data/assets/assetRegistry';
 
 // 그림 파일이 있는지 확인하는 도우미.
 // 'ok' 면 그림을 쓰고, 'loading'(확인 중)이나 'missing'(없음)이면 임시 그래픽을 그린다.
@@ -15,11 +16,22 @@ function setStatus(url: string, status: AssetStatus) {
 
 function check(url: string) {
   if (statusCache.has(url)) return;
+  // 빌드 때 없던 그림은 내려받지 않는다
+  if (!hasAsset(url.slice(url.indexOf('assets/') + 'assets/'.length))) {
+    statusCache.set(url, 'missing');
+    return;
+  }
   statusCache.set(url, 'loading');
   const img = new Image();
   img.onload = () => setStatus(url, 'ok');
   img.onerror = () => setStatus(url, 'missing');
   img.src = url;
+}
+
+// 아직 확인 전: 목록에 없으면 바로 'missing' (첫 화면부터 임시 그래픽, 깜빡임 없음)
+function initial(url: string): AssetStatus {
+  check(url);
+  return statusCache.get(url) ?? 'loading';
 }
 
 export function useAssetStatus(url: string | null): AssetStatus {
@@ -36,5 +48,5 @@ export function useAssetStatus(url: string | null): AssetStatus {
     },
     [url],
   );
-  return useSyncExternalStore(subscribe, () => (url ? (statusCache.get(url) ?? 'loading') : 'missing'));
+  return useSyncExternalStore(subscribe, () => (url ? (statusCache.get(url) ?? initial(url)) : 'missing'));
 }
