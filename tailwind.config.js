@@ -11,6 +11,7 @@ export default {
         moss: v('moss'),
         cream: v('cream'),
         oak: v('oak'),
+        wood: v('wood'), // 글자·버튼용 진한 나무색
         petal: v('petal'),
         apricot: v('apricot'),
         mist: v('mist'),

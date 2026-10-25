@@ -4,7 +4,7 @@ type Variant = 'primary' | 'sage' | 'soft';
 type Size = 'md' | 'lg' | 'icon';
 
 const VARIANTS: Record<Variant, string> = {
-  primary: 'bg-oak text-cream',
+  primary: 'bg-wood text-cream',
   sage: 'bg-sage text-bark',
   soft: 'bg-cream text-bark ring-2 ring-bark/10',
 };

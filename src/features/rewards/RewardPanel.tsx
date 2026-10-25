@@ -21,52 +21,59 @@ export default function RewardPanel({ rewards, bonus, discovery, onWorkshop, onA
   const bonusEntries = bundleEntries(bonus);
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center gap-5 text-center">
-      <Character expression="happy" size={110} bob />
-      <h2 className="text-3xl font-bold sm:text-4xl">{t('reward.title')}</h2>
-
-      <section aria-labelledby="reward-got" className="w-full max-w-md rounded-3xl bg-cream p-5 shadow-pop-sm">
-        <h3 id="reward-got" className="mb-3 text-xl font-semibold">
-          {t('reward.youGot')}
-        </h3>
-        <div className="flex flex-wrap justify-center gap-3">
-          {bundleEntries(rewards).map(([id, n], i) => (
-            <span key={id} className="animate-rise" style={{ animationDelay: `${i * 150}ms` }}>
-              <ResourceChip id={id} amount={n} prefix="+" size="lg" />
-            </span>
-          ))}
+    // 세로 화면: 위에서 아래로 / 높이가 낮은 가로 화면: 왼쪽 받은 재료, 오른쪽 발견한 것과 버튼
+    <main className="flex flex-1 flex-col items-center justify-center gap-5 text-center [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-4">
+      <div className="flex w-full flex-col items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Character expression="happy" size={96} bob />
+          <h2 className="text-3xl font-bold sm:text-4xl [@media(max-height:500px)]:text-2xl">{t('reward.title')}</h2>
         </div>
-        {bonusEntries.length > 0 && (
-          <div className="mt-4 animate-rise rounded-2xl border-4 border-dashed border-oak/50 p-3" style={{ animationDelay: '450ms' }}>
-            <p className="mb-2 text-lg font-bold text-oak">{t('reward.firstTimeBonus')}</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              {bonusEntries.map(([id, n]) => (
-                <ResourceChip key={id} id={id} amount={n} prefix="+" size="lg" />
-              ))}
-            </div>
+
+        <section aria-labelledby="reward-got" className="w-full max-w-md rounded-3xl bg-cream p-5 shadow-pop-sm">
+          <h3 id="reward-got" className="mb-3 text-xl font-semibold">
+            {t('reward.youGot')}
+          </h3>
+          <div className="flex flex-wrap justify-center gap-3">
+            {bundleEntries(rewards).map(([id, n], i) => (
+              <span key={id} className="animate-rise" style={{ animationDelay: `${i * 150}ms` }}>
+                <ResourceChip id={id} amount={n} prefix="+" size="lg" />
+              </span>
+            ))}
           </div>
-        )}
-      </section>
+          {bonusEntries.length > 0 && (
+            <div className="mt-4 animate-rise rounded-2xl border-4 border-dashed border-oak/50 p-3" style={{ animationDelay: '450ms' }}>
+              <p className="mb-2 text-lg font-bold text-wood">{t('reward.firstTimeBonus')}</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                {bonusEntries.map(([id, n]) => (
+                  <ResourceChip key={id} id={id} amount={n} prefix="+" size="lg" />
+                ))}
+              </div>
+            </div>
+          )}
+        </section>
+      </div>
 
-      <section className="w-full max-w-md rounded-3xl bg-moss/70 p-4">
-        <h3 className="mb-1 text-lg text-oak">{t('math.learned')}</h3>
-        <p className="text-lg font-semibold">{discovery}</p>
-      </section>
+      <div className="flex w-full flex-col items-center gap-4">
+        <section className="w-full max-w-md rounded-3xl bg-moss/70 p-4">
+          <h3 className="mb-1 text-lg text-wood">{t('math.learned')}</h3>
+          <p className="text-lg font-semibold">{discovery}</p>
+        </section>
 
-      <div className="grid w-full max-w-md gap-3">
-        <BigButton size="lg" onClick={onWorkshop}>
-          <Hammer size={28} aria-hidden />
-          {t('reward.goWorkshop')}
-        </BigButton>
-        <div className="grid grid-cols-2 gap-3">
-          <BigButton variant="soft" onClick={onAgain}>
-            <RotateCcw size={24} aria-hidden />
-            {t('math.again')}
+        <div className="grid w-full max-w-md gap-3">
+          <BigButton size="lg" onClick={onWorkshop}>
+            <Hammer size={28} aria-hidden />
+            {t('reward.goWorkshop')}
           </BigButton>
-          <BigButton variant="soft" onClick={onMoreGames}>
-            <LayoutGrid size={24} aria-hidden />
-            {t('math.moreGames')}
-          </BigButton>
+          <div className="grid grid-cols-2 gap-3">
+            <BigButton variant="soft" onClick={onAgain}>
+              <RotateCcw size={24} aria-hidden />
+              {t('math.again')}
+            </BigButton>
+            <BigButton variant="soft" onClick={onMoreGames}>
+              <LayoutGrid size={24} aria-hidden />
+              {t('math.moreGames')}
+            </BigButton>
+          </div>
         </div>
       </div>
     </main>

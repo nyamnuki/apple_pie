@@ -78,7 +78,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
                 </span>
                 <div className="min-w-0 flex-1">
                   <p className="text-xl font-bold leading-tight">{tKey(def.nameKey)}</p>
-                  {owned > 0 && <p className="text-base text-bark/70">{t('workshop.youHave', { n: formatNumber(owned) })}</p>}
+                  {owned > 0 && <p className="text-base text-bark/85">{t('workshop.youHave', { n: formatNumber(owned) })}</p>}
                 </div>
               </div>
 

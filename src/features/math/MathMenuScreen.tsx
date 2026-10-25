@@ -19,7 +19,7 @@ export default function MathMenuScreen({ onPick, onBack }: { onPick: (id: Lesson
   return (
     <AppShell background="bg-gradient-to-b from-mist/60 via-cream to-moss">
       <ScreenHeader title={t('math.title')} onBack={onBack} />
-      <p className="mb-1 text-lg font-semibold text-oak">🌰 {t('regions.acornVillage')}</p>
+      <p className="mb-1 text-lg font-semibold text-wood">🌰 {t('regions.acornVillage')}</p>
       <p className="mb-4 text-xl">{t('math.chooseLesson')}</p>
 
       <ul className="grid gap-3 sm:grid-cols-2">
@@ -36,7 +36,7 @@ export default function MathMenuScreen({ onPick, onBack }: { onPick: (id: Lesson
                   <AssetIcon path={icon.assetPath} emoji={icon.emoji} size={44} />
                 </span>
                 <span>
-                  <span className="block text-sm font-semibold text-oak">{t(AREA_KEY[lesson.area])}</span>
+                  <span className="block text-sm font-semibold text-wood">{t(AREA_KEY[lesson.area])}</span>
                   <span className="block text-2xl font-bold leading-tight">{t(lessonKey(lesson.id, 'title'))}</span>
                 </span>
               </button>

@@ -22,12 +22,12 @@ export default function ItemToken({ item, badge, removed, leaving, onClick, labe
         <AssetIcon path={assetPath} emoji={emoji} size={size} />
       </span>
       {badge !== undefined && !removed && (
-        <span className="absolute -right-1 -top-1 flex h-7 min-w-7 animate-pop items-center justify-center rounded-full bg-oak px-1 text-base font-bold text-cream">
+        <span className="absolute -right-1 -top-1 flex h-7 min-w-7 animate-pop items-center justify-center rounded-full bg-wood px-1 text-base font-bold text-cream">
           {badge}
         </span>
       )}
       {removed && (
-        <span className="absolute inset-0 flex items-center justify-center text-bark/70">
+        <span className="absolute inset-0 flex items-center justify-center text-bark/85">
           <X size={36} strokeWidth={3} aria-hidden />
         </span>
       )}

@@ -19,7 +19,7 @@ export default function StageProgress({ stage }: { stage: Stage }) {
     <div className="flex items-center gap-3">
       <ol className="flex gap-1.5" aria-hidden="true">
         {STAGES.map((s, i) => (
-          <li key={s} className={`h-3 rounded-full transition-all ${i < index ? 'w-3 bg-oak' : i === index ? 'w-8 bg-oak' : 'w-3 bg-bark/15'}`} />
+          <li key={s} className={`h-3 rounded-full transition-all ${i < index ? 'w-3 bg-wood' : i === index ? 'w-8 bg-wood' : 'w-3 bg-bark/15'}`} />
         ))}
       </ol>
       <span className="text-lg font-semibold">

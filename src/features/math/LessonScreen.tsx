@@ -137,16 +137,22 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           onMoreGames={onExit}
         />
       ) : (
-        <main className="flex flex-1 flex-col gap-4">
-          <StageProgress stage={state.stage} />
-          <GuideBubble text={guide} expression={expression} />
+        // 세로 화면: 단계 → 말풍선 → 장면 → 버튼 (위에서 아래로)
+        // 높이가 낮은 가로 화면: 왼쪽에 장면, 오른쪽에 단계·말풍선·버튼
+        <main className="grid flex-1 grid-rows-[auto_auto_1fr_auto] gap-4 [grid-template-areas:'progress'_'guide'_'field'_'controls'] [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:grid-rows-[auto_1fr_auto] [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:[grid-template-areas:'field_progress'_'field_guide'_'field_controls']">
+          <div className="[grid-area:progress]">
+            <StageProgress stage={state.stage} />
+          </div>
+          <div className="[grid-area:guide]">
+            <GuideBubble text={guide} expression={expression} />
+          </div>
 
-          <section className="flex min-h-[220px] flex-1 items-center justify-center rounded-[2rem] bg-cream/60 p-4">
+          <section className="flex min-h-[220px] items-center justify-center overflow-auto rounded-[2rem] bg-cream/60 p-4 [grid-area:field] [@media(max-height:500px)]:min-h-0">
             <SceneField key={fieldKey} scene={field.scene} mode={field.mode} onDone={onFieldDone} />
           </section>
 
           {/* 아래 버튼: 단계마다 다르다 */}
-          <div>
+          <div className="[grid-area:controls]">
             {state.stage === 'observe' && nextButton(true)}
             {state.stage === 'manipulate' && nextButton(state.manipulated)}
             {state.stage === 'predict' && (

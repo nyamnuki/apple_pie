@@ -34,10 +34,13 @@ function addBundle(have: ResourceBundle, add: ResourceBundle, sign = 1): Resourc
 
 export type GameAction =
   | { type: 'completeLesson'; lesson: MathLesson }
-  | { type: 'craft'; furnitureId: string };
+  | { type: 'craft'; furnitureId: string }
+  | { type: 'reset' }; // 부모 설정에서 진행 상황 모두 지우기
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
+    case 'reset':
+      return createInitialGameState();
     case 'completeLesson': {
       const { rewards, bonus } = rewardFor(action.lesson, state);
       return {

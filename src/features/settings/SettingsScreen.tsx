@@ -1,4 +1,4 @@
-import { Languages, Save } from 'lucide-react';
+import { Languages, Save, Lock } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -6,8 +6,8 @@ import LanguagePicker from './LanguagePicker';
 import { useI18n } from '../../i18n';
 import { readSavedAt } from '../../services/storage/gameSave';
 
-// 설정 화면: 언어 선택과 저장 상태 안내. (부모 확인·시간 제한은 이후 단계)
-export default function SettingsScreen({ onBack, canSave }: { onBack: () => void; canSave: boolean }) {
+// 설정 화면: 언어 선택, 저장 상태 안내, 어른 전용 설정으로 가는 버튼
+export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: () => void; onParent: () => void; canSave: boolean }) {
   const { t, formatDateTime } = useI18n();
   const savedAt = canSave ? readSavedAt() : null;
   return (
@@ -19,7 +19,7 @@ export default function SettingsScreen({ onBack, canSave }: { onBack: () => void
           <Languages size={28} aria-hidden />
           {t('settings.language')}
         </h2>
-        <p className="mb-4 text-lg text-bark/80">{t('settings.languageHint')}</p>
+        <p className="mb-4 text-lg text-bark/85">{t('settings.languageHint')}</p>
         <LanguagePicker />
       </section>
 
@@ -29,8 +29,14 @@ export default function SettingsScreen({ onBack, canSave }: { onBack: () => void
           {t('save.title')}
         </h2>
         <p className="text-lg">{t(canSave ? 'save.savedHere' : 'save.notSaved')}</p>
-        {savedAt && <p className="mt-1 text-base text-bark/80">{t('save.lastSaved', { time: formatDateTime(savedAt) })}</p>}
+        {savedAt && <p className="mt-1 text-base text-bark/85">{t('save.lastSaved', { time: formatDateTime(savedAt) })}</p>}
       </section>
+
+      {/* 어른 전용: 곱셈 문제를 풀어야 들어갈 수 있다 */}
+      <BigButton variant="soft" className="mt-4" onClick={onParent}>
+        <Lock size={24} aria-hidden />
+        {t('parent.entry')}
+      </BigButton>
 
       <div className="mt-auto pt-6">
         <BigButton variant="soft" className="w-full" onClick={onBack}>

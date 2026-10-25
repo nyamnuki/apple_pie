@@ -20,7 +20,8 @@ type Action =
   | { type: 'move'; uid: string; gx: number; gy: number }
   | { type: 'rotate'; uid: string }
   | { type: 'remove'; uid: string }
-  | { type: 'setWallpaper'; wallpaperId: string | null };
+  | { type: 'setWallpaper'; wallpaperId: string | null }
+  | { type: 'reset' }; // 처음 방 모습으로
 
 function roomReducer(state: RoomLayout, action: Action): RoomLayout {
   switch (action.type) {
@@ -34,6 +35,8 @@ function roomReducer(state: RoomLayout, action: Action): RoomLayout {
       return { ...state, placed: state.placed.filter((p) => p.uid !== action.uid) };
     case 'setWallpaper':
       return { ...state, wallpaperId: action.wallpaperId };
+    case 'reset':
+      return DEFAULT_LAYOUT;
   }
 }
 

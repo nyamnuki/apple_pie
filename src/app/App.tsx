@@ -8,6 +8,8 @@ import MathMenuScreen from '../features/math/MathMenuScreen';
 import LessonScreen from '../features/math/LessonScreen';
 import WorkshopScreen from '../features/workshop/WorkshopScreen';
 import InventoryScreen from '../features/inventory/InventoryScreen';
+import ParentGate from '../features/settings/ParentGate';
+import ParentScreen from '../features/settings/ParentScreen';
 import type { LessonId } from '../types/math';
 import type { LoadStatus } from '../services/storage/gameSave';
 
@@ -41,7 +43,11 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
     case 'decorate':
       return <DecorateScreen onBack={() => setScreen('room')} />;
     case 'settings':
-      return <SettingsScreen onBack={() => setScreen(settingsFrom)} canSave={loadStatus !== 'unavailable'} />;
+      return <SettingsScreen onBack={() => setScreen(settingsFrom)} onParent={() => setScreen('parentGate')} canSave={loadStatus !== 'unavailable'} />;
+    case 'parentGate':
+      return <ParentGate onPass={() => setScreen('parent')} onBack={() => setScreen('settings')} />;
+    case 'parent':
+      return <ParentScreen onBack={() => setScreen('settings')} />;
     case 'math':
       return (
         <MathMenuScreen

@@ -32,7 +32,7 @@ export default function ChoiceButtons({ choices, labels, tried = [], chosen = nu
             aria-label={isTried ? t('math.a11y.triedChoice', { choice: label }) : label}
             className={`relative flex min-h-[72px] items-center justify-center gap-2 rounded-3xl px-3 py-2 font-bold shadow-pop transition-transform active:translate-y-1 active:shadow-pop-sm ${
               numeric ? 'text-4xl' : 'text-xl'
-            } ${isChosen ? 'bg-sage ring-4 ring-oak' : 'bg-cream'} ${isTried ? 'opacity-40 shadow-none line-through' : ''}`}
+            } ${isChosen ? 'bg-sage ring-4 ring-wood' : 'bg-cream'} ${isTried ? 'opacity-40 shadow-none line-through' : ''}`}
           >
             {label}
             {isTried && <X size={24} strokeWidth={3} aria-hidden className="absolute right-2 top-2" />}

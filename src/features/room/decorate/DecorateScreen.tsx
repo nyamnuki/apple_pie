@@ -28,6 +28,23 @@ const MODE_HINT: Record<Mode['kind'], TranslationKey> = {
   moving: 'decorate.hintMove',
 };
 
+// 누른 칸에 놓을 수 없으면, 바로 옆(대각선 포함)에서 놓을 수 있는 칸을 찾는다.
+// 휴대폰에서는 바닥 칸이 작아서(약 56×28px) 아이 손가락이 옆 칸을 누르기 쉽기 때문이다.
+function nearestSpot(spots: Set<string>, gx: number, gy: number): [number, number] | null {
+  if (spots.has(spotKey(gx, gy))) return [gx, gy];
+  let best: [number, number] | null = null;
+  let bestDist = Infinity;
+  for (let dy = -1; dy <= 1; dy++)
+    for (let dx = -1; dx <= 1; dx++) {
+      const dist = dx * dx + dy * dy;
+      if (dist > 0 && dist < bestDist && spots.has(spotKey(gx + dx, gy + dy))) {
+        best = [gx + dx, gy + dy];
+        bestDist = dist;
+      }
+    }
+  return best;
+}
+
 // 물건을 놓을 수 있는 모든 칸
 function findSpots(placed: PlacedFurniture[], furnitureId: string, rotation: 0 | 1, ignoreUid?: string) {
   const spots = new Set<string>();
@@ -81,15 +98,16 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
 
   // 바닥 칸을 눌렀을 때
   const tapTile = (gx: number, gy: number) => {
-    if (mode.kind === 'placing') {
-      if (!validSpots?.has(spotKey(gx, gy))) return setFlash('decorate.spotTaken');
-      const uid = newUid(mode.furnitureId);
-      dispatch({ type: 'place', item: { uid, furnitureId: mode.furnitureId, gx, gy, rotation: 0 } });
-      return change({ kind: 'selected', uid }, 'decorate.placed');
-    }
-    if (mode.kind === 'moving') {
-      if (!validSpots?.has(spotKey(gx, gy))) return setFlash('decorate.spotTaken');
-      dispatch({ type: 'move', uid: mode.uid, gx, gy });
+    if (mode.kind === 'placing' || mode.kind === 'moving') {
+      const spot = validSpots ? nearestSpot(validSpots, gx, gy) : null;
+      if (!spot) return setFlash('decorate.spotTaken');
+      const [x, y] = spot;
+      if (mode.kind === 'placing') {
+        const uid = newUid(mode.furnitureId);
+        dispatch({ type: 'place', item: { uid, furnitureId: mode.furnitureId, gx: x, gy: y, rotation: 0 } });
+        return change({ kind: 'selected', uid }, 'decorate.placed');
+      }
+      dispatch({ type: 'move', uid: mode.uid, gx: x, gy: y });
       return change({ kind: 'selected', uid: mode.uid }, 'decorate.placed');
     }
     // 빈 바닥을 누르면 선택을 푼다

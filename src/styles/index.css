@@ -15,6 +15,9 @@
   --color-mist: 200 223 232;     /* Mist Blue    #C8DFE8 */
   --color-lavender: 217 208 236; /* Lavender     #D9D0EC */
   --color-text: 89 72 60;        /* Text Brown   #59483C */
+  /* 글자·버튼용 진한 나무색: Oak Wood 는 크림색 글자와 대비가 2.95 로 부족해서
+     글자를 올리는 곳에만 이 색을 쓴다 (대비 4.6). 방·가구 그림은 원래 Oak Wood 그대로. */
+  --color-wood: 148 101 57;      /* Deep Oak     #946539 */
 }
 
 /* ===== 터치 최적화 공통 규칙 ===== */
@@ -47,7 +50,7 @@
   }
   /* 키보드로 조작할 때 지금 어디에 있는지 잘 보이게 */
   :focus-visible {
-    outline: 4px solid rgb(var(--color-oak));
+    outline: 4px solid rgb(var(--color-wood));
     outline-offset: 3px;
   }
   /* 방 그림(SVG) 안의 가구·바닥: 손가락이나 마우스로 누를 때는 테두리를 숨기고,
@@ -56,7 +59,7 @@
     outline: none;
   }
   svg [tabindex]:focus-visible {
-    outline: 4px dashed rgb(var(--color-oak));
+    outline: 4px dashed rgb(var(--color-wood));
     outline-offset: 2px;
   }
 }

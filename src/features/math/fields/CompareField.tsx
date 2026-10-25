@@ -21,7 +21,7 @@ export default function CompareField({ scene, mode, onDone }: { scene: Scene; mo
         <ItemToken key={i} item={item} onClick={makePair} label={t('math.a11y.pairItem')} />
       ))}
       {showLeftover && count > pairs && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-oak px-3 py-0.5 text-sm font-bold text-cream">{t('math.leftOver')}</span>
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-wood px-3 py-0.5 text-sm font-bold text-cream">{t('math.leftOver')}</span>
       )}
     </div>
   );
@@ -38,7 +38,7 @@ export default function CompareField({ scene, mode, onDone }: { scene: Scene; mo
           {range(pairs).map((i) => (
             <div key={i} className="flex flex-col items-center rounded-2xl bg-apricot/60 px-1 py-1">
               <ItemToken item={scene.itemA} size={40} />
-              <span className="h-2 w-1 rounded bg-oak" />
+              <span className="h-2 w-1 rounded bg-wood" />
               <ItemToken item={scene.itemB} size={40} />
             </div>
           ))}

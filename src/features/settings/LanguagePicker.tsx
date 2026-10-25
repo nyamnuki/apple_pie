@@ -26,21 +26,22 @@ export default function LanguagePicker() {
             aria-checked={selected}
             lang={code}
             onClick={() => setLocale(code)}
-            className={`flex min-h-[80px] items-center gap-4 rounded-3xl border-4 px-5 py-3 text-left transition-colors ${
+            // 좁은 화면에서는 '선택됨' 표시가 다음 줄로 내려가도록 flex-wrap
+            className={`flex min-h-[80px] min-w-0 flex-wrap items-center gap-x-4 gap-y-1 rounded-3xl border-4 px-4 py-3 text-left transition-colors ${
               selected ? 'border-oak bg-apricot shadow-pop-sm' : 'border-transparent bg-cream shadow-pop'
             }`}
           >
             <span className="text-4xl" aria-hidden>
               {label.flag}
             </span>
-            <span className="flex-1">
+            <span className="min-w-0 flex-1">
               <span className="block text-2xl font-bold">{label.native}</span>
               {/* 현재 언어로 번역한 이름 (예: 한국어 화면에서 '영어') — 같으면 생략 */}
-              {translated !== label.native && <span className="block text-base text-bark/70">{translated}</span>}
+              {translated !== label.native && <span className="block text-base text-bark/85">{translated}</span>}
             </span>
             {/* 색만으로 구분하지 않도록 체크 표시와 '선택됨' 글자도 함께 보여준다 */}
             {selected && (
-              <span className="flex items-center gap-1 rounded-full bg-oak px-3 py-1 text-base text-cream">
+              <span className="ml-auto flex items-center gap-1 rounded-full bg-wood px-3 py-1 text-base text-cream">
                 <Check size={20} strokeWidth={3} aria-hidden />
                 {t('settings.selected')}
               </span>

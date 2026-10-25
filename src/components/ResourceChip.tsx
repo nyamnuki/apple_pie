@@ -38,10 +38,10 @@ export default function ResourceChip({ id, amount, need, prefix = '', size = 'md
           </span>
         )}
       </span>
-      <span className={`font-bold tabular-nums ${big ? 'text-2xl' : 'text-lg'} ${lacking ? 'text-bark/60' : ''}`}>
+      <span className={`font-bold tabular-nums ${big ? 'text-2xl' : 'text-lg'} ${lacking ? 'text-bark/85' : ''}`}>
         {prefix}
         {formatNumber(amount)}
-        {need !== undefined && <span className="text-bark/60"> / {formatNumber(need)}</span>}
+        {need !== undefined && <span className="text-bark/85"> / {formatNumber(need)}</span>}
       </span>
     </span>
   );

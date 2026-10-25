@@ -46,7 +46,7 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
                 <ResourceChip id={r.id} amount={game.resources[r.id] ?? 0} size="lg" />
                 <span>
                   <span className="block text-lg font-semibold">{tKey(r.nameKey)}</span>
-                  <span className="block text-sm text-bark/70">
+                  <span className="block text-sm text-bark/85">
                     {getRegion(r.region).emoji} {tKey(getRegion(r.region).nameKey)}
                   </span>
                 </span>
