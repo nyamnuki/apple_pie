@@ -70,6 +70,11 @@ npm run dev      # 개발 서버 실행 → 터미널에 나오는 주소를 브
 `furniture.ts` 에 `category: 'wall'` 로 추가하고 `wallBand`(가운데 `middle` / 위쪽 `high`)와 차지하는 칸 수(`gridWidth`)를 정합니다.
 오른쪽 벽 창문 자리(2~3번 칸)의 가운데 높이에는 걸 수 없습니다 (`src/features/room/placement.ts`).
 
+### 방 배치 규칙은 한 곳에서
+방을 바꾸는 모든 동작(놓기·옮기기·돌리기·치우기·벽에 걸기·벽지)은 `src/features/room/roomState.ts` 의 `applyRoomAction` 을 거칩니다.
+방 밖, 다른 가구와 겹침, 가진 개수보다 많이 놓기, 창문 자리 같은 잘못된 요청은 상태를 전혀 바꾸지 않습니다.
+화면에서 미리 막지 못한 경우(예: 아이가 같은 칸을 아주 빠르게 두 번 누름)에도 여기서 한 번 더 막습니다.
+
 ### 효과음·배경 음악 바꾸기
 - 효과음: `src/services/audio/sound.ts` 에 소리마다 음 높이·길이가 적혀 있습니다.
 - 배경 음악: `src/services/audio/music.ts` 에 곡 2개(낮의 숲 / 밤의 숲)의 빠르기·화음·멜로디가 음 이름(`E4 - G4 …`)으로 적혀 있습니다.
@@ -139,25 +144,40 @@ docs/             배포 안내
 
 ## 테스트
 
-`npm test` 는 배포용으로 빌드한 뒤 실제 브라우저(Chromium)로 게임을 직접 조작해 확인합니다.
-처음 한 번은 테스트용 브라우저를 내려받아야 합니다:
+두 종류의 자동 테스트가 있습니다. `npm test` 는 둘 다 실행합니다.
 
 ```bash
-npx playwright install chromium
-npm test
+npm run test:unit   # 단위 테스트 (Vitest, 1초 안팎): 규칙만 빠르게 검사
+npx playwright install chromium   # 처음 한 번만: 브라우저 테스트용 브라우저 내려받기
+npm run test:e2e    # 브라우저 테스트 (Playwright): 배포용으로 빌드한 뒤 실제 브라우저로 조작
+npm test            # 둘 다
 ```
+
+**단위 테스트** (`src/**/*.test.ts`)
+
+| 파일 | 확인하는 것 |
+|---|---|
+| `src/features/math/answers.test.ts` | 정답 계산 (세기·비교·더하기·빼기·규칙·도형), 문장 속 숫자 |
+| `src/data/math/lessons.test.ts` | 레슨 6개 데이터: 선택지에 정답 포함·중복 없음, 20까지의 수 범위, 보상은 그 마을 재료, 마을 열림 조건과 레시피 재료를 실제로 얻을 수 있는지 |
+| `src/app/gameState.test.ts` | 보상 정책 (처음: 기본 + 보너스, 다시: 기본만), 가구 만들기 (재료 부족·잠긴 마을·처음부터 가진 가구는 불가), 지우기 |
+| `src/features/room/roomState.test.ts` | 방 배치 규칙: 방 밖·겹침·가진 개수 초과·같은 번호·창문 자리·같은 벽 겹침·잘못된 돌리기·옮기기는 상태를 바꾸지 않음 |
+| `src/services/storage/gameSave.test.ts` | 저장·불러오기, 버전 1→2 변환, 깨진·모르는 버전 저장본 복구와 보관, 일부만 이상한 데이터 정리, 저장이 막힌 브라우저 |
+| `src/i18n/locales.test.ts` | 영어·한국어 키 일치, 빈 문장 없음, 문장 속 `{자리}` 일치, 코드·데이터가 쓰는 키의 존재, 레슨 문장의 `{자리}`를 채울 수 있는지 |
+
+**브라우저 테스트** (`tests/*.spec.ts`)
 
 | 파일 | 확인하는 것 |
 |---|---|
 | `tests/i18n.spec.ts` | 처음엔 영어, 한국어로 즉시 전환, 다시 열어도 유지, 잘못된 값은 영어로, 한국어 화면에 영어 섞임 없음 |
 | `tests/math.spec.ts` | 놀이 4종 전체 진행, 예상 비교, 힌트 3단계, 정답, 보상 화면, 한국어 진행 |
+| `tests/moonlight.spec.ts` | 달빛 숲 잠금·열림, 규칙 찾기·도형 찾기 놀이, 달빛 숲 재료 가구, 한국어 |
 | `tests/rewards.spec.ts` | 보상 재료, 처음 보너스 1번만, 공방에서 만들기, 방에 놓기, 가방 |
 | `tests/room.spec.ts` | 놓기, 겹침 막기, 옆 칸 보정, 옮기기·돌리기·치우기, 저장 |
 | `tests/save.spec.ts` | 즉시 저장, 저장 시각 표시, 깨진/모르는 버전/일부 이상한 저장본 복구, 저장이 막힌 브라우저 |
-| `tests/moonlight.spec.ts` | 달빛 숲 잠금·열림, 규칙 찾기·도형 찾기 놀이, 달빛 숲 재료 가구, 한국어 |
-| `tests/extras.spec.ts` | 효과음·배경 음악 켜기/끄기와 유지, 달빛 숲에서 곡 바뀜, 벽 장식 걸기·옮기기·떼기, 저장 버전 1→2 변환, 도토·모모 등장 |
+| `tests/extras.spec.ts` | 효과음·배경 음악 켜기/끄기와 유지, 달빛 숲에서 곡 바뀜, 벽 장식, 저장 버전 1→2 변환, 도토·모모 등장 |
 | `tests/parent.spec.ts` | 어른 확인, 진행 상황 지우기(언어 유지), 오류 화면 |
-| `tests/layout.spec.ts` | 2개 언어 × 4개 화면 크기: 가로 넘침·글자 잘림·48px 미만 버튼 없음 |
+| `tests/regressions.spec.ts` | 고친 버그 재발 방지: 끝내기 연타 시 보상 1번, 같은 칸 연타 시 가진 개수만큼만 배치 |
+| `tests/layout.spec.ts` | 2개 언어 × 4개 화면 크기(휴대폰 세로·가로 포함): 가로 넘침·글자 잘림·48px 미만 버튼 없음 |
 
 ## 앞으로 할 수 있는 것
 

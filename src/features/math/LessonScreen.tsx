@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react';
+import { useReducer, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
@@ -60,8 +60,13 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   // 이번에 받은 보상 (보상 화면에 보여준다)
   const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; newRegion: RegionId | null } | null>(null);
 
+  // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
+  const rewarded = useRef(false);
+
   // 끝내기: 보상을 계산해 지급하고 보상 화면으로. 이 놀이로 새 마을이 열리면 함께 알려준다.
   const finish = () => {
+    if (rewarded.current) return;
+    rewarded.current = true;
     const after = game.completedLessons.includes(lesson.id) ? game.completedLessons : [...game.completedLessons, lesson.id];
     const newRegion = REGIONS.find((r) => !isRegionOpen(r.id, game.completedLessons) && isRegionOpen(r.id, after))?.id ?? null;
     setEarned({ ...rewardFor(lesson, game), newRegion });
@@ -153,7 +158,10 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           discovery={t(k('discover'))}
           newRegion={earned.newRegion}
           onWorkshop={onWorkshop}
-          onAgain={() => dispatch({ type: 'restart' })}
+          onAgain={() => {
+            rewarded.current = false; // 다시 하면 새 판
+            dispatch({ type: 'restart' });
+          }}
           onMoreGames={onExit}
         />
       ) : (

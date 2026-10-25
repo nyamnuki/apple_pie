@@ -2,7 +2,7 @@ import { FURNITURE, getFurniture } from '../../data/furniture/furniture';
 import { RESOURCES } from '../../data/resources/resources';
 import { LESSONS } from '../../data/math/lessons';
 import { createInitialGameState, type GameState } from '../../app/gameState';
-import { DEFAULT_LAYOUT } from '../../features/room/RoomProvider';
+import { DEFAULT_LAYOUT } from '../../features/room/roomState';
 import { canPlace, canPlaceWall } from '../../features/room/placement';
 import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';

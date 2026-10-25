@@ -1,7 +1,7 @@
 import { readString, writeString, isStorageAvailable } from './localStore';
 import { sanitizeGame, sanitizeRoom } from './sanitize';
 import { createInitialGameState, type GameState } from '../../app/gameState';
-import { DEFAULT_LAYOUT } from '../../features/room/RoomProvider';
+import { DEFAULT_LAYOUT } from '../../features/room/roomState';
 import type { RoomLayout } from '../../types/furniture';
 
 // ===== 게임 저장 =====

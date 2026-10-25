@@ -1,0 +1,121 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { BACKUP_KEY, SAVE_KEY, SCHEMA_VERSION, loadGame, readSavedAt, saveGame } from './gameSave';
+import { createInitialGameState } from '../../app/gameState';
+import { DEFAULT_LAYOUT } from '../../features/room/roomState';
+
+// 저장·불러오기·복구·버전 변환. 브라우저 저장소(localStorage)를 메모리로 흉내 낸다.
+class MemoryStorage {
+  data = new Map<string, string>();
+  blocked = false;
+  getItem(k: string) {
+    if (this.blocked) throw new Error('blocked');
+    return this.data.get(k) ?? null;
+  }
+  setItem(k: string, v: string) {
+    if (this.blocked) throw new DOMException('blocked', 'SecurityError');
+    this.data.set(k, v);
+  }
+  removeItem(k: string) {
+    this.data.delete(k);
+  }
+}
+let store: MemoryStorage;
+beforeEach(() => {
+  store = new MemoryStorage();
+  (globalThis as unknown as { localStorage: MemoryStorage }).localStorage = store;
+});
+const put = (value: unknown) => store.data.set(SAVE_KEY, typeof value === 'string' ? value : JSON.stringify(value));
+const v1Save = {
+  schemaVersion: 1,
+  savedAt: '2026-01-01T00:00:00Z',
+  game: { resources: { acorn: 4 }, furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 }, completedLessons: ['counting1'] },
+  room: { placed: [{ uid: 'b', furnitureId: 'leafBed', gx: 0, gy: 0, rotation: 0 }, { uid: 't', furnitureId: 'toyChest', gx: 3, gy: 3, rotation: 0 }], wallpaperId: null },
+};
+
+describe('정상', () => {
+  it('저장본이 없으면 처음 상태 (new)', () => {
+    expect(loadGame()).toEqual({ game: createInitialGameState(), room: DEFAULT_LAYOUT, status: 'new' });
+  });
+
+  it('저장한 것을 그대로 불러온다', () => {
+    const game = { ...createInitialGameState(), resources: { acorn: 2, goldenAcorn: 1 }, completedLessons: ['counting1' as const] };
+    const room = { ...DEFAULT_LAYOUT, wallItems: [{ uid: 'f', furnitureId: 'leafFrame', wall: 'left' as const, slot: 1 }] };
+    game.furniture = { ...game.furniture, leafFrame: 1 };
+    expect(saveGame(game, room)).toBe(true);
+    const saved = JSON.parse(store.data.get(SAVE_KEY)!);
+    expect(saved.schemaVersion).toBe(SCHEMA_VERSION);
+    expect(readSavedAt()).toBeInstanceOf(Date);
+    expect(loadGame()).toEqual({ game, room, status: 'loaded' });
+  });
+});
+
+describe('버전 변환', () => {
+  it('버전 1 저장본은 벽 장식을 빈 목록으로 채워 그대로 살린다', () => {
+    put(v1Save);
+    const r = loadGame();
+    expect(r.status).toBe('loaded');
+    expect(r.room.wallItems).toEqual([]);
+    expect(r.room.placed.map((p) => p.uid)).toEqual(['b', 't']);
+    expect(r.game.resources).toEqual({ acorn: 4 });
+    expect(r.game.completedLessons).toEqual(['counting1']);
+  });
+
+  it('모르는(더 새로운) 버전은 새로 시작하고 원래 내용을 보관한다', () => {
+    put({ ...v1Save, schemaVersion: 99 });
+    expect(loadGame().status).toBe('recovered');
+    expect(store.data.get(BACKUP_KEY)).toContain('"schemaVersion":99');
+  });
+});
+
+describe('손상 데이터 복구', () => {
+  it.each([['깨진 글자', '{oops'], ['객체가 아님', '42'], ['null', 'null'], ['버전 없음', '{"game":{}}']])('%s → 새로 시작 + 보관', (_, raw) => {
+    put(raw);
+    const r = loadGame();
+    expect(r.status).toBe('recovered');
+    expect(r.game).toEqual(createInitialGameState());
+    expect(store.data.get(BACKUP_KEY)).toBe(raw);
+  });
+
+  it('일부만 이상하면 그 부분만 버린다', () => {
+    put({
+      schemaVersion: 2,
+      savedAt: 'x',
+      game: { resources: { acorn: -5, apple: 3.5, goldenAcorn: 2, fake: 9 }, furniture: { toyChest: 2, unknownThing: 3, leafBed: 0, leafFrame: 1 }, completedLessons: ['counting1', 'nope', 'counting1'] },
+      room: {
+        placed: [
+          { uid: 'b', furnitureId: 'leafBed', gx: 0, gy: 0, rotation: 0 },
+          { uid: 't1', furnitureId: 'toyChest', gx: 9, gy: 9, rotation: 0 },
+          { uid: 't2', furnitureId: 'toyChest', gx: 3, gy: 3, rotation: 0 },
+          { uid: 't3', furnitureId: 'toyChest', gx: 4, gy: 4, rotation: 0 },
+          { uid: 't4', furnitureId: 'toyChest', gx: 5, gy: 5, rotation: 0 },
+          { uid: 'f', furnitureId: 'flowerPot', gx: 1, gy: 1, rotation: 0 },
+          { uid: 'r', furnitureId: 'mushroomLamp', gx: 2, gy: 0, rotation: 7 },
+        ],
+        wallItems: [
+          { uid: 'w1', furnitureId: 'leafFrame', wall: 'right', slot: 2 }, // 창문 자리
+          { uid: 'w2', furnitureId: 'leafFrame', wall: 'left', slot: 1 },
+          { uid: 'w3', furnitureId: 'leafFrame', wall: 'left', slot: 3 }, // 가진 수(1) 초과
+          { uid: 'b', furnitureId: 'acornGarland', wall: 'up', slot: 0 }, // 잘못된 벽
+        ],
+        wallpaperId: 'woodlandWallpaper', // 갖지 않음
+      },
+    });
+    const r = loadGame();
+    expect(r.status).toBe('loaded');
+    expect(r.game.resources).toEqual({ goldenAcorn: 2 });
+    expect(r.game.furniture).toEqual({ leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 2, leafFrame: 1 });
+    expect(r.game.completedLessons).toEqual(['counting1']);
+    expect(r.room.placed.map((p) => p.uid)).toEqual(['b', 't2', 't3']);
+    expect(r.room.wallItems.map((w) => w.uid)).toEqual(['w2']);
+    expect(r.room.wallpaperId).toBeNull();
+  });
+});
+
+describe('저장이 막힌 브라우저', () => {
+  it('처음 상태로 시작하고(unavailable), 저장은 실패를 알려준다', () => {
+    store.blocked = true;
+    expect(loadGame().status).toBe('unavailable');
+    expect(saveGame(createInitialGameState(), DEFAULT_LAYOUT)).toBe(false);
+    expect(readSavedAt()).toBeNull();
+  });
+});
