@@ -10,7 +10,7 @@ import type { MathScene } from '../../types/math';
 
 // 레슨 데이터 점검: 선택지에 정답이 있는지, 수의 범위, 보상과 레시피가 서로 맞는지
 
-const MAX = 20; // 현재 난이도: 20까지의 수
+const MAX = 20; // 현재 난이도: 20까지의 수 (묶어 세기만 50까지)
 
 function sizeOk(scene: MathScene): boolean {
   switch (scene.kind) {
@@ -26,6 +26,9 @@ function sizeOk(scene: MathScene): boolean {
       return scene.unit.length >= 2 && scene.shown >= scene.unit.length * 2; // 묶음이 두 번 이상 보여야 규칙을 찾을 수 있다
     case 'shapes':
       return scene.shapes.some((s) => s.shape === scene.target) && scene.shapes.some((s) => s.shape !== scene.target);
+    case 'groups':
+      // 수정 동굴: 묶어 세기는 50까지. 낱개는 묶음 하나보다 적어야 묶어 세기가 된다.
+      return scene.size >= 2 && scene.groups >= 2 && scene.ones >= 0 && scene.ones < scene.size && scene.groups * scene.size + scene.ones <= 50;
   }
 }
 

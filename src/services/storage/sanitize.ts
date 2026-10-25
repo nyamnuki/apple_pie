@@ -39,7 +39,18 @@ export function sanitizeGame(raw: unknown): GameState {
     ? [...new Set(raw.completedLessons.filter((id): id is LessonId => typeof id === 'string' && knownLessons.has(id)))]
     : [];
 
-  return { resources, furniture, completedLessons };
+  // 놀이 기록 (없거나 이상하면 그 놀이만 버린다. 예전 저장본에는 없다)
+  const rawStats = isObject(raw.lessonStats) ? raw.lessonStats : {};
+  const lessonStats: GameState['lessonStats'] = {};
+  for (const id of knownLessons as Set<LessonId>) {
+    const s = rawStats[id];
+    if (!isObject(s) || typeof s.lastPlayed !== 'string' || Number.isNaN(Date.parse(s.lastPlayed))) continue;
+    const plays = toCount(s.plays);
+    if (plays === 0) continue;
+    lessonStats[id] = { plays, firstTry: Math.min(toCount(s.firstTry), plays), hints: Math.min(toCount(s.hints), plays * 3), lastPlayed: s.lastPlayed };
+  }
+
+  return { resources, furniture, completedLessons, lessonStats };
 }
 
 export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {

@@ -15,6 +15,8 @@ export function answerOf(scene: MathScene): MathAnswer {
       return scene.unit[scene.shown % scene.unit.length];
     case 'shapes':
       return scene.shapes.filter((s) => s.shape === scene.target).length;
+    case 'groups':
+      return scene.groups * scene.size + scene.ones;
   }
 }
 
@@ -35,5 +37,7 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return vars;
     case 'shapes':
       return { ...vars, total: formatNumber(scene.shapes.length) };
+    case 'groups':
+      return { ...vars, size: formatNumber(scene.size), groups: formatNumber(scene.groups), ones: formatNumber(scene.ones), tens: formatNumber(scene.groups * scene.size) };
   }
 }

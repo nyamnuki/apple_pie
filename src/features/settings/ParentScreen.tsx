@@ -1,16 +1,17 @@
 import { useState } from 'react';
-import { ShieldCheck, BarChart3, Trash2 } from 'lucide-react';
+import { ShieldCheck, BarChart3, BookOpen, Trash2 } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
 import { useGame } from '../../app/GameProvider';
 import { useRoom } from '../room/RoomProvider';
-import { LESSONS } from '../../data/math/lessons';
+import { LESSONS, lessonKey } from '../../data/math/lessons';
+import { REGIONS } from '../../data/regions/regions';
 import { useI18n } from '../../i18n';
 
 // 부모 설정: 개인정보 안내, 진행 요약, 진행 상황 지우기 (언어 설정은 그대로 둔다)
 export default function ParentScreen({ onBack }: { onBack: () => void }) {
-  const { t, formatNumber } = useI18n();
+  const { t, tKey, formatNumber, formatDateTime } = useI18n();
   const { game, dispatch } = useGame();
   const { dispatch: roomDispatch } = useRoom();
   const [step, setStep] = useState<'idle' | 'confirm' | 'done'>('idle');
@@ -46,6 +47,41 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
             <li>{t('parent.lessonsDone', { n: formatNumber(game.completedLessons.length), total: formatNumber(LESSONS.length) })}</li>
             <li>{t('parent.furnitureOwned', { n: formatNumber(furnitureCount) })}</li>
           </ul>
+        </section>
+
+        {/* 놀이별 기록: 몇 번 했는지, 한 번에 맞혔는지, 힌트를 얼마나 봤는지 */}
+        <section aria-labelledby="lessons-h" className={card}>
+          <h2 id="lessons-h" className={heading}>
+            <BookOpen size={28} aria-hidden />
+            {t('parent.lessonsTitle')}
+          </h2>
+          <p className="mb-3 text-base">{t('parent.lessonsIntro')}</p>
+          {REGIONS.map((region) => (
+            <div key={region.id} className="mb-3 last:mb-0">
+              <h3 className="mb-1 text-xl font-bold">
+                <span aria-hidden="true">{region.emoji}</span> {tKey(region.nameKey)}
+              </h3>
+              <ul className="flex flex-col gap-2">
+                {LESSONS.filter((l) => l.region === region.id).map((lesson) => {
+                  const s = game.lessonStats[lesson.id];
+                  return (
+                    <li key={lesson.id} data-lesson={lesson.id} className="rounded-2xl bg-cream/80 px-4 py-2">
+                      <p className="text-lg font-bold">{t(lessonKey(lesson.id, 'title'))}</p>
+                      {s ? (
+                        <p className="text-base">
+                          {t('parent.stats', { plays: formatNumber(s.plays), firstTry: formatNumber(s.firstTry), hints: formatNumber(s.hints) })}
+                          <br />
+                          {t('parent.lastPlayed', { time: formatDateTime(new Date(s.lastPlayed)) })}
+                        </p>
+                      ) : (
+                        <p className="text-base">{t('parent.notPlayed')}</p>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
         </section>
 
         <section aria-labelledby="reset-h" className="rounded-[2rem] border-4 border-dashed border-bark/30 p-5">

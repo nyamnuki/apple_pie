@@ -1,10 +1,10 @@
 import { audio, existingAudio } from './sound';
 
 // ===== 배경 음악 (Web Audio API) =====
-// 음원 파일 없이 코드로 연주한다. 8마디가 끝없이 반복되는 잔잔한 곡 2개.
+// 음원 파일 없이 코드로 연주한다. 8마디가 끝없이 반복되는 잔잔한 곡 3개.
 // 멜로디는 5음 음계(도 레 미 솔 라)로만 써서 어떤 화음 위에서도 부드럽게 들린다.
 
-export type TrackId = 'day' | 'night';
+export type TrackId = 'day' | 'night' | 'cave';
 
 interface Track {
   bpm: number; // 빠르기 (1분에 4분음표 몇 번)
@@ -37,6 +37,18 @@ const TRACKS: Record<TrackId, Track> = {
     melody:
       'A4 - - C5 E5 - D5 - | C5 - A4 - - - G4 - | E4 - G4 - A4 - - - | G4 - E4 - D4 - - - | ' +
       'A4 - C5 - D5 - E5 - | D5 - C5 - A4 - - - | G4 - A4 C5 - - E4 - | D4 - - - E4 - - -',
+  },
+  // 수정 동굴: 높은 음이 물방울처럼 똑똑 떨어지는 곡 — 화음 Dm · C · Am · G 반복
+  cave: {
+    bpm: 76,
+    wave: 'sine',
+    chords: [
+      ['D3', 'F3', 'A3'], ['C3', 'E3', 'G3'], ['A2', 'C3', 'E3'], ['G2', 'B2', 'D3'],
+      ['D3', 'F3', 'A3'], ['C3', 'E3', 'G3'], ['A2', 'C3', 'E3'], ['G2', 'B2', 'D3'],
+    ],
+    melody:
+      'D5 - A4 - - - D5 E5 | C5 - - - G4 - - - | A4 - C5 - E5 - D5 - | D5 - - - - - - - | ' +
+      'A4 - D5 - E5 - G5 - | E5 - D5 - C5 - - - | A4 - C5 - D5 - A4 - | D5 - - - - - - -',
   },
 };
 

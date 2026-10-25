@@ -111,6 +111,36 @@ describe('손상 데이터 복구', () => {
   });
 });
 
+describe('놀이 기록', () => {
+  const at = '2026-10-25T09:00:00.000Z';
+  it('예전 저장본(기록 없음)은 빈 기록으로 불러온다', () => {
+    put(v1Save);
+    expect(loadGame().game.lessonStats).toEqual({});
+  });
+
+  it('맞는 기록은 살리고, 이상한 기록은 그 놀이만 버린다', () => {
+    put({
+      schemaVersion: SCHEMA_VERSION,
+      savedAt: at,
+      game: {
+        ...createInitialGameState(),
+        lessonStats: {
+          counting1: { plays: 3, firstTry: 2, hints: 1, lastPlayed: at },
+          addition1: { plays: 2, firstTry: 9, hints: 99, lastPlayed: at }, // 횟수보다 많으면 줄인다
+          comparing1: { plays: -1, firstTry: 0, hints: 0, lastPlayed: at }, // 음수
+          subtraction1: { plays: 1, firstTry: 0, hints: 0, lastPlayed: 'yesterday' }, // 날짜가 아님
+          noSuchLesson: { plays: 1, firstTry: 0, hints: 0, lastPlayed: at },
+        },
+      },
+      room: DEFAULT_LAYOUT,
+    });
+    expect(loadGame().game.lessonStats).toEqual({
+      counting1: { plays: 3, firstTry: 2, hints: 1, lastPlayed: at },
+      addition1: { plays: 2, firstTry: 2, hints: 6, lastPlayed: at },
+    });
+  });
+});
+
 describe('저장이 막힌 브라우저', () => {
   it('처음 상태로 시작하고(unavailable), 저장은 실패를 알려준다', () => {
     store.blocked = true;

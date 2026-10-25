@@ -156,6 +156,20 @@ export const FURNITURE: FurnitureDef[] = [
     unlockCondition: { type: 'recipe', cost: { moonDew: 2, glowBranch: 1 } },
     placeholder: { shape: 'lantern', color: '#C8DFE8', emoji: '🏮', height: 124 },
   },
+  {
+    id: 'crystalLamp',
+    nameKey: 'furniture.crystalLamp.name',
+    descriptionKey: 'furniture.crystalLamp.description',
+    assetPath: 'furniture/crystal-lamp.png',
+    category: 'light',
+    width: 120,
+    height: 180,
+    gridWidth: 1,
+    gridHeight: 1,
+    // 수정 동굴 재료
+    unlockCondition: { type: 'recipe', cost: { crystal: 3, glowBranch: 1 } },
+    placeholder: { shape: 'crystal', color: '#C8DFE8', emoji: '💎', height: 96 },
+  },
   // ===== 벽 장식 (방 좌표 단위 크기: 가로 100 × 칸수, 세로 = 거는 높이 띠) =====
   {
     id: 'leafFrame',
@@ -199,6 +213,35 @@ export const FURNITURE: FurnitureDef[] = [
     // 달빛 숲 재료
     unlockCondition: { type: 'recipe', cost: { glowBranch: 2, moonDew: 1 } },
     placeholder: { shape: 'starFrame', color: '#D9D0EC', emoji: '🌌', height: 0 },
+  },
+  {
+    id: 'mithrilMirror',
+    nameKey: 'furniture.mithrilMirror.name',
+    descriptionKey: 'furniture.mithrilMirror.description',
+    assetPath: 'furniture/mithril-mirror.png',
+    category: 'wall',
+    wallBand: 'middle',
+    width: 100,
+    height: 80,
+    gridWidth: 1,
+    gridHeight: 0,
+    // 수정 동굴 재료
+    unlockCondition: { type: 'recipe', cost: { mithril: 2, crystal: 1 } },
+    placeholder: { shape: 'mirror', color: '#D9D0EC', emoji: '🪞', height: 0 },
+  },
+  {
+    id: 'gemGarland',
+    nameKey: 'furniture.gemGarland.name',
+    descriptionKey: 'furniture.gemGarland.description',
+    assetPath: 'furniture/gem-garland.png',
+    category: 'wall',
+    wallBand: 'high',
+    width: 200,
+    height: 32,
+    gridWidth: 2,
+    gridHeight: 0,
+    unlockCondition: { type: 'recipe', cost: { crystal: 2, mithril: 1 } },
+    placeholder: { shape: 'gemGarland', color: '#C8DFE8', emoji: '✨', height: 0 },
   },
 ];
 

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 앱 아이콘: 크림색 토끼 루루와 나뭇잎 (가운데 80% 안에 그려서 둥근 아이콘으로 잘려도 보인다) -->
+  <rect width="512" height="512" fill="#A8C3A0"/>
+  <circle cx="256" cy="420" r="210" fill="#7FA077" opacity="0.35"/>
+  <!-- 귀 -->
+  <ellipse cx="196" cy="160" rx="38" ry="92" fill="#FFF5DF" stroke="#59483C" stroke-width="10" transform="rotate(-12 196 160)"/>
+  <ellipse cx="196" cy="166" rx="16" ry="60" fill="#F3C6D2" transform="rotate(-12 196 166)"/>
+  <ellipse cx="316" cy="160" rx="38" ry="92" fill="#FFF5DF" stroke="#59483C" stroke-width="10" transform="rotate(12 316 160)"/>
+  <ellipse cx="316" cy="166" rx="16" ry="60" fill="#F3C6D2" transform="rotate(12 316 166)"/>
+  <!-- 얼굴 -->
+  <ellipse cx="256" cy="300" rx="132" ry="118" fill="#FFF5DF" stroke="#59483C" stroke-width="10"/>
+  <circle cx="208" cy="292" r="15" fill="#59483C"/>
+  <circle cx="304" cy="292" r="15" fill="#59483C"/>
+  <circle cx="213" cy="286" r="5" fill="#FFFFFF"/>
+  <circle cx="309" cy="286" r="5" fill="#FFFFFF"/>
+  <ellipse cx="180" cy="330" rx="22" ry="13" fill="#F3C6D2"/>
+  <ellipse cx="332" cy="330" rx="22" ry="13" fill="#F3C6D2"/>
+  <path d="M238 328 Q256 346 274 328" fill="none" stroke="#59483C" stroke-width="9" stroke-linecap="round"/>
+  <!-- 잎사귀 장식 -->
+  <path d="M330 206 C372 196 396 220 392 252 C356 262 330 240 330 206 Z" fill="#7FA077" stroke="#59483C" stroke-width="8" stroke-linejoin="round"/>
+</svg>

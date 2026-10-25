@@ -11,6 +11,14 @@ export const REGIONS: RegionDef[] = [
     emoji: '🌙',
     unlock: { type: 'lessons', region: 'acornVillage', count: 2 },
   },
+  // 달빛 숲 놀이를 2개 끝내면 열린다
+  {
+    id: 'crystalCave',
+    nameKey: 'regions.crystalCave',
+    topicsKey: 'regions.topics.crystalCave',
+    emoji: '💎',
+    unlock: { type: 'lessons', region: 'moonlightForest', count: 2 },
+  },
 ];
 
 export const getRegion = (id: RegionId) => REGIONS.find((r) => r.id === id)!;

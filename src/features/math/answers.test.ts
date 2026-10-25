@@ -18,6 +18,16 @@ describe('answerOf', () => {
     expect(answerOf({ kind: 'subtract', item: 'cookie', start: 16, remove: 9 })).toBe(7);
   });
 
+  it('묶어 세기: 묶음 × 묶음 크기 + 낱개', () => {
+    expect(answerOf({ kind: 'groups', item: 'gem', size: 2, groups: 6, ones: 0 })).toBe(12);
+    expect(answerOf({ kind: 'groups', item: 'candle', size: 2, groups: 9, ones: 1 })).toBe(19);
+    expect(answerOf({ kind: 'groups', item: 'mushroom', size: 10, groups: 4, ones: 2 })).toBe(42);
+  });
+
+  it('묶어 세기 문장 속 숫자: 묶음 수·낱개·묶음으로 센 수', () => {
+    expect(sceneVars({ kind: 'groups', item: 'pebble', size: 10, groups: 2, ones: 3 }, String)).toEqual({ answer: '23', size: '10', groups: '2', ones: '3', tens: '20' });
+  });
+
   it('규칙: 되풀이 묶음에서 다음 차례', () => {
     expect(answerOf({ kind: 'pattern', unit: ['moon', 'star', 'star'], shown: 9 })).toBe('moon');
     expect(answerOf({ kind: 'pattern', unit: ['star', 'star', 'moon', 'moon'], shown: 10 })).toBe('moon');

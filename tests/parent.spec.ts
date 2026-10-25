@@ -24,11 +24,11 @@ test('어른 확인과 진행 상황 지우기 (언어는 유지)', async ({ pag
   await answer(page, true, 'Check answer');
   await answer(page, true, 'Check answer');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Grown-up settings');
-  await expect(page.getByText('Math games finished: 2 of 6')).toBeVisible();
+  await expect(page.getByText('Math games finished: 2 of 8')).toBeVisible();
 
   await page.getByRole('button', { name: 'Erase all progress' }).click();
   await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(page.getByText('Math games finished: 2 of 6')).toBeVisible();
+  await expect(page.getByText('Math games finished: 2 of 8')).toBeVisible();
 
   // 한국어로 바꾼 뒤 지우기
   await page.getByRole('button', { name: 'Go back' }).click();
@@ -65,4 +65,36 @@ test('예상 못 한 오류가 나면 안내 화면이 나오고 다시 시작�
   await page.evaluate(() => ((window as unknown as { __crash: boolean }).__crash = false));
   await page.getByRole('button', { name: 'Start again' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Math Town');
+});
+
+test('어른 설정: 놀이별 기록 (횟수·한 번에 맞힘·힌트·마지막 시각)', async ({ page, context }) => {
+  await seed(context, {
+    save: makeSave({
+      completedLessons: ['counting1'],
+      lessonStats: { counting1: { plays: 3, firstTry: 2, hints: 1, lastPlayed: '2026-10-25T09:00:00.000Z' } },
+    }),
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('button', { name: 'For grown-ups' }).click();
+  await answer(page, true, 'Check answer');
+  await answer(page, true, 'Check answer');
+
+  await expect(page.getByRole('heading', { name: 'Game by game' })).toBeVisible();
+  const counting = page.locator('[data-lesson="counting1"]');
+  await expect(counting).toContainText('Counting Apples');
+  await expect(counting).toContainText('Played 3 times · right on the first try 2 times · hints seen: 1');
+  await expect(counting).toContainText('Last played:');
+  await expect(page.locator('[data-lesson="tens1"]')).toContainText('Not played yet');
+  // 마을 3개가 모두 나온다
+  for (const name of ['Acorn Village', 'Moonlight Forest', 'Crystal Cave']) await expect(page.getByRole('heading', { name, level: 3 })).toBeVisible();
+
+  // 한국어
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('radio', { name: /한국어/ }).click();
+  await page.getByRole('button', { name: '어른 전용' }).click();
+  await answer(page, true, '답 확인');
+  await answer(page, true, '답 확인');
+  await expect(page.locator('[data-lesson="counting1"]')).toContainText('3번 함 · 한 번에 맞힘 2번 · 본 힌트 1개');
+  await expect(page.locator('[data-lesson="tens1"]')).toContainText('아직 안 했어요');
 });

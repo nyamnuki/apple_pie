@@ -39,6 +39,39 @@ function StarryFrame({ w, h }: { w: number; h: number }) {
   );
 }
 
+// 미스릴 거울: 은빛 둥근 틀 + 반짝이는 거울
+function MithrilMirror({ w, h }: { w: number; h: number }) {
+  const rx = w * 0.3;
+  const ry = h * 0.44;
+  return (
+    <g>
+      <ellipse cx={w / 2} cy={h / 2} rx={rx} ry={ry} fill="#C9CCD6" {...LINE} />
+      <ellipse cx={w / 2} cy={h / 2} rx={rx - 7} ry={ry - 7} fill="#E4F1F6" />
+      {/* 빛 반사 두 줄 */}
+      <path d={`M${w * 0.4} ${h * 0.3} l10 -6 M${w * 0.42} ${h * 0.42} l16 -10`} stroke="#FFFFFF" strokeWidth="4" strokeLinecap="round" />
+      {/* 위의 보석 */}
+      <polygon points={`${w / 2 - 6},${h / 2 - ry + 2} ${w / 2},${h / 2 - ry - 7} ${w / 2 + 6},${h / 2 - ry + 2} ${w / 2},${h / 2 - ry + 9}`} fill="#D9D0EC" {...LINE} />
+    </g>
+  );
+}
+
+// 보석 가랜드: 줄에 매달린 작은 보석들
+function GemGarland({ w, h }: { w: number; h: number }) {
+  const n = Math.round(w / 30);
+  const colors = ['#C8DFE8', '#D9D0EC', '#F3C6D2'];
+  return (
+    <g>
+      <path d={`M0 4 Q${w / 2} 20 ${w} 4`} fill="none" stroke="#9A9AA6" strokeWidth="2.5" />
+      {Array.from({ length: n }, (_, i) => {
+        const x = ((i + 0.5) / n) * w;
+        const y = 4 + Math.sin((x / w) * Math.PI) * 8;
+        const s = h * 0.32;
+        return <polygon key={i} points={`${x},${y} ${x + s * 0.7},${y + s} ${x},${y + s * 2.1} ${x - s * 0.7},${y + s}`} fill={colors[i % 3]} {...LINE} />;
+      })}
+    </g>
+  );
+}
+
 function Garland({ w, h }: { w: number; h: number }) {
   const n = Math.round(w / 34);
   const sag = (x: number) => 4 + Math.sin((x / w) * Math.PI) * 8; // 줄이 살짝 처진다
@@ -69,6 +102,10 @@ export default function WallPlaceholder({ def, w, h }: { def: FurnitureDef; w: n
       return <Garland w={w} h={h} />;
     case 'starFrame':
       return <StarryFrame w={w} h={h} />;
+    case 'mirror':
+      return <MithrilMirror w={w} h={h} />;
+    case 'gemGarland':
+      return <GemGarland w={w} h={h} />;
     default:
       return <LeafFrame w={w} h={h} />;
   }

@@ -7,10 +7,11 @@ import { isRegionOpen, regionProgress } from '../../utils/regions';
 import { useI18n } from '../../i18n';
 import type { RegionId } from '../../types/resources';
 
-// 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲)
+// 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲, 수정 동굴: 푸른 동굴)
 const CARD_STYLE: Record<RegionId, string> = {
   acornVillage: 'bg-moss',
   moonlightForest: 'bg-lavender',
+  crystalCave: 'bg-mist',
 };
 
 // 마을 지도: 가고 싶은 마을을 고른다. 잠긴 마을은 열리는 조건과 진행 정도를 보여준다.

@@ -31,7 +31,7 @@ for (const locale of ['en', 'ko'] as const) {
   for (const vp of VIEWPORTS) {
     test(`화면 배치 ${locale} ${vp.width}x${vp.height}`, async ({ browser }) => {
       const context = await browser.newContext({ viewport: vp });
-      await seed(context, { save: makeSave({ resources: { acorn: 9, apple: 6 }, furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 } }), locale });
+      await seed(context, { save: makeSave({ resources: { acorn: 9, apple: 6 }, furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 }, completedLessons: ['counting1', 'comparing1', 'patterns1', 'shapes1'] }), locale });
       const page = await context.newPage();
       const problems = collectProblems(page);
       const nav = (i: number) => page.locator('nav button').nth(i);
@@ -64,6 +64,13 @@ for (const locale of ['en', 'ko'] as const) {
       await check(page, 'math-menu');
       await page.locator('li button').first().click();
       await check(page, 'lesson');
+      // 수정 동굴의 '10씩 묶어 세기' 만져 보기 (10묶음 버튼)
+      await back();
+      await back();
+      await page.locator('ol li button').first().click(); // 지도 맨 위 = 수정 동굴
+      await page.locator('li button').last().click();
+      await page.locator('main button:has(svg.lucide-arrow-right)').click();
+      await check(page, 'lesson-groups');
       expect(problems).toEqual([]);
       await context.close();
     });

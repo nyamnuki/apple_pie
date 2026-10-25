@@ -146,6 +146,36 @@ export const LESSONS: MathLesson[] = [
     },
     applyChoices: [4, 5, 6, 7],
   },
+
+  // ===== 수정 동굴 =====
+  {
+    id: 'skipCount1',
+    rewards: { crystal: 2 },
+    firstTimeBonus: { mithril: 1 },
+    area: 'skipCounting',
+    region: 'crystalCave',
+    icon: 'gem',
+    // 2씩 뛰어 세기: 둘씩 짝지어 있으면 2, 4, 6… 으로 빨리 센다
+    explore: { kind: 'groups', item: 'gem', size: 2, groups: 6, ones: 0 }, // 12
+    predict: { kind: 'groups', item: 'bat', size: 2, groups: 8, ones: 0 }, // 16
+    predictChoices: [8, 14, 16, 18],
+    apply: { kind: 'groups', item: 'candle', size: 2, groups: 9, ones: 1 }, // 짝 9쌍 + 하나 = 19
+    applyChoices: [9, 18, 19, 20],
+  },
+  {
+    id: 'tens1',
+    rewards: { crystal: 1, mithril: 1 },
+    firstTimeBonus: { mithril: 1 },
+    area: 'placeValue',
+    region: 'crystalCave',
+    icon: 'pebble',
+    // 10씩 묶어 세기: 10묶음 몇 개 + 낱개 몇 개 (20보다 큰 수로 가는 다리)
+    explore: { kind: 'groups', item: 'pebble', size: 10, groups: 2, ones: 3 }, // 23
+    predict: { kind: 'groups', item: 'gem', size: 10, groups: 3, ones: 5 }, // 35 (53 은 자리를 바꿔 읽은 실수)
+    predictChoices: [8, 35, 53, 38],
+    apply: { kind: 'groups', item: 'mushroom', size: 10, groups: 4, ones: 2 }, // 42
+    applyChoices: [6, 24, 40, 42],
+  },
 ];
 
 export const getLesson = (id: LessonId) => LESSONS.find((l) => l.id === id)!;

@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { createInitialGameState, gameReducer, rewardFor, type GameState } from './gameState';
 import { getLesson } from '../data/math/lessons';
+import type { MathLesson } from '../types/math';
 
 // 보상과 가구 만들기 규칙
 const counting = getLesson('counting1'); // 보상: 도토리 3 + 사과 1, 처음 보너스: 황금 도토리 1
 const patterns = getLesson('patterns1'); // 달빛 숲 레슨
+const AT = '2026-10-25T09:00:00.000Z';
+const finish = (lesson: MathLesson, wrongTries = 0, at = AT) => ({ type: 'completeLesson' as const, lesson, wrongTries, at });
 
 describe('처음 상태', () => {
   it('재료 없음, 처음부터 가진 가구 4개, 끝낸 놀이 없음', () => {
@@ -19,18 +22,36 @@ describe('보상 정책', () => {
   it('처음 끝내면 기본 보상 + 처음 보너스, 다시 하면 기본 보상만', () => {
     let s = createInitialGameState();
     expect(rewardFor(counting, s)).toEqual({ rewards: { acorn: 3, apple: 1 }, bonus: { goldenAcorn: 1 } });
-    s = gameReducer(s, { type: 'completeLesson', lesson: counting });
+    s = gameReducer(s, finish(counting));
     expect(s.resources).toEqual({ acorn: 3, apple: 1, goldenAcorn: 1 });
     expect(rewardFor(counting, s)).toEqual({ rewards: { acorn: 3, apple: 1 }, bonus: {} });
-    s = gameReducer(s, { type: 'completeLesson', lesson: counting });
+    s = gameReducer(s, finish(counting));
     expect(s.resources).toEqual({ acorn: 6, apple: 2, goldenAcorn: 1 });
     expect(s.completedLessons).toEqual(['counting1']); // 같은 놀이는 한 번만 기록
   });
 
   it('놀이마다 처음 보너스는 따로 받는다', () => {
-    let s = gameReducer(createInitialGameState(), { type: 'completeLesson', lesson: counting });
-    s = gameReducer(s, { type: 'completeLesson', lesson: getLesson('addition1') });
+    let s = gameReducer(createInitialGameState(), finish(counting));
+    s = gameReducer(s, finish(getLesson('addition1')));
     expect(s.resources.goldenAcorn).toBe(2);
+  });
+});
+
+describe('놀이 기록 (부모 화면)', () => {
+  it('끝낼 때마다 횟수·한 번에 맞힘·본 힌트·마지막 시각을 쌓는다', () => {
+    let s = gameReducer(createInitialGameState(), finish(counting, 0, AT));
+    expect(s.lessonStats.counting1).toEqual({ plays: 1, firstTry: 1, hints: 0, lastPlayed: AT });
+    s = gameReducer(s, finish(counting, 2, '2026-10-26T10:00:00.000Z'));
+    expect(s.lessonStats.counting1).toEqual({ plays: 2, firstTry: 1, hints: 2, lastPlayed: '2026-10-26T10:00:00.000Z' });
+    // 힌트는 3단계까지만 있으므로 한 판에 3개까지만 센다
+    s = gameReducer(s, finish(counting, 5));
+    expect(s.lessonStats.counting1?.hints).toBe(5);
+    expect(s.lessonStats.addition1).toBeUndefined();
+  });
+
+  it('지우기 하면 기록도 사라진다', () => {
+    const s = gameReducer(gameReducer(createInitialGameState(), finish(counting)), { type: 'reset' });
+    expect(s.lessonStats).toEqual({});
   });
 });
 

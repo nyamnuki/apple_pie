@@ -32,9 +32,9 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
     setScreen('settings');
   };
 
-  // 배경 음악: 달빛 숲(놀이 고르기·놀이)은 밤의 곡, 나머지는 낮의 곡
-  const inForest = (screen === 'math' && regionId === 'moonlightForest') || (screen === 'lesson' && getLesson(lessonId).region === 'moonlightForest');
-  const track: TrackId = inForest ? 'night' : 'day';
+  // 배경 음악: 달빛 숲(놀이 고르기·놀이)은 밤의 곡, 수정 동굴은 동굴 곡, 나머지는 낮의 곡
+  const here: RegionId | null = screen === 'math' ? regionId : screen === 'lesson' ? getLesson(lessonId).region : null;
+  const track: TrackId = here === 'moonlightForest' ? 'night' : here === 'crystalCave' ? 'cave' : 'day';
 
   return (
     <>

@@ -22,6 +22,9 @@ import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 import type { CharacterId, Expression } from '../../data/characters/characters';
 
+// 안내하는 친구: 도토리 마을은 루루, 달빛 숲은 모모, 수정 동굴은 도토
+const GUIDE_OF: Record<RegionId, CharacterId> = { acornVillage: 'lulu', moonlightForest: 'momo', crystalCave: 'doto' };
+
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
 function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode: FieldMode } {
   switch (s.stage) {
@@ -72,7 +75,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     setEarned({ ...rewardFor(lesson, game), newRegion });
     play.reward();
     if (newRegion) play.unlock();
-    gameDispatch({ type: 'completeLesson', lesson });
+    gameDispatch({ type: 'completeLesson', lesson, wrongTries: state.wrong.length, at: new Date().toISOString() });
     dispatch({ type: 'next' });
   };
   const k = (part: Parameters<typeof lessonKey>[1]) => lessonKey(lessonId, part);
@@ -124,8 +127,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     }
   })();
 
-  // 안내하는 친구: 도토리 마을은 루루, 달빛 숲은 모모
-  const speaker: CharacterId = lesson.region === 'moonlightForest' ? 'momo' : 'lulu';
+  const speaker = GUIDE_OF[lesson.region];
 
   const field = fieldFor(lesson, state);
   // 장면이나 방식이 바뀌면 새로 그린다 (센 숫자 초기화)

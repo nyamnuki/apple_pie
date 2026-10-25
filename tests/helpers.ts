@@ -18,7 +18,7 @@ export async function seed(context: BrowserContext, opts: { save?: unknown; rawS
 }
 
 // 저장 데이터 하나 만들기 (기본: 처음 가구 4개, 재료 없음)
-export function makeSave(over: { resources?: object; furniture?: object; completedLessons?: string[]; placed?: object[]; wallpaperId?: string | null } = {}) {
+export function makeSave(over: { resources?: object; furniture?: object; completedLessons?: string[]; placed?: object[]; wallpaperId?: string | null; lessonStats?: object } = {}) {
   return {
     schemaVersion: 1,
     savedAt: '2026-10-25T00:00:00Z',
@@ -26,6 +26,7 @@ export function makeSave(over: { resources?: object; furniture?: object; complet
       resources: over.resources ?? {},
       furniture: over.furniture ?? { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1 },
       completedLessons: over.completedLessons ?? [],
+      ...(over.lessonStats ? { lessonStats: over.lessonStats } : {}),
     },
     room: {
       placed: over.placed ?? [
@@ -58,11 +59,13 @@ export const englishWords = (page: Page) =>
     (document.body.innerText + ' ' + [...document.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')).join(' ')).match(/[A-Za-z]{2,}/g),
   );
 
-// 경고·오류 모으기 (그림 파일이 없을 때의 404 는 정상이므로 뺀다)
+// 경고·오류 모으기 (그림 파일이 없을 때의 404 는 정상이므로 뺀다.
+// 테스트에서 서비스 워커를 막았다는 Playwright 의 안내도 앱 문제가 아니므로 뺀다)
 export function collectProblems(page: Page) {
   const problems: string[] = [];
   page.on('pageerror', (e) => problems.push(e.message));
   page.on('console', (m) => {
+    if (m.text().includes('Service Worker registration blocked by Playwright')) return;
     if (m.type() === 'warning' || (m.type() === 'error' && !m.text().includes('404'))) problems.push(m.text());
   });
   return problems;

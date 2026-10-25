@@ -7,9 +7,12 @@ export const RESOURCES: ResourceDef[] = [
   { id: 'acorn', nameKey: 'resources.acorn', region: 'acornVillage', rare: false, assetPath: 'items/res-acorn.png', placeholder: { emoji: '🌰', color: '#F5D0AD' } },
   { id: 'apple', nameKey: 'resources.apple', region: 'acornVillage', rare: false, assetPath: 'items/res-apple.png', placeholder: { emoji: '🍎', color: '#F3C6D2' } },
   { id: 'goldenAcorn', nameKey: 'resources.goldenAcorn', region: 'acornVillage', rare: true, assetPath: 'items/res-golden-acorn.png', placeholder: { emoji: '🌰', color: '#F2C94C' } },
-  // 달빛 숲 (아직 열리지 않음)
+  // 달빛 숲
   { id: 'glowBranch', nameKey: 'resources.glowBranch', region: 'moonlightForest', rare: false, assetPath: 'items/res-glow-branch.png', placeholder: { emoji: '🪄', color: '#D9D0EC' } },
   { id: 'moonDew', nameKey: 'resources.moonDew', region: 'moonlightForest', rare: true, assetPath: 'items/res-moon-dew.png', placeholder: { emoji: '💧', color: '#C8DFE8' } },
+  // 수정 동굴
+  { id: 'crystal', nameKey: 'resources.crystal', region: 'crystalCave', rare: false, assetPath: 'items/res-crystal.png', placeholder: { emoji: '💎', color: '#C8DFE8' } },
+  { id: 'mithril', nameKey: 'resources.mithril', region: 'crystalCave', rare: true, assetPath: 'items/res-mithril.png', placeholder: { emoji: '🪙', color: '#D9D0EC' } },
 ];
 
 export const getResource = (id: ResourceId) => RESOURCES.find((r) => r.id === id)!;

@@ -14,6 +14,8 @@ export default defineConfig({
     baseURL: `http://localhost:${PORT}/`,
     ...devices['Pixel 7'], // 기본은 휴대폰 크기 (테스트마다 바꿀 수 있음)
     browserName: 'chromium',
+    // 서비스 워커(인터넷 없이 실행)는 보통 테스트에서 끈다. tests/offline.spec.ts 에서만 켠다.
+    serviceWorkers: 'block',
   },
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,

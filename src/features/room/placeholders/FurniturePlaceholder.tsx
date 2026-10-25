@@ -226,6 +226,32 @@ const PAINTERS: Partial<Record<PlaceholderShape, Painter>> = {
       </g>
     );
   },
+  // 수정 등불: 돌 받침 + 빛나는 수정 세 개 (뾰족한 육각 기둥을 옆에서 본 모양)
+  crystal: (a) => {
+    const e = flatEllipse(inset(a, 0.5), 22);
+    const spikes: [number, number, number, string][] = [
+      // 가운데로부터 x 거리, 너비, 높이, 색
+      [-14, 13, 46, '#D9D0EC'],
+      [12, 12, 40, '#C8DFE8'],
+      [0, 16, 70, '#E4F1F6'],
+    ];
+    return (
+      <g>
+        <circle cx={e.cx} cy={e.cy - 36} r="34" fill="#C8DFE8" opacity="0.45" />
+        <Box area={inset(a, 0.55)} h={20} color="#9A9AA6" />
+        {spikes.map(([dx, w, h, color], i) => {
+          const x = e.cx + dx;
+          const y = e.cy + 2;
+          return (
+            <g key={i} {...LINE}>
+              <polygon points={`${x - w / 2},${y} ${x - w / 2},${y - h * 0.7} ${x},${y - h} ${x + w / 2},${y - h * 0.7} ${x + w / 2},${y}`} fill={color} />
+              <polygon points={`${x},${y} ${x},${y - h} ${x + w / 2},${y - h * 0.7} ${x + w / 2},${y}`} fill={SHADE} fillOpacity="0.14" stroke="none" />
+            </g>
+          );
+        })}
+      </g>
+    );
+  },
   // 기본 상자 (모양을 아직 정하지 않은 가구)
   box: (a) => <Box area={a} h={40} color="#D5E4C8" />,
 };

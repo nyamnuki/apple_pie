@@ -5,7 +5,8 @@ import type { ResourceBundle, RegionId } from './resources';
 export type MathItemId =
   | 'apple' | 'pear' | 'mushroom' | 'acorn' | 'leaf' | 'flower'
   | 'butterfly' | 'ladybug' | 'frog' | 'blueberry' | 'cookie'
-  | 'moon' | 'star' | 'owl';
+  | 'moon' | 'star' | 'owl'
+  | 'gem' | 'pebble' | 'bat' | 'candle';
 
 // 도형 종류와 도형 하나의 모습 (크기·색·돌림이 달라도 같은 도형이다)
 export type ShapeId = 'circle' | 'square' | 'triangle';
@@ -17,7 +18,7 @@ export interface ShapeSpec {
 }
 
 // 학습 영역
-export type MathArea = 'counting' | 'comparing' | 'addition' | 'subtraction' | 'patterns' | 'shapes';
+export type MathArea = 'counting' | 'comparing' | 'addition' | 'subtraction' | 'patterns' | 'shapes' | 'skipCounting' | 'placeValue';
 
 // 한 장면의 수량 정보 — 언어와 상관없이 같은 값을 쓴다.
 export type MathScene =
@@ -26,7 +27,9 @@ export type MathScene =
   | { kind: 'add'; item: MathItemId; start: number; add: number } // start 개에 add 개를 더한다
   | { kind: 'subtract'; item: MathItemId; start: number; remove: number } // start 개에서 remove 개를 뺀다
   | { kind: 'pattern'; unit: MathItemId[]; shown: number } // unit 을 되풀이해 shown 개 보여주고, 다음 것을 맞힌다
-  | { kind: 'shapes'; target: ShapeId; shapes: ShapeSpec[] }; // 여러 도형 중 target 도형의 개수를 센다
+  | { kind: 'shapes'; target: ShapeId; shapes: ShapeSpec[] } // 여러 도형 중 target 도형의 개수를 센다
+  // size 개씩 묶인 묶음 groups 개와 낱개 ones 개를 묶음째로 센다 (2씩 뛰어 세기, 10씩 묶어 세기)
+  | { kind: 'groups'; item: MathItemId; size: number; groups: number; ones: number };
 
 // 답: 숫자, 비교 문제의 'A 쪽이 많다 / B 쪽이 많다 / 똑같다', 또는 규칙 문제의 물건
 export type MathAnswer = number | 'a' | 'b' | 'same' | MathItemId;
@@ -55,7 +58,7 @@ export interface MathLesson {
 }
 
 // 놀이 id 목록 (언어 파일의 lessons.<id> 와 같아야 한다)
-export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1';
+export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1';
 
 // 놀이마다 언어 파일에 있어야 하는 문장들
 export type LessonTextPart =

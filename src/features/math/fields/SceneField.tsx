@@ -4,6 +4,7 @@ import AddField from './AddField';
 import SubtractField from './SubtractField';
 import PatternField from './PatternField';
 import ShapesField from './ShapesField';
+import GroupsField from './GroupsField';
 import type { FieldMode } from './useSequence';
 import type { MathScene } from '../../../types/math';
 
@@ -22,5 +23,7 @@ export default function SceneField({ scene, mode, onDone }: { scene: MathScene; 
       return <PatternField scene={scene} mode={mode} onDone={onDone} />;
     case 'shapes':
       return <ShapesField scene={scene} mode={mode} onDone={onDone} />;
+    case 'groups':
+      return <GroupsField scene={scene} mode={mode} onDone={onDone} />;
   }
 }
