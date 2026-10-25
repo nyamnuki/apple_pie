@@ -15,11 +15,11 @@ export const LESSONS: MathLesson[] = [
     area: 'counting',
     region: 'acornVillage',
     icon: 'apple',
-    explore: { kind: 'count', item: 'apple', total: 5 },
-    predict: { kind: 'count', item: 'pear', total: 6 },
-    predictChoices: [4, 5, 6, 7],
-    apply: { kind: 'count', item: 'mushroom', total: 7 },
-    applyChoices: [5, 6, 7, 8],
+    explore: { kind: 'count', item: 'apple', total: 10 },
+    predict: { kind: 'count', item: 'pear', total: 13 },
+    predictChoices: [12, 13, 14, 15],
+    apply: { kind: 'count', item: 'mushroom', total: 17 },
+    applyChoices: [15, 16, 17, 18],
   },
   {
     id: 'comparing1',
@@ -28,11 +28,11 @@ export const LESSONS: MathLesson[] = [
     area: 'comparing',
     region: 'acornVillage',
     icon: 'acorn',
-    explore: { kind: 'compare', itemA: 'acorn', itemB: 'leaf', a: 3, b: 5 },
-    predict: { kind: 'compare', itemA: 'flower', itemB: 'butterfly', a: 4, b: 4 },
+    explore: { kind: 'compare', itemA: 'acorn', itemB: 'leaf', a: 7, b: 9 },
+    predict: { kind: 'compare', itemA: 'flower', itemB: 'butterfly', a: 8, b: 8 },
     predictChoices: ['a', 'b', 'same'],
     predictLabels: { a: 'lessons.comparing1.predictA', b: 'lessons.comparing1.predictB' },
-    apply: { kind: 'compare', itemA: 'blueberry', itemB: 'cookie', a: 6, b: 4 },
+    apply: { kind: 'compare', itemA: 'blueberry', itemB: 'cookie', a: 11, b: 9 },
     applyChoices: ['a', 'b', 'same'],
     applyLabels: { a: 'lessons.comparing1.applyA', b: 'lessons.comparing1.applyB' },
   },
@@ -43,11 +43,12 @@ export const LESSONS: MathLesson[] = [
     area: 'addition',
     region: 'acornVillage',
     icon: 'flower',
-    explore: { kind: 'add', item: 'flower', start: 3, add: 2 },
-    predict: { kind: 'add', item: 'ladybug', start: 4, add: 2 },
-    predictChoices: [5, 6, 7, 8],
-    apply: { kind: 'add', item: 'frog', start: 2, add: 3 },
-    applyChoices: [4, 5, 6, 7],
+    // 10을 넘는 덧셈: 처음 수에서 이어 세기
+    explore: { kind: 'add', item: 'flower', start: 8, add: 5 },
+    predict: { kind: 'add', item: 'ladybug', start: 9, add: 4 },
+    predictChoices: [11, 12, 13, 14],
+    apply: { kind: 'add', item: 'frog', start: 8, add: 7 },
+    applyChoices: [13, 14, 15, 16],
   },
   {
     id: 'subtraction1',
@@ -56,11 +57,12 @@ export const LESSONS: MathLesson[] = [
     area: 'subtraction',
     region: 'acornVillage',
     icon: 'blueberry',
-    explore: { kind: 'subtract', item: 'blueberry', start: 5, remove: 2 },
-    predict: { kind: 'subtract', item: 'butterfly', start: 6, remove: 2 },
-    predictChoices: [2, 3, 4, 5],
-    apply: { kind: 'subtract', item: 'cookie', start: 5, remove: 1 },
-    applyChoices: [3, 4, 5, 6],
+    // 10보다 큰 수에서 빼기
+    explore: { kind: 'subtract', item: 'blueberry', start: 12, remove: 5 },
+    predict: { kind: 'subtract', item: 'butterfly', start: 14, remove: 6 },
+    predictChoices: [6, 7, 8, 9],
+    apply: { kind: 'subtract', item: 'cookie', start: 16, remove: 9 },
+    applyChoices: [5, 6, 7, 8],
   },
 
   // ===== 달빛 숲 =====
@@ -71,11 +73,11 @@ export const LESSONS: MathLesson[] = [
     area: 'patterns',
     region: 'moonlightForest',
     icon: 'moon',
-    explore: { kind: 'pattern', unit: ['moon', 'star'], shown: 6 }, // 달 별 달 별 달 별 → 달
-    predict: { kind: 'pattern', unit: ['star', 'star', 'moon'], shown: 6 }, // 별 별 달 별 별 달 → 별
+    explore: { kind: 'pattern', unit: ['moon', 'star', 'star'], shown: 9 }, // 달 별 별 ×3 → 달
+    predict: { kind: 'pattern', unit: ['star', 'star', 'moon', 'moon'], shown: 10 }, // 별 별 달 달 별 별 달 달 별 별 → 달
     predictChoices: ['star', 'moon', 'owl'],
-    apply: { kind: 'pattern', unit: ['leaf', 'mushroom', 'acorn'], shown: 6 }, // 잎 버섯 도토리 ×2 → 잎
-    applyChoices: ['leaf', 'mushroom', 'acorn'],
+    apply: { kind: 'pattern', unit: ['leaf', 'mushroom', 'acorn', 'owl'], shown: 10 }, // 잎 버섯 도토리 부엉이 ×2 + 잎 버섯 → 도토리
+    applyChoices: ['leaf', 'mushroom', 'acorn', 'owl'],
   },
   {
     id: 'shapes1',
@@ -84,20 +86,24 @@ export const LESSONS: MathLesson[] = [
     area: 'shapes',
     region: 'moonlightForest',
     icon: 'star',
-    // 동그라미 3개 (크기·색이 다르다)
+    // 동그라미 5개 (크기·색이 다르다)
     explore: {
       kind: 'shapes',
       target: 'circle',
       shapes: [
         { shape: 'circle', color: '#A8C3A0', size: 1.1 },
         { shape: 'square', color: '#F5D0AD', size: 0.9 },
-        { shape: 'circle', color: '#F3C6D2', size: 0.65 },
+        { shape: 'circle', color: '#F3C6D2', size: 0.6 },
         { shape: 'triangle', color: '#C8DFE8', size: 1 },
         { shape: 'circle', color: '#D9D0EC', size: 0.85 },
-        { shape: 'square', color: '#A8C3A0', size: 0.7 },
+        { shape: 'square', color: '#A8C3A0', size: 0.7, rotate: 20 },
+        { shape: 'triangle', color: '#F3C6D2', size: 0.75, rotate: 180 },
+        { shape: 'circle', color: '#F5D0AD', size: 1 },
+        { shape: 'square', color: '#C8DFE8', size: 0.65 },
+        { shape: 'circle', color: '#C8DFE8', size: 0.7 },
       ],
     },
-    // 세모 4개 (하나는 돌아가 있다)
+    // 세모 6개 (여러 개가 돌아가 있다)
     predict: {
       kind: 'shapes',
       target: 'triangle',
@@ -110,10 +116,14 @@ export const LESSONS: MathLesson[] = [
         { shape: 'circle', color: '#F3C6D2', size: 1 },
         { shape: 'square', color: '#F5D0AD', size: 0.65 },
         { shape: 'triangle', color: '#D9D0EC', size: 0.85, rotate: 90 },
+        { shape: 'circle', color: '#A8C3A0', size: 0.6 },
+        { shape: 'triangle', color: '#C8DFE8', size: 0.6, rotate: 30 },
+        { shape: 'square', color: '#A8C3A0', size: 0.8, rotate: 15 },
+        { shape: 'triangle', color: '#F5D0AD', size: 0.9, rotate: 270 },
       ],
     },
-    predictChoices: [3, 4, 5, 6],
-    // 네모 3개 (하나는 45도 돌아가 있다)
+    predictChoices: [5, 6, 7, 8],
+    // 네모 5개 (45도 돌아간 것 2개 포함)
     apply: {
       kind: 'shapes',
       target: 'square',
@@ -127,9 +137,14 @@ export const LESSONS: MathLesson[] = [
         { shape: 'square', color: '#A8C3A0', size: 0.6 },
         { shape: 'triangle', color: '#F5D0AD', size: 0.7 },
         { shape: 'circle', color: '#D9D0EC', size: 1.05 },
+        { shape: 'square', color: '#F5D0AD', size: 0.85, rotate: 15 },
+        { shape: 'triangle', color: '#C8DFE8', size: 0.65, rotate: 90 },
+        { shape: 'circle', color: '#F3C6D2', size: 0.75 },
+        { shape: 'square', color: '#D9D0EC', size: 0.7, rotate: 45 },
+        { shape: 'triangle', color: '#A8C3A0', size: 0.95, rotate: 30 },
       ],
     },
-    applyChoices: [2, 3, 4, 5],
+    applyChoices: [4, 5, 6, 7],
   },
 ];
 

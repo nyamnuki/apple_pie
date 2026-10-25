@@ -13,7 +13,7 @@ test('도토리 마을 놀이 2개를 끝내면 달빛 숲이 열린다', async 
   await expect(forest).toContainText('Finish 2 games in Acorn Village to open it. (1/2)');
 
   await goToRegion(page, /^Acorn Village/);
-  await playLesson(page, /Taking Away/, 'Take this one away', '4');
+  await playLesson(page, /Taking Away/, 'Take this one away', '7');
   await expect(page.getByRole('status')).toHaveText(/A new place opened: Moonlight Forest!/);
 
   await page.getByRole('button', { name: 'More games' }).click();
@@ -32,11 +32,11 @@ test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) 
   await page.getByRole('button', { name: /What Comes Next\?/ }).click();
   const choices = page.getByRole('group', { name: 'Answer choices' });
 
-  await expect(guide(page)).toHaveText('Look at the night sky: moon, star, moon, star… What comes next?');
+  await expect(guide(page)).toHaveText('Look at the night sky: moon, star, star, moon, star, star… What comes next?');
   await expect(page.getByRole('img', { name: 'What comes next?' })).toBeVisible(); // '?' 자리
   await page.getByRole('button', { name: 'Next' }).click();
 
-  // 만져 보기: 하나씩 말하기 (6번)
+  // 만져 보기: 하나씩 말하기 (9번)
   let taps = 0;
   const say = page.getByRole('button', { name: /Say the next one/ });
   await expect(say.first()).toHaveAccessibleName('Say the next one: Moon');
@@ -44,26 +44,27 @@ test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) 
     await say.first().click();
     taps++;
   }
-  expect(taps).toBe(6);
-  await expect(guide(page)).toHaveText('Moon, star — moon, star! The same part keeps repeating, so a moon comes next.');
+  expect(taps).toBe(9);
+  await expect(guide(page)).toHaveText('Moon, star, star — moon, star, star! The same part keeps repeating, so a moon comes next.');
   await page.getByRole('button', { name: 'Next' }).click();
 
-  // 예상: 그림 답 버튼 (별·달·부엉이) — 일부러 달
+  // 예상: 그림 답 버튼 (별·달·부엉이) — 일부러 별
   for (const [i, name] of ['Star', 'Moon', 'Owl'].entries()) await expect(choices.getByRole('button').nth(i)).toHaveAccessibleName(name);
-  await choices.getByRole('button', { name: 'Moon' }).click();
+  await choices.getByRole('button', { name: 'Star' }).click();
   await waitLastButtonEnabled(page);
-  await expect(guide(page)).toHaveText(/A star comes next! Good guess!/);
+  await expect(guide(page)).toHaveText(/After star, star comes a moon! Good guess!/);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 
   // 해 보기: 힌트 1, 2 → 정답
-  await expect(guide(page)).toHaveText('Leaf, mushroom, acorn… Which one comes next?');
+  await expect(guide(page)).toHaveText('Leaf, mushroom, acorn, owl… Which one comes next?');
+  await expect(choices.getByRole('button')).toHaveCount(4);
   await choices.getByRole('button', { name: 'Mushroom' }).click();
-  await expect(guide(page)).toHaveText("Let's try another way! Look carefully. Which three things keep repeating?");
-  await choices.getByRole('button', { name: 'Acorn' }).click();
-  await expect(page.getByRole('button', { name: /Say the next one/ }).first()).toBeVisible(); // 힌트 2: 직접 해 보기
+  await expect(guide(page)).toHaveText("Let's try another way! Look carefully. Which four things keep repeating?");
   await choices.getByRole('button', { name: 'Leaf' }).click();
-  await expect(guide(page)).toHaveText('Yes! Leaf, mushroom, acorn — then a leaf again!');
+  await expect(page.getByRole('button', { name: /Say the next one/ }).first()).toBeVisible(); // 힌트 2: 직접 해 보기
+  await choices.getByRole('button', { name: 'Acorn' }).click();
+  await expect(guide(page)).toHaveText('Yes! Leaf, mushroom — and then an acorn!');
 
   await page.getByRole('button', { name: 'Finish' }).click();
   await expect(page.getByRole('img', { name: 'Glow Branch +2' })).toBeVisible();
@@ -84,24 +85,24 @@ test('놀이: 도형 찾기 (다른 도형을 누르면 흔들리기만 한다)'
   await expect(page.getByRole('status', { name: 'Count: 0' })).toBeVisible(); // 세지 않음
   const circle = page.getByRole('button', { name: 'Circle' });
   while (await circle.count()) await circle.first().click();
-  await expect(guide(page)).toHaveText('You found 3 circles! Their sizes and colors are different, but they are all round.');
+  await expect(guide(page)).toHaveText('You found 5 circles! Their sizes and colors are different, but they are all round.');
   await page.getByRole('button', { name: 'Next' }).click();
 
   const choices = page.getByRole('group', { name: 'Answer choices' });
-  await choices.getByRole('button', { name: '3', exact: true }).click();
+  await choices.getByRole('button', { name: '5', exact: true }).click();
   await waitLastButtonEnabled(page);
-  await expect(guide(page)).toHaveText(/There are 4! Even the turned ones are triangles\./);
+  await expect(guide(page)).toHaveText(/There are 6! Even the turned ones are triangles\./);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 
   await choices.getByRole('button', { name: '4', exact: true }).click();
   await expect(guide(page)).toContainText('A square has 4 straight sides');
-  await choices.getByRole('button', { name: '2', exact: true }).click();
+  await choices.getByRole('button', { name: '6', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Square' }).first()).toBeVisible(); // 힌트 2: 직접 찾아보기
-  await choices.getByRole('button', { name: '5', exact: true }).click();
+  await choices.getByRole('button', { name: '7', exact: true }).click();
   await expect(guide(page)).toHaveText("Let's try another way! Let's find the squares together.");
-  await choices.getByRole('button', { name: '3', exact: true }).click();
-  await expect(guide(page)).toHaveText('Yes! There are 3 squares — even the turned one!');
+  await choices.getByRole('button', { name: '5', exact: true }).click();
+  await expect(guide(page)).toHaveText('Yes! There are 5 squares — even the turned ones!');
 });
 
 test('달빛 숲이 열리면 달빛 숲 재료 가구를 만들 수 있다', async ({ page, context }) => {
@@ -127,6 +128,6 @@ test('한국어: 지도와 규칙 찾기 놀이', async ({ page, context }) => {
   await goToRegion(page, /^달빛 숲/);
   expect(await englishWords(page)).toBeNull();
   await page.getByRole('button', { name: /다음에 올 것은\?/ }).click();
-  await expect(guide(page)).toHaveText('밤하늘을 봐요. 달, 별, 달, 별… 다음엔 무엇이 올까요?');
+  await expect(guide(page)).toHaveText('밤하늘을 봐요. 달, 별, 별, 달, 별, 별… 다음엔 무엇이 올까요?');
   expect(await englishWords(page)).toBeNull();
 });

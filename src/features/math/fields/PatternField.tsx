@@ -13,6 +13,7 @@ const CHUNK_BG = ['bg-moss', 'bg-lavender'];
 // 묶음 안의 순서(1, 2, …)가 붙는다. 다 누르면 '?' 자리에 다음 것이 나타난다.
 export default function PatternField({ scene, mode, onDone }: { scene: Scene; mode: FieldMode; onDone?: () => void }) {
   const { t, tKey, formatNumber } = useI18n();
+  const compact = scene.shown > 8; // 물건이 많으면 조금 작게
   const L = scene.unit.length;
   const seq = range(scene.shown).map((i) => scene.unit[i % L]);
   const { picked, pick, finished } = useSequence({ steps: scene.shown, mode, demoOrder: range(scene.shown), onDone });
@@ -29,12 +30,12 @@ export default function PatternField({ scene, mode, onDone }: { scene: Scene; mo
         return (
           <span key={i} className={`rounded-2xl p-0.5 transition-colors ${chunkDone ? CHUNK_BG[Math.floor(i / L) % 2] : ''}`}>
             <ItemToken
+              compact={compact}
               item={item}
               badge={said ? formatNumber((i % L) + 1) : undefined}
               // 어느 것을 눌러도 다음 차례의 물건을 말한다 (순서대로 말하기)
               onClick={mode === 'interactive' && !finished ? () => pick(count) : undefined}
               label={t('math.a11y.sayItem', { name: tKey(itemNameKey(seq[count] ?? item)) })}
-              size={44}
             />
           </span>
         );
@@ -42,12 +43,12 @@ export default function PatternField({ scene, mode, onDone }: { scene: Scene; mo
       {/* 다음에 올 자리 */}
       <span className="rounded-2xl p-0.5">
         {reveal ? (
-          <ItemToken item={next} badge={formatNumber((scene.shown % L) + 1)} size={44} />
+          <ItemToken compact={compact} item={next} badge={formatNumber((scene.shown % L) + 1)} />
         ) : (
           <span
             role="img"
             aria-label={t('math.a11y.nextSlot')}
-            className="flex h-16 w-16 items-center justify-center rounded-2xl border-4 border-dashed border-wood/60 text-3xl font-bold text-wood"
+            className={`flex ${compact ? 'h-12 w-12' : 'h-16 w-16'} items-center justify-center rounded-2xl border-4 border-dashed border-wood/60 text-3xl font-bold text-wood`}
           >
             ?
           </span>

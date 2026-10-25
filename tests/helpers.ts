@@ -97,10 +97,10 @@ export async function playCountingApples(page: Page, fromMenu = true) {
   while (await apple.count()) await apple.first().click();
   await waitLastButtonEnabled(page);
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: '6', exact: true }).click();
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: '12', exact: true }).click();
   await waitLastButtonEnabled(page);
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
-  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: '7', exact: true }).click();
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: '17', exact: true }).click();
   await page.getByRole('button', { name: 'Finish' }).click();
 }

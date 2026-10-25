@@ -9,6 +9,7 @@ type Scene = Extract<MathScene, { kind: 'subtract' }>;
 // 빼기: 물건을 눌러 덜어 내고, 다 덜어 내면 남은 물건에 숫자를 붙여 센다
 export default function SubtractField({ scene, mode, onDone }: { scene: Scene; mode: FieldMode; onDone?: () => void }) {
   const { t, formatNumber } = useI18n();
+  const compact = scene.start > 10; // 물건이 많으면 조금 작게
   const all = range(scene.start);
   // 자동 진행할 때는 끝에서부터 덜어 낸다
   const { picked, pick, finished } = useSequence({ steps: scene.remove, mode, demoOrder: [...all].reverse(), onDone });
@@ -22,6 +23,7 @@ export default function SubtractField({ scene, mode, onDone }: { scene: Scene; m
           const leftIndex = remaining.indexOf(i);
           return (
             <ItemToken
+              compact={compact}
               key={i}
               item={scene.item}
               removed={removed}

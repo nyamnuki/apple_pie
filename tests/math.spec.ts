@@ -18,16 +18,16 @@ interface Case {
 
 const CASES: Case[] = [
   {
-    title: 'Counting Apples', tap: 'Count this one', taps: 5,
+    title: 'Counting Apples', tap: 'Count this one', taps: 10,
     observe: "Look at the apples. Let's count them together!",
-    manipulateDone: 'The last number we said was 5. So there are 5 apples!',
-    guess: '4', verifyStart: "Let's count them one by one… There are 6 pears!",
-    wrong: ['5', '6', '8'], right: '7',
+    manipulateDone: 'The last number we said was 10. So there are 10 apples!',
+    guess: '12', verifyStart: "Let's count them one by one… There are 13 pears!",
+    wrong: ['15', '16', '18'], right: '17',
     hints: ['Look carefully. Did you count every mushroom just once?', 'Tap each mushroom to count it. Watch the numbers!', "Let's count together, one by one."],
-    correct: 'Yes! There are 7 mushrooms.',
+    correct: 'Yes! There are 17 mushrooms.',
   },
   {
-    title: 'Which Has More?', tap: 'Make a pair', taps: 3,
+    title: 'Which Has More?', tap: 'Make a pair', taps: 7,
     observe: 'Here are some acorns and some leaves. Which group has more?',
     manipulateDone: 'Some leaves have no partner. They are left over, so there are more leaves!',
     guess: "They're the same", verifyStart: "Let's make pairs… Every flower has a butterfly partner.",
@@ -36,22 +36,22 @@ const CASES: Case[] = [
     correct: 'Yes! Some blueberries are left over, so there are more blueberries.',
   },
   {
-    title: 'Adding More', tap: 'Add this one', taps: 2,
-    observe: 'There are 3 flowers in the pot. 2 more flowers are waiting!',
-    manipulateDone: '3 flowers and 2 more make 5 flowers!',
-    guess: '7', verifyStart: 'Here they come! Start at 4 and count on… 6 ladybugs!',
-    wrong: ['4', '6', '7'], right: '5',
+    title: 'Adding More', tap: 'Add this one', taps: 5,
+    observe: 'There are 8 flowers in the pot. 5 more flowers are waiting!',
+    manipulateDone: '8 flowers and 5 more make 13 flowers!',
+    guess: '11', verifyStart: 'Here they come! Start at 9 and count on… 13 ladybugs!',
+    wrong: ['13', '14', '16'], right: '15',
     hints: ['Look carefully. How many frogs are on the log at the start?', 'Tap each frog that is hopping over. Count on as they join!', "Let's add them together, one by one."],
-    correct: 'Yes! 2 and 3 make 5 frogs.',
+    correct: 'Yes! 8 and 7 make 15 frogs.',
   },
   {
-    title: 'Taking Away', tap: 'Take this one away', taps: 2,
-    observe: 'There are 5 blueberries. Lulu is hungry and wants to eat 2!',
-    manipulateDone: 'We took away 2. Now there are 3 blueberries left!',
-    guess: '4', verifyStart: "Off they go! Let's count the ones still here… 4 butterflies are left!",
-    wrong: ['3', '5', '6'], right: '4',
-    hints: ['Look carefully. How many cookies will Lulu eat?', 'Tap the cookie Lulu eats, then count the cookies that are left.', "Let's take it away together and count what is left."],
-    correct: 'Yes! 5 take away 1 leaves 4 cookies.',
+    title: 'Taking Away', tap: 'Take this one away', taps: 5,
+    observe: 'There are 12 blueberries. Lulu is hungry and wants to eat 5!',
+    manipulateDone: 'We took away 5. Now there are 7 blueberries left!',
+    guess: '7', verifyStart: "Off they go! Let's count the ones still here… 8 butterflies are left!",
+    wrong: ['5', '6', '8'], right: '7',
+    hints: ['Look carefully. How many cookies will Lulu eat?', 'Tap the cookies Lulu eats, then count the cookies that are left.', "Let's take them away together and count what is left."],
+    correct: 'Yes! 16 take away 9 leaves 7 cookies.',
   },
 ];
 
@@ -110,9 +110,9 @@ test('한국어로도 놀이가 자연스럽게 진행된다 (빼기)', async ({
   await page.getByRole('button', { name: '놀이하기' }).click();
   await goToRegion(page, /^도토리 마을/);
   await page.getByRole('button', { name: /빼기/ }).click();
-  await expect(guide(page)).toHaveText('블루베리가 5개 있어요. 배고픈 루루가 2개를 먹고 싶대요!');
+  await expect(guide(page)).toHaveText('블루베리가 12개 있어요. 배고픈 루루가 5개를 먹고 싶대요!');
   await page.getByRole('button', { name: '다음' }).click();
   const item = page.getByRole('button', { name: '이것 덜어 내기' });
   while (await item.count()) await item.first().click();
-  await expect(guide(page)).toHaveText('2개를 덜어 냈어요. 이제 블루베리가 3개 남았어요!');
+  await expect(guide(page)).toHaveText('5개를 덜어 냈어요. 이제 블루베리가 7개 남았어요!');
 });

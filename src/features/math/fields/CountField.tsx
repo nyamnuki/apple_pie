@@ -9,6 +9,7 @@ type Scene = Extract<MathScene, { kind: 'count' }>;
 // 수 세기: 물건을 하나씩 누르면 센 순서대로 숫자가 붙는다
 export default function CountField({ scene, mode, onDone }: { scene: Scene; mode: FieldMode; onDone?: () => void }) {
   const { t, formatNumber } = useI18n();
+  const compact = scene.total > 10; // 물건이 많으면 조금 작게
   const order = range(scene.total);
   const { picked, pick } = useSequence({ steps: scene.total, mode, demoOrder: order, onDone });
 
@@ -19,6 +20,7 @@ export default function CountField({ scene, mode, onDone }: { scene: Scene; mode
           const n = picked.indexOf(i);
           return (
             <ItemToken
+              compact={compact}
               key={i}
               item={scene.item}
               badge={n >= 0 ? formatNumber(n + 1) : undefined}

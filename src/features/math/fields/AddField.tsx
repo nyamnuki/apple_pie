@@ -10,6 +10,7 @@ type Scene = Extract<MathScene, { kind: 'add' }>;
 // 더하기: 처음 묶음(왼쪽)에 기다리는 물건(오른쪽)을 하나씩 옮기며 이어 센다
 export default function AddField({ scene, mode, onDone }: { scene: Scene; mode: FieldMode; onDone?: () => void }) {
   const { t, formatNumber } = useI18n();
+  const compact = scene.start + scene.add > 10; // 물건이 많으면 조금 작게
   const { picked, pick } = useSequence({ steps: scene.add, mode, demoOrder: range(scene.add), onDone });
   const showNumbers = mode !== 'static';
 
@@ -19,10 +20,10 @@ export default function AddField({ scene, mode, onDone }: { scene: Scene; mode: 
         {/* 처음 묶음 + 옮겨 온 물건 */}
         <div className="flex min-h-[88px] max-w-xs flex-wrap justify-center gap-2 rounded-3xl bg-moss/70 p-3">
           {range(scene.start).map((i) => (
-            <ItemToken key={`s${i}`} item={scene.item} badge={showNumbers ? formatNumber(i + 1) : undefined} />
+            <ItemToken compact={compact} key={`s${i}`} item={scene.item} badge={showNumbers ? formatNumber(i + 1) : undefined} />
           ))}
           {picked.map((i, n) => (
-            <ItemToken key={`a${i}`} item={scene.item} badge={formatNumber(scene.start + n + 1)} />
+            <ItemToken compact={compact} key={`a${i}`} item={scene.item} badge={formatNumber(scene.start + n + 1)} />
           ))}
         </div>
 
@@ -34,7 +35,7 @@ export default function AddField({ scene, mode, onDone }: { scene: Scene; mode: 
               {range(scene.add)
                 .filter((i) => !picked.includes(i))
                 .map((i) => (
-                  <ItemToken key={`w${i}`} item={scene.item} onClick={mode === 'interactive' ? () => pick(i) : undefined} label={t('math.a11y.addItem')} />
+                  <ItemToken compact={compact} key={`w${i}`} item={scene.item} onClick={mode === 'interactive' ? () => pick(i) : undefined} label={t('math.a11y.addItem')} />
                 ))}
             </div>
           </>

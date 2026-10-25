@@ -29,7 +29,7 @@ export default function ChoiceButtons({ choices, labels, tried = [], chosen = nu
   const items = isItem(choices[0]);
 
   return (
-    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric ? 'grid-cols-4' : items ? 'grid-cols-3' : 'grid-cols-1 sm:grid-cols-3'}`}>
+    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric || (items && choices.length > 3) ? 'grid-cols-4' : items ? 'grid-cols-3' : 'grid-cols-1 sm:grid-cols-3'}`}>
       {choices.map((c) => {
         const isTried = tried.includes(c);
         const isChosen = chosen === c;

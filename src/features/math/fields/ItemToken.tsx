@@ -11,10 +11,12 @@ interface Props {
   onClick?: () => void; // 있으면 누를 수 있는 버튼이 된다
   label?: string; // 누를 수 있을 때 화면 읽기용 이름
   size?: number;
+  compact?: boolean; // 물건이 많을 때 작은 칸 (48px)
 }
 
 // 수학 장면의 물건 하나 (사과, 꽃 등). 누르기 영역은 최소 56px.
-export default function ItemToken({ item, badge, removed, leaving, onClick, label, size = 52 }: Props) {
+export default function ItemToken({ item, badge, removed, leaving, onClick, label, size: sizeProp, compact }: Props) {
+  const size = sizeProp ?? (compact ? 36 : 52);
   const { emoji, assetPath } = MATH_ITEMS[item];
   const body = (
     <>
@@ -33,7 +35,7 @@ export default function ItemToken({ item, badge, removed, leaving, onClick, labe
       )}
     </>
   );
-  const frame = `relative flex h-16 w-16 items-center justify-center rounded-2xl ${leaving ? 'border-4 border-dashed border-oak/70' : ''}`;
+  const frame = `relative flex ${compact ? 'h-12 w-12' : 'h-16 w-16'} items-center justify-center rounded-2xl ${leaving ? 'border-4 border-dashed border-oak/70' : ''}`;
 
   if (onClick)
     return (
