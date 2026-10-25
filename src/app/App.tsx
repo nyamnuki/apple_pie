@@ -13,6 +13,8 @@ import ParentScreen from '../features/settings/ParentScreen';
 import RegionMapScreen from '../features/map/RegionMapScreen';
 import { getLesson } from '../data/math/lessons';
 import type { RegionId } from '../types/resources';
+import MusicManager from '../services/audio/MusicManager';
+import type { TrackId } from '../services/audio/music';
 import type { LessonId } from '../types/math';
 import type { LoadStatus } from '../services/storage/gameSave';
 
@@ -30,64 +32,78 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
     setScreen('settings');
   };
 
-  switch (screen) {
-    case 'title':
-      return <TitleScreen onStart={() => setScreen('room')} onSettings={() => openSettings('title')} notice={notice} onCloseNotice={() => setNotice(null)} />;
-    case 'room':
-      return (
-        <RoomScreen
-          onPlay={() => setScreen('map')}
-          onDecorate={() => setScreen('decorate')}
-          onWorkshop={() => setScreen('workshop')}
-          onInventory={() => setScreen('inventory')}
-          onSettings={() => openSettings('room')}
-          onBack={() => setScreen('title')}
-        />
-      );
-    case 'decorate':
-      return <DecorateScreen onBack={() => setScreen('room')} />;
-    case 'settings':
-      return <SettingsScreen onBack={() => setScreen(settingsFrom)} onParent={() => setScreen('parentGate')} canSave={loadStatus !== 'unavailable'} />;
-    case 'parentGate':
-      return <ParentGate onPass={() => setScreen('parent')} onBack={() => setScreen('settings')} />;
-    case 'parent':
-      return <ParentScreen onBack={() => setScreen('settings')} />;
-    case 'map':
-      return (
-        <RegionMapScreen
-          onPick={(id) => {
-            setRegionId(id);
-            setScreen('math');
-          }}
-          onBack={() => setScreen('room')}
-        />
-      );
-    case 'math':
-      return (
-        <MathMenuScreen
-          regionId={regionId}
-          onPick={(id) => {
-            setLessonId(id);
-            setScreen('lesson');
-          }}
-          onBack={() => setScreen('map')}
-        />
-      );
-    case 'lesson':
-      return (
-        <LessonScreen
-          key={lessonId}
-          lessonId={lessonId}
-          onExit={() => {
-            setRegionId(getLesson(lessonId).region);
-            setScreen('math');
-          }}
-          onWorkshop={() => setScreen('workshop')}
-        />
-      );
-    case 'workshop':
-      return <WorkshopScreen onBack={() => setScreen('room')} onDecorate={() => setScreen('decorate')} />;
-    case 'inventory':
-      return <InventoryScreen onBack={() => setScreen('room')} onWorkshop={() => setScreen('workshop')} onDecorate={() => setScreen('decorate')} />;
+  // 배경 음악: 달빛 숲(놀이 고르기·놀이)은 밤의 곡, 나머지는 낮의 곡
+  const inForest = (screen === 'math' && regionId === 'moonlightForest') || (screen === 'lesson' && getLesson(lessonId).region === 'moonlightForest');
+  const track: TrackId = inForest ? 'night' : 'day';
+
+  return (
+    <>
+      <MusicManager track={track} />
+      {renderScreen()}
+    </>
+  );
+
+  // 지금 화면 그리기
+  function renderScreen() {
+    switch (screen) {
+      case 'title':
+        return <TitleScreen onStart={() => setScreen('room')} onSettings={() => openSettings('title')} notice={notice} onCloseNotice={() => setNotice(null)} />;
+      case 'room':
+        return (
+          <RoomScreen
+            onPlay={() => setScreen('map')}
+            onDecorate={() => setScreen('decorate')}
+            onWorkshop={() => setScreen('workshop')}
+            onInventory={() => setScreen('inventory')}
+            onSettings={() => openSettings('room')}
+            onBack={() => setScreen('title')}
+          />
+        );
+      case 'decorate':
+        return <DecorateScreen onBack={() => setScreen('room')} />;
+      case 'settings':
+        return <SettingsScreen onBack={() => setScreen(settingsFrom)} onParent={() => setScreen('parentGate')} canSave={loadStatus !== 'unavailable'} />;
+      case 'parentGate':
+        return <ParentGate onPass={() => setScreen('parent')} onBack={() => setScreen('settings')} />;
+      case 'parent':
+        return <ParentScreen onBack={() => setScreen('settings')} />;
+      case 'map':
+        return (
+          <RegionMapScreen
+            onPick={(id) => {
+              setRegionId(id);
+              setScreen('math');
+            }}
+            onBack={() => setScreen('room')}
+          />
+        );
+      case 'math':
+        return (
+          <MathMenuScreen
+            regionId={regionId}
+            onPick={(id) => {
+              setLessonId(id);
+              setScreen('lesson');
+            }}
+            onBack={() => setScreen('map')}
+          />
+        );
+      case 'lesson':
+        return (
+          <LessonScreen
+            key={lessonId}
+            lessonId={lessonId}
+            onExit={() => {
+              setRegionId(getLesson(lessonId).region);
+              setScreen('math');
+            }}
+            onWorkshop={() => setScreen('workshop')}
+          />
+        );
+      case 'workshop':
+        return <WorkshopScreen onBack={() => setScreen('room')} onDecorate={() => setScreen('decorate')} />;
+      case 'inventory':
+        return <InventoryScreen onBack={() => setScreen('room')} onWorkshop={() => setScreen('workshop')} onDecorate={() => setScreen('decorate')} />;
+    }
   }
 }

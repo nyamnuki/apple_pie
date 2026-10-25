@@ -4,7 +4,8 @@
 let ctx: AudioContext | null = null;
 
 // 브라우저 규칙상 소리는 아이가 화면을 누른 뒤에만 낼 수 있다. 처음 소리를 낼 때 만든다.
-function audio(): AudioContext | null {
+// (배경 음악 music.ts 도 같은 오디오를 쓴다)
+export function audio(): AudioContext | null {
   try {
     if (!ctx) {
       const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;

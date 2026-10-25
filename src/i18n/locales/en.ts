@@ -82,6 +82,9 @@ export const en = {
     sound: 'Sound',
     soundOn: 'Sound is on',
     soundOff: 'Sound is off',
+    music: 'Music',
+    musicOn: 'Music is on',
+    musicOff: 'Music is off',
   },
   math: {
     title: 'Math Play',

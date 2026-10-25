@@ -83,6 +83,9 @@ export const ko: Messages = {
     sound: '소리',
     soundOn: '소리 켜짐',
     soundOff: '소리 꺼짐',
+    music: '배경 음악',
+    musicOn: '음악 켜짐',
+    musicOff: '음악 꺼짐',
   },
   math: {
     title: '수학 놀이',

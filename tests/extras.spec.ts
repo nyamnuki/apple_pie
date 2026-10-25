@@ -17,6 +17,12 @@ test.describe('효과음', () => {
     });
   });
 
+  // 효과음만 보려고 배경 음악은 끈 채로 시작 (이미 설정이 있으면 건드리지 않는다)
+  const musicOff = (context: import('@playwright/test').BrowserContext) =>
+    context.addInitScript(() => {
+      if (!localStorage.getItem('mathTown.settings')) localStorage.setItem('mathTown.settings', '{"sound":true,"music":false}');
+    });
+
   const countApples = async (page: import('@playwright/test').Page) => {
     await page.getByRole('button', { name: 'Start' }).click();
     await page.getByRole('button', { name: 'Play' }).click();
@@ -29,6 +35,7 @@ test.describe('효과음', () => {
 
   test('셀 때 소리가 나고, 설정에서 끄면 나지 않으며 꺼진 상태가 유지된다', async ({ page, context }) => {
     await seed(context, { save: makeSave() });
+    await musicOff(context);
     await page.goto('/');
     await countApples(page);
     expect(await page.evaluate(() => (window as unknown as { __osc: number }).__osc)).toBeGreaterThanOrEqual(2);
@@ -40,11 +47,76 @@ test.describe('효과음', () => {
     await sw.click();
     await expect(sw).toHaveAttribute('aria-checked', 'false');
     await expect(sw).toContainText('Sound is off');
-    expect(await page.evaluate(() => localStorage.getItem('mathTown.settings'))).toBe('{"sound":false}');
+    expect(await page.evaluate(() => localStorage.getItem('mathTown.settings'))).toBe('{"sound":false,"music":false}');
 
     await page.reload();
     await countApples(page);
     expect(await page.evaluate(() => (window as unknown as { __osc: number }).__osc)).toBe(0);
+  });
+});
+
+test.describe('배경 음악', () => {
+  // 만들어진 음(오실레이터)의 개수와 음색을 기록한다
+  test.beforeEach(async ({ context }) => {
+    await context.addInitScript(() => {
+      const w = window as unknown as { __types: string[] };
+      w.__types = [];
+      const original = AudioContext.prototype.createOscillator;
+      AudioContext.prototype.createOscillator = function (this: AudioContext) {
+        const osc = original.call(this);
+        setTimeout(() => w.__types.push(osc.type), 0); // 음색은 만든 직후에 정해진다
+        return osc;
+      };
+    });
+  });
+  const types = (page: import('@playwright/test').Page) => page.evaluate(() => (window as unknown as { __types: string[] }).__types.slice());
+
+  test('처음 누르면 시작해서 계속 이어지고, 설정에서 끄면 멈추며 꺼진 상태가 유지된다', async ({ page, context }) => {
+    await seed(context, { save: makeSave() });
+    await page.goto('/');
+    await page.waitForTimeout(800);
+    expect(await types(page)).toEqual([]); // 누르기 전에는 소리 없음
+
+    await page.getByRole('button', { name: 'Open settings' }).click(); // 첫 누르기
+    await page.waitForTimeout(1500);
+    const first = (await types(page)).length;
+    expect(first).toBeGreaterThan(0);
+    await page.waitForTimeout(2000);
+    expect((await types(page)).length).toBeGreaterThan(first); // 가만히 있어도 음악이 이어진다
+
+    const sw = page.getByRole('switch', { name: 'Music' });
+    await expect(sw).toHaveAttribute('aria-checked', 'true');
+    await sw.click();
+    await expect(sw).toContainText('Music is off');
+    await page.waitForTimeout(600);
+    const afterOff = (await types(page)).length;
+    await page.waitForTimeout(1500);
+    expect((await types(page)).length).toBe(afterOff); // 끈 뒤에는 새 음이 없다
+    expect(JSON.parse((await page.evaluate(() => localStorage.getItem('mathTown.settings')))!)).toEqual({ sound: true, music: false });
+
+    await page.reload();
+    await page.getByRole('button', { name: 'Open settings' }).click();
+    await page.waitForTimeout(1500);
+    expect(await types(page)).toEqual([]);
+    await expect(page.getByRole('switch', { name: 'Music' })).toHaveAttribute('aria-checked', 'false');
+  });
+
+  test('달빛 숲에서는 밤의 곡(부드러운 음색)으로 바뀐다', async ({ page, context }) => {
+    await seed(context, { save: makeSave({ completedLessons: ['counting1', 'comparing1'] }) });
+    await page.goto('/');
+    await page.getByRole('button', { name: 'Start' }).click();
+    await page.waitForTimeout(3000);
+    expect(await types(page)).toContain('triangle'); // 낮의 곡: 멜로디가 triangle 음색
+
+    await page.getByRole('button', { name: 'Play' }).click();
+    await goToRegion(page, /^Moonlight Forest/);
+    await page.getByRole('button', { name: /Shape Hunt/ }).click();
+    await page.waitForTimeout(1000); // 곡이 바뀔 시간
+    const before = (await types(page)).length;
+    await page.waitForTimeout(3500);
+    const recent = (await types(page)).slice(before);
+    expect(recent.length).toBeGreaterThan(0);
+    expect(new Set(recent)).toEqual(new Set(['sine'])); // 밤의 곡: 모두 sine
   });
 });
 
