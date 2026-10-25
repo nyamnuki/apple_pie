@@ -3,16 +3,17 @@ import { X } from 'lucide-react';
 import AppShell from '../../../components/AppShell';
 import BigButton from '../../../components/BigButton';
 import ScreenHeader from '../../../components/ScreenHeader';
-import RoomView, { spotKey } from '../RoomView';
+import RoomView, { spotKey, wallKey } from '../RoomView';
 import FurnitureTray from './FurnitureTray';
 import SelectedActions from './SelectedActions';
 import { GRID } from '../iso';
-import { canPlace } from '../placement';
+import { canPlace, canPlaceWall, isWallItem } from '../placement';
 import { newUid, useRoom } from '../RoomProvider';
 import { getFurniture } from '../../../data/furniture/furniture';
 import { useGame } from '../../../app/GameProvider';
+import { useSound } from '../../../services/audio/SoundProvider';
 import { useI18n, type TranslationKey } from '../../../i18n';
-import type { PlacedFurniture } from '../../../types/furniture';
+import type { PlacedFurniture, WallItem, WallSide } from '../../../types/furniture';
 
 // 꾸미기 화면의 상태
 type Mode =
@@ -45,6 +46,20 @@ function nearestSpot(spots: Set<string>, gx: number, gy: number): [number, numbe
   return best;
 }
 
+// 벽 장식을 걸 수 있는 모든 벽 칸 ('left:2' 형식)
+function findWallSpots(wallItems: WallItem[], furnitureId: string, ignoreUid?: string) {
+  const spots = new Set<string>();
+  for (const wall of ['left', 'right'] as WallSide[])
+    for (let slot = 0; slot < GRID; slot++) if (canPlaceWall(wallItems, furnitureId, wall, slot, ignoreUid)) spots.add(wallKey(wall, slot));
+  return spots;
+}
+
+// 누른 벽 칸에 걸 수 없으면 같은 벽의 바로 옆 칸
+function nearestWallSpot(spots: Set<string>, wall: WallSide, slot: number): number | null {
+  for (const s of [slot, slot - 1, slot + 1]) if (spots.has(wallKey(wall, s))) return s;
+  return null;
+}
+
 // 물건을 놓을 수 있는 모든 칸
 function findSpots(placed: PlacedFurniture[], furnitureId: string, rotation: 0 | 1, ignoreUid?: string) {
   const spots = new Set<string>();
@@ -57,6 +72,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
   const { t } = useI18n();
   const { layout, dispatch } = useRoom();
   const { game } = useGame();
+  const { play } = useSound();
   const [mode, setMode] = useState<Mode>({ kind: 'idle' });
   // 잠깐 보여주는 안내 (예: '거기는 자리가 없어요'). 상태가 바뀌면 사라진다.
   const [flash, setFlash] = useState<TranslationKey | null>(null);
@@ -66,14 +82,24 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     setFlash(message);
   };
 
-  const selectedItem = mode.kind === 'selected' || mode.kind === 'moving' ? layout.placed.find((p) => p.uid === mode.uid) : undefined;
+  const activeUid = mode.kind === 'selected' || mode.kind === 'moving' ? mode.uid : null;
+  const selectedItem = activeUid ? layout.placed.find((p) => p.uid === activeUid) : undefined; // 바닥 가구
+  const selectedWall = activeUid ? layout.wallItems.find((w) => w.uid === activeUid) : undefined; // 벽 장식
+  const placingDef = mode.kind === 'placing' ? getFurniture(mode.furnitureId) : undefined;
 
   // 바닥을 고르는 중이면 놓을 수 있는 칸 목록을 만든다
   const validSpots = useMemo(() => {
-    if (mode.kind === 'placing') return findSpots(layout.placed, mode.furnitureId, 0);
+    if (mode.kind === 'placing' && !isWallItem(placingDef)) return findSpots(layout.placed, mode.furnitureId, 0);
     if (mode.kind === 'moving' && selectedItem) return findSpots(layout.placed, selectedItem.furnitureId, selectedItem.rotation, selectedItem.uid);
     return null;
-  }, [mode, layout.placed, selectedItem]);
+  }, [mode, layout.placed, selectedItem, placingDef]);
+
+  // 벽 칸을 고르는 중이면 걸 수 있는 벽 칸 목록
+  const validWallSpots = useMemo(() => {
+    if (mode.kind === 'placing' && isWallItem(placingDef)) return findWallSpots(layout.wallItems, mode.furnitureId);
+    if (mode.kind === 'moving' && selectedWall) return findWallSpots(layout.wallItems, selectedWall.furnitureId, selectedWall.uid);
+    return null;
+  }, [mode, layout.wallItems, selectedWall, placingDef]);
 
   // 목록에서 물건을 눌렀을 때
   const pick = (furnitureId: string) => {
@@ -86,14 +112,16 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
       return;
     }
     // 아직 안 놓은 것이 있으면 놓을 자리 고르기, 다 놓았으면 방에 있는 것을 고른 상태로
-    const placedCount = layout.placed.filter((p) => p.furnitureId === furnitureId).length;
+    const inRoom: { uid: string; furnitureId: string }[] = isWallItem(def) ? layout.wallItems : layout.placed;
+    const placedCount = inRoom.filter((p) => p.furnitureId === furnitureId).length;
     if ((game.furniture[furnitureId] ?? 0) <= placedCount) {
-      const existing = layout.placed.find((p) => p.furnitureId === furnitureId);
+      const existing = inRoom.find((p) => p.furnitureId === furnitureId);
       if (existing) change({ kind: 'selected', uid: existing.uid });
       return;
     }
-    if (findSpots(layout.placed, furnitureId, 0).size === 0) return change({ kind: 'idle' }, 'decorate.noSpace');
-    change({ kind: 'placing', furnitureId });
+    const free = isWallItem(def) ? findWallSpots(layout.wallItems, furnitureId) : findSpots(layout.placed, furnitureId, 0);
+    if (free.size === 0) return change({ kind: 'idle' }, isWallItem(def) ? 'decorate.noWallSpace' : 'decorate.noSpace');
+    change({ kind: 'placing', furnitureId }, isWallItem(def) ? 'decorate.hintPlaceWall' : null);
   };
 
   // 바닥 칸을 눌렀을 때
@@ -102,6 +130,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
       const spot = validSpots ? nearestSpot(validSpots, gx, gy) : null;
       if (!spot) return setFlash('decorate.spotTaken');
       const [x, y] = spot;
+      play.place();
       if (mode.kind === 'placing') {
         const uid = newUid(mode.furnitureId);
         dispatch({ type: 'place', item: { uid, furnitureId: mode.furnitureId, gx: x, gy: y, rotation: 0 } });
@@ -114,6 +143,21 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     if (mode.kind === 'selected') change({ kind: 'idle' });
   };
 
+  // 벽 칸을 눌렀을 때 (벽 장식 걸기·옮기기)
+  const tapWall = (wall: WallSide, slot: number) => {
+    if (!validWallSpots || (mode.kind !== 'placing' && mode.kind !== 'moving')) return;
+    const s = nearestWallSpot(validWallSpots, wall, slot);
+    if (s === null) return setFlash('decorate.spotTaken');
+    play.place();
+    if (mode.kind === 'placing') {
+      const uid = newUid(mode.furnitureId);
+      dispatch({ type: 'placeWall', item: { uid, furnitureId: mode.furnitureId, wall, slot: s } });
+      return change({ kind: 'selected', uid }, 'decorate.placed');
+    }
+    dispatch({ type: 'moveWall', uid: mode.uid, wall, slot: s });
+    change({ kind: 'selected', uid: mode.uid }, 'decorate.placed');
+  };
+
   const turn = () => {
     if (!selectedItem) return;
     const next = selectedItem.rotation === 0 ? 1 : 0;
@@ -123,12 +167,12 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
   };
 
   const putAway = () => {
-    if (!selectedItem) return;
-    dispatch({ type: 'remove', uid: selectedItem.uid });
+    if (!activeUid) return;
+    dispatch({ type: 'remove', uid: activeUid });
     change({ kind: 'idle' });
   };
 
-  const selectedDef = selectedItem ? getFurniture(selectedItem.furnitureId) : undefined;
+  const selectedDef = selectedItem ? getFurniture(selectedItem.furnitureId) : selectedWall ? getFurniture(selectedWall.furnitureId) : undefined;
   const picking = mode.kind === 'placing' || mode.kind === 'moving';
 
   return (
@@ -144,10 +188,13 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
         <div className="min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0">
           <RoomView
             layout={layout}
-            selectedUid={selectedItem?.uid ?? null}
+            selectedUid={activeUid}
             validSpots={validSpots}
             onTileClick={tapTile}
             onFurnitureClick={(uid) => change({ kind: 'selected', uid })}
+            validWallSpots={validWallSpots}
+            wallBand={(placingDef ?? (selectedWall && getFurniture(selectedWall.furnitureId)))?.wallBand ?? 'middle'}
+            onWallClick={tapWall}
           />
         </div>
 
@@ -156,7 +203,8 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
             <SelectedActions
               def={selectedDef}
               onMove={() => change({ kind: 'moving', uid: mode.uid })}
-              onTurn={turn}
+              // 벽 장식은 돌리지 않는다
+              onTurn={selectedWall ? undefined : turn}
               onPutAway={putAway}
               onDone={() => change({ kind: 'idle' })}
             />

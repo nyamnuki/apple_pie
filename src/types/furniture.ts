@@ -2,7 +2,7 @@ import type { TranslationKey } from '../i18n';
 import type { ResourceBundle } from './resources';
 
 // 가구 종류. 'rug' 는 바닥에 깔리므로 다른 가구가 위에 올라설 수 있다.
-export type FurnitureCategory = 'bed' | 'rug' | 'light' | 'storage' | 'table' | 'seat' | 'plant' | 'decor' | 'wallpaper';
+export type FurnitureCategory = 'bed' | 'rug' | 'light' | 'storage' | 'table' | 'seat' | 'plant' | 'decor' | 'wallpaper' | 'wall';
 
 // 얻는 방법
 export type UnlockCondition =
@@ -10,7 +10,9 @@ export type UnlockCondition =
   | { type: 'recipe'; cost: ResourceBundle }; // 공방에서 이 재료로 만든다
 
 // 그림 파일이 없을 때 코드로 그리는 모양 (src/features/room/placeholders/)
-export type PlaceholderShape = 'bed' | 'rug' | 'lamp' | 'shelf' | 'desk' | 'pot' | 'chest' | 'stool' | 'basket' | 'lantern' | 'box';
+export type PlaceholderShape =
+  | 'bed' | 'rug' | 'lamp' | 'shelf' | 'desk' | 'pot' | 'chest' | 'stool' | 'basket' | 'lantern' | 'box'
+  | 'frame' | 'garland' | 'starFrame'; // 벽 장식
 
 // 그림 파일이 없을 때 대신 쓰는 임시 그래픽 정보
 export interface PlaceholderStyle {
@@ -29,10 +31,23 @@ export interface FurnitureDef {
   category: FurnitureCategory;
   width: number; // 그림 너비 (방 좌표 단위)
   height: number; // 그림 높이 (방 좌표 단위)
-  gridWidth: number; // 바닥에서 차지하는 칸 수 (가로, 오른쪽 위 방향)
+  gridWidth: number; // 바닥에서 차지하는 칸 수 (가로, 오른쪽 위 방향). 벽 장식은 벽에서 차지하는 칸 수
   gridHeight: number; // 바닥에서 차지하는 칸 수 (세로, 왼쪽 아래 방향)
   unlockCondition: UnlockCondition;
   placeholder: PlaceholderStyle;
+  wallBand?: WallBand; // 벽 장식만: 거는 높이
+}
+
+// ===== 벽 장식 =====
+export type WallSide = 'left' | 'right';
+export type WallBand = 'middle' | 'high'; // 가운데 높이(액자) / 위쪽(가랜드)
+
+// 벽에 건 장식 하나: 어느 벽의 몇 번째 칸부터
+export interface WallItem {
+  uid: string;
+  furnitureId: string;
+  wall: WallSide;
+  slot: number;
 }
 
 // 방에 놓인 가구 한 개
@@ -47,5 +62,6 @@ export interface PlacedFurniture {
 // 방 전체 상태
 export interface RoomLayout {
   placed: PlacedFurniture[];
+  wallItems: WallItem[]; // 벽에 건 장식
   wallpaperId: string | null; // 붙인 벽지 (없으면 기본 벽)
 }

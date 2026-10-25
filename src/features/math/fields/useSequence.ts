@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useSound } from '../../../services/audio/SoundProvider';
 
 // 장면을 보여주는 방식
 //  static      : 그냥 보여주기 (누를 수 없음)
@@ -34,6 +35,14 @@ export function useSequence({ steps, mode, demoOrder, onDone }: Options) {
     const timer = setTimeout(() => pick(next), DEMO_DELAY);
     return () => clearTimeout(timer);
   }, [mode, finished, picked, demoOrder, pick]);
+
+  // 하나 누를 때마다 음이 한 칸씩 올라간다 (처음부터 끝난 모습일 때는 소리 없음)
+  const { play } = useSound();
+  const heard = useRef(picked.length);
+  useEffect(() => {
+    if (picked.length > heard.current) play.count(picked.length - 1);
+    heard.current = picked.length;
+  }, [picked.length, play]);
 
   // 끝나면 한 번만 알려준다
   const onDoneRef = useRef(onDone);

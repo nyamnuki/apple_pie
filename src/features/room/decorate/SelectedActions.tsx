@@ -6,7 +6,7 @@ import type { FurnitureDef } from '../../../types/furniture';
 interface Props {
   def: FurnitureDef;
   onMove: () => void;
-  onTurn: () => void;
+  onTurn?: () => void; // 없으면 '돌리기' 버튼을 숨긴다 (벽 장식)
   onPutAway: () => void;
   onDone: () => void;
 }
@@ -24,10 +24,12 @@ export default function SelectedActions({ def, onMove, onTurn, onPutAway, onDone
           <Move size={26} aria-hidden />
           {t('decorate.move')}
         </BigButton>
-        <BigButton variant="sage" onClick={onTurn}>
-          <RotateCw size={26} aria-hidden />
-          {t('decorate.turn')}
-        </BigButton>
+        {onTurn && (
+          <BigButton variant="sage" onClick={onTurn}>
+            <RotateCw size={26} aria-hidden />
+            {t('decorate.turn')}
+          </BigButton>
+        )}
         <BigButton variant="soft" onClick={onPutAway}>
           <PackageOpen size={26} aria-hidden />
           {t('decorate.putAway')}

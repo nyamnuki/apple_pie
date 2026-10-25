@@ -1,3 +1,5 @@
+import type { WallSide } from '../../types/furniture';
+
 // ===== 아이소메트릭(비스듬히 내려다본) 방의 좌표 계산 =====
 // 방 그림 전체는 760 × 640 크기의 '방 좌표'로 그리고, 화면 크기에 맞게 자동으로 늘리거나 줄인다.
 
@@ -37,3 +39,24 @@ export function footprintCorners(gx: number, gy: number, w: number, d: number) {
 
 // 점을 위로 h 만큼 올린 점
 export const lift = (p: Point, h: number): Point => ({ x: p.x, y: p.y - h });
+
+// ===== 벽 =====
+// 왼쪽 벽: 바닥 b 방향 모서리 위 / 오른쪽 벽: 바닥 a 방향 모서리 위. 벽마다 GRID 칸.
+
+// 벽 장식을 거는 높이 띠 [아래, 위] (방 좌표 단위)
+export const WALL_BANDS = { middle: [95, 175], high: [180, 212] } as const;
+
+// 벽 위의 점: 모서리에서 t 칸, 높이 z
+export function wallPoint(wall: WallSide, t: number, z: number): Point {
+  return lift(wall === 'left' ? toScreen(0, t) : toScreen(t, 0), z);
+}
+
+// 벽 장식을 '정면 그림'처럼 그릴 수 있게 해 주는 변환.
+// 장식 안쪽 좌표: x = 0 ~ 100×칸수 (보는 사람 기준 왼쪽 → 오른쪽), y = 0 ~ 띠 높이 (위 → 아래)
+export function wallTransform(wall: WallSide, slot: number, width: number, zTop: number): string {
+  // 왼쪽 벽은 보는 사람 기준으로 먼 쪽(칸 번호가 큰 쪽)이 왼쪽이다
+  const origin = wall === 'left' ? wallPoint('left', slot + width, zTop) : wallPoint('right', slot, zTop);
+  const ux = TILE_W / 2 / 100;
+  const uy = (wall === 'left' ? -TILE_H / 2 : TILE_H / 2) / 100;
+  return `matrix(${ux} ${uy} 0 1 ${origin.x} ${origin.y})`;
+}

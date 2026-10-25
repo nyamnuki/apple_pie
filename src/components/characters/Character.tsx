@@ -1,12 +1,14 @@
 import type { ComponentType } from 'react';
 import LuluSvg from './LuluSvg';
+import DotoSvg from './DotoSvg';
+import MomoSvg from './MomoSvg';
 import { CHARACTERS, characterAssetPath, type CharacterId, type Expression } from '../../data/characters/characters';
 import { assetUrl } from '../../data/assets/assetRegistry';
 import { useAssetStatus } from '../../services/assets/useAssetStatus';
 import { useI18n, type TranslationKey } from '../../i18n';
 
 // 코드로 그린 캐릭터 그림 (새 캐릭터를 그리면 여기에 추가)
-const DRAWN: Partial<Record<CharacterId, ComponentType<{ expression: Expression }>>> = { lulu: LuluSvg };
+const DRAWN: Partial<Record<CharacterId, ComponentType<{ expression: Expression }>>> = { lulu: LuluSvg, doto: DotoSvg, momo: MomoSvg };
 
 const MOOD_KEY: Record<Expression, TranslationKey> = {
   default: 'characters.moods.default',

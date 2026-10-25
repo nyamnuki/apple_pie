@@ -61,7 +61,7 @@ export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: Regio
                   <span className="block text-2xl font-bold leading-tight">{tKey(region.nameKey)}</span>
                   <span className="block text-base">{tKey(region.topicsKey)}</span>
                   {open ? (
-                    <span className="mt-1 block text-base font-semibold text-wood">{t('map.gamesDone', { n: formatNumber(done), total: formatNumber(total) })}</span>
+                    <span className="mt-1 block text-base font-bold">{t('map.gamesDone', { n: formatNumber(done), total: formatNumber(total) })}</span>
                   ) : (
                     unlock.type === 'lessons' && (
                       <span className="mt-1 block text-base font-semibold">

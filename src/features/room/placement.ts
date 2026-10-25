@@ -1,6 +1,6 @@
 import { GRID } from './iso';
 import { getFurniture } from '../../data/furniture/furniture';
-import type { FurnitureDef, PlacedFurniture } from '../../types/furniture';
+import type { FurnitureDef, PlacedFurniture, WallItem, WallSide } from '../../types/furniture';
 
 // ===== 가구 배치 규칙 =====
 // - 가구는 바닥 6 × 6 칸 안에만 놓을 수 있다.
@@ -30,7 +30,7 @@ export function canPlace(
   ignoreUid?: string,
 ): boolean {
   const def = getFurniture(furnitureId);
-  if (!def || def.category === 'wallpaper') return false;
+  if (!def || def.category === 'wallpaper' || def.category === 'wall') return false;
   const [w, d] = footprintSize(def, rotation);
   if (gx < 0 || gy < 0 || gx + w > GRID || gy + d > GRID) return false;
 
@@ -40,6 +40,28 @@ export function canPlace(
     if (!other || isFloorLayer(other) !== isFloorLayer(def)) return true; // 러그와 일반 가구는 겹쳐도 된다
     const [ow, od] = footprintSize(other, item.rotation);
     return !overlaps(gx, gy, w, d, item.gx, item.gy, ow, od);
+  });
+}
+
+// ===== 벽 장식 배치 규칙 =====
+// - 벽마다 GRID 칸. 같은 벽·같은 높이 띠에서 겹치지 않는다.
+// - 오른쪽 벽 창문(2~3번 칸)의 가운데 높이에는 걸 수 없다 (위쪽 가랜드는 가능).
+const WINDOW_SLOTS = [2, 3];
+
+export const isWallItem = (def: FurnitureDef | undefined) => def?.category === 'wall';
+
+export function canPlaceWall(wallItems: WallItem[], furnitureId: string, wall: WallSide, slot: number, ignoreUid?: string): boolean {
+  const def = getFurniture(furnitureId);
+  if (!def || !isWallItem(def)) return false;
+  const w = def.gridWidth;
+  const band = def.wallBand ?? 'middle';
+  if (slot < 0 || slot + w > GRID) return false;
+  if (wall === 'right' && band === 'middle' && WINDOW_SLOTS.some((s) => s >= slot && s < slot + w)) return false;
+  return wallItems.every((item) => {
+    if (item.uid === ignoreUid || item.wall !== wall) return true;
+    const other = getFurniture(item.furnitureId);
+    if (!other || (other.wallBand ?? 'middle') !== band) return true;
+    return slot + w <= item.slot || item.slot + other.gridWidth <= slot;
   });
 }
 

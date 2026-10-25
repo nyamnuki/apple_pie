@@ -23,7 +23,10 @@ export default function FurnitureTray({ layout, owned, onPick }: Props) {
       className="flex gap-3 overflow-x-auto pb-2 [scrollbar-width:thin] [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:overflow-y-auto"
     >
       {items.map((def) => {
-        const placed = def.category === 'wallpaper' ? (layout.wallpaperId === def.id ? 1 : 0) : layout.placed.filter((p) => p.furnitureId === def.id).length;
+        const placed =
+          def.category === 'wallpaper'
+            ? layout.wallpaperId === def.id ? 1 : 0
+            : (def.category === 'wall' ? layout.wallItems : layout.placed).filter((p) => p.furnitureId === def.id).length;
         const available = def.category === 'wallpaper' ? 0 : owned[def.id] - placed;
         return (
           <li key={def.id} className="shrink-0">

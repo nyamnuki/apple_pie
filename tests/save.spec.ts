@@ -11,7 +11,7 @@ test('바뀐 내용은 바로 새로고침해도 남는다 (떠날 때 즉시 �
   await page.getByRole('button', { name: 'Floor spot, row 5, column 4' }).click({ force: true });
   await page.reload(); // 0.3초 기다리지 않고 바로
   const save = await readSave(page);
-  expect(save.schemaVersion).toBe(1);
+  expect(save.schemaVersion).toBe(2);
   expect(save.room.placed.some((p: { furnitureId: string }) => p.furnitureId === 'toyChest')).toBe(true);
 });
 

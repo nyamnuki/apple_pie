@@ -63,7 +63,7 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, onWo
 
       <div className="flex w-full flex-col items-center gap-4">
         <section className="w-full max-w-md rounded-3xl bg-moss/70 p-4">
-          <h3 className="mb-1 text-lg text-wood">{t('math.learned')}</h3>
+          <h3 className="mb-1 text-lg font-semibold">{t('math.learned')}</h3>
           <p className="text-lg font-semibold">{discovery}</p>
         </section>
 

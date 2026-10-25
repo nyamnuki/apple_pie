@@ -1,11 +1,12 @@
 import type { KeyboardEvent } from 'react';
 import RoomBackground from './RoomBackground';
 import FurnitureSprite from './FurnitureSprite';
-import { GRID, VIEW_W, VIEW_H, TILE_H, footprintCorners, toPoints } from './iso';
+import WallItemSprite from './WallItemSprite';
+import { GRID, VIEW_W, VIEW_H, TILE_H, WALL_BANDS, footprintCorners, toPoints, wallPoint } from './iso';
 import { sortForDrawing } from './placement';
 import { getFurniture } from '../../data/furniture/furniture';
 import { useI18n } from '../../i18n';
-import type { RoomLayout } from '../../types/furniture';
+import type { RoomLayout, WallSide } from '../../types/furniture';
 
 interface Props {
   layout: RoomLayout;
@@ -13,17 +14,22 @@ interface Props {
   selectedUid?: string | null;
   validSpots?: Set<string> | null; // 지금 놓을 수 있는 칸 ('gx,gy') — 있으면 '바닥 고르는 중'
   onTileClick?: (gx: number, gy: number) => void;
-  onFurnitureClick?: (uid: string) => void;
+  onFurnitureClick?: (uid: string) => void; // 바닥 가구·벽 장식 모두
+  validWallSpots?: Set<string> | null; // 지금 걸 수 있는 벽 칸 ('left:2') — 있으면 '벽 칸 고르는 중'
+  wallBand?: 'middle' | 'high'; // 고르는 중인 장식의 높이 띠
+  onWallClick?: (wall: WallSide, slot: number) => void;
 }
 
 export const spotKey = (gx: number, gy: number) => `${gx},${gy}`;
+export const wallKey = (wall: WallSide, slot: number) => `${wall}:${slot}`;
+const WALLS: WallSide[] = ['left', 'right'];
 
 // 아이소메트릭 방 전체 그림: 배경 → 바닥 칸(누르기용) → 가구 → '+' 표시 순서로 겹쳐 그린다.
-export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick }: Props) {
+export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick }: Props) {
   const { t, tKey } = useI18n();
-  const picking = Boolean(validSpots);
+  const picking = Boolean(validSpots) || Boolean(validWallSpots);
   const items = sortForDrawing(layout.placed);
-  const names = items.map((i) => getFurniture(i.furnitureId)).filter(Boolean).map((d) => tKey(d!.nameKey));
+  const names = [...layout.wallItems, ...items].map((i) => getFurniture(i.furnitureId)).filter(Boolean).map((d) => tKey(d!.nameKey));
 
   const tiles = onTileClick
     ? Array.from({ length: GRID * GRID }, (_, i) => ({ gx: i % GRID, gy: Math.floor(i / GRID) }))
@@ -46,8 +52,59 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
     >
       <RoomBackground wallpaperId={layout.wallpaperId} />
 
+      {/* 벽 장식 (바닥 가구보다 뒤) */}
+      {layout.wallItems.map((item) => {
+        const def = getFurniture(item.furnitureId);
+        if (!def) return null;
+        return (
+          <WallItemSprite
+            key={item.uid}
+            item={item}
+            def={def}
+            label={t(item.uid === selectedUid ? 'a11y.furnitureSelected' : 'a11y.furnitureInRoom', { name: tKey(def.nameKey) })}
+            selected={item.uid === selectedUid}
+            onClick={onFurnitureClick && !picking ? () => onFurnitureClick(item.uid) : undefined}
+          />
+        );
+      })}
+
+      {/* 벽 칸 고르기: 벽마다 6칸을 누를 수 있고, 걸 수 있는 칸에는 '+' */}
+      {validWallSpots &&
+        WALLS.map((wall) =>
+          Array.from({ length: GRID }, (_, slot) => {
+            const [z0, z1] = WALL_BANDS[wallBand];
+            const quad = [wallPoint(wall, slot, z1 + 10), wallPoint(wall, slot + 1, z1 + 10), wallPoint(wall, slot + 1, z0 - 10), wallPoint(wall, slot, z0 - 10)];
+            const center = wallPoint(wall, slot + 0.5, (z0 + z1) / 2);
+            const valid = validWallSpots.has(wallKey(wall, slot));
+            return (
+              <g key={wallKey(wall, slot)}>
+                <polygon
+                  points={toPoints(quad)}
+                  fill="transparent"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t(wall === 'left' ? 'a11y.leftWallSpot' : 'a11y.rightWallSpot', { n: slot + 1 })}
+                  onClick={() => onWallClick?.(wall, slot)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onWallClick?.(wall, slot);
+                    }
+                  }}
+                />
+                {valid && (
+                  <g pointerEvents="none" aria-hidden="true">
+                    <circle cx={center.x} cy={center.y} r="17" fill="#FFF5DF" stroke="#946539" strokeWidth="4" />
+                    <path d={`M${center.x - 8} ${center.y}h16M${center.x} ${center.y - 8}v16`} stroke="#946539" strokeWidth="5" strokeLinecap="round" />
+                  </g>
+                )}
+              </g>
+            );
+          }),
+        )}
+
       {/* 바닥 칸: 꾸미기 화면에서 누를 수 있다 */}
-      {tiles.map(({ gx, gy }) => {
+      {!validWallSpots && tiles.map(({ gx, gy }) => {
         const c = footprintCorners(gx, gy, 1, 1);
         // 바닥을 고를 때만 키보드로 칸에 갈 수 있게 한다 (평소에는 가구만)
         return (
@@ -55,9 +112,9 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
             key={spotKey(gx, gy)}
             points={toPoints([c.top, c.right, c.bottom, c.left])}
             fill="transparent"
-            role={picking ? 'button' : undefined}
-            tabIndex={picking ? 0 : -1}
-            aria-label={picking ? t('a11y.floorSpot', { row: gy + 1, col: gx + 1 }) : undefined}
+            role={validSpots ? 'button' : undefined}
+            tabIndex={validSpots ? 0 : -1}
+            aria-label={validSpots ? t('a11y.floorSpot', { row: gy + 1, col: gx + 1 }) : undefined}
             onClick={() => onTileClick?.(gx, gy)}
             onKeyDown={(e) => tileKeyDown(e, gx, gy)}
           />

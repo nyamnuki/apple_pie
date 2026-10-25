@@ -27,7 +27,7 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
 
   // 방에 놓인 개수 (벽지는 붙였으면 1)
   const inRoom = (id: string) =>
-    id === layout.wallpaperId ? 1 : layout.placed.filter((p) => p.furnitureId === id).length;
+    id === layout.wallpaperId ? 1 : [...layout.placed, ...layout.wallItems].filter((p) => p.furnitureId === id).length;
 
   return (
     <AppShell background="bg-gradient-to-b from-cream to-moss">

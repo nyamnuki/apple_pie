@@ -6,6 +6,7 @@ import ScreenHeader from '../../components/ScreenHeader';
 import AssetThumb from '../../components/AssetThumb';
 import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';
+import GuideBubble from '../../components/GuideBubble';
 import { FURNITURE, getFurniture } from '../../data/furniture/furniture';
 import { RESOURCES } from '../../data/resources/resources';
 import { getRegion } from '../../data/regions/regions';
@@ -13,11 +14,13 @@ import { useGame } from '../../app/GameProvider';
 import { bundleEntries, canAfford, lockedRegionOf } from '../../utils/bundles';
 import { isRegionOpen } from '../../utils/regions';
 import { useI18n } from '../../i18n';
+import { useSound } from '../../services/audio/SoundProvider';
 
 // 공방: 모은 재료로 레시피대로 가구를 만든다
 export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => void; onDecorate: () => void }) {
   const { t, tKey, formatNumber } = useI18n();
   const { game, dispatch } = useGame();
+  const { play } = useSound();
   const [made, setMade] = useState<string | null>(null); // 방금 만든 가구
   const recipes = FURNITURE.filter((f) => f.unlockCondition.type === 'recipe');
   // 지금 가진 재료 (열린 마을 재료는 0개여도 보여준다)
@@ -33,7 +36,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
       {madeDef ? (
         <section aria-live="polite" className="mb-4 flex flex-col items-center gap-3 rounded-3xl bg-cream p-5 text-center shadow-pop-sm">
           <div className="flex items-end gap-2">
-            <Character expression="happy" size={88} />
+            <Character id="doto" expression="happy" size={88} />
             <AssetThumb def={madeDef} size={88} />
           </div>
           <p className="text-2xl font-bold">{t('workshop.made', { name: tKey(madeDef.nameKey) })}</p>
@@ -48,7 +51,9 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
           </div>
         </section>
       ) : (
-        <p className="mb-3 text-xl">{t('workshop.intro')}</p>
+        <div className="mb-3">
+          <GuideBubble speaker="doto" expression="cheer" text={t('workshop.intro')} />
+        </div>
       )}
 
       {/* 가진 재료 */}
@@ -100,6 +105,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
                   onClick={() => {
                     dispatch({ type: 'craft', furnitureId: def.id });
                     setMade(def.id);
+                    play.craft();
                   }}
                 >
                   <Hammer size={24} aria-hidden />

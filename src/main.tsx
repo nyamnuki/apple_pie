@@ -6,6 +6,7 @@ import { RoomProvider } from './features/room/RoomProvider';
 import { GameProvider } from './app/GameProvider';
 import SaveManager from './app/SaveManager';
 import ErrorBoundary from './app/ErrorBoundary';
+import { SoundProvider } from './services/audio/SoundProvider';
 import { loadGame } from './services/storage/gameSave';
 import './styles/index.css';
 
@@ -15,14 +16,16 @@ const save = loadGame();
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <I18nProvider>
-      <ErrorBoundary>
-        <GameProvider initial={save.game}>
-          <RoomProvider initial={save.room}>
-            <SaveManager />
-            <App loadStatus={save.status} />
-          </RoomProvider>
-        </GameProvider>
-      </ErrorBoundary>
+      <SoundProvider>
+        <ErrorBoundary>
+          <GameProvider initial={save.game}>
+            <RoomProvider initial={save.room}>
+              <SaveManager />
+              <App loadStatus={save.status} />
+            </RoomProvider>
+          </GameProvider>
+        </ErrorBoundary>
+      </SoundProvider>
     </I18nProvider>
   </React.StrictMode>,
 );

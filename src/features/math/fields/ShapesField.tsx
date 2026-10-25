@@ -3,6 +3,7 @@ import ShapeIcon from './ShapeIcon';
 import CountBubble from './CountBubble';
 import { range, useSequence, type FieldMode } from './useSequence';
 import { useI18n, type TranslationKey } from '../../../i18n';
+import { useSound } from '../../../services/audio/SoundProvider';
 import type { MathScene, ShapeId } from '../../../types/math';
 
 type Scene = Extract<MathScene, { kind: 'shapes' }>;
@@ -20,6 +21,7 @@ export default function ShapesField({ scene, mode, onDone }: { scene: Scene; mod
   const targets = range(scene.shapes.length).filter((i) => scene.shapes[i].shape === scene.target);
   const { picked, pick } = useSequence({ steps: targets.length, mode, demoOrder: targets, onDone });
   const [shaking, setShaking] = useState<number | null>(null);
+  const { play } = useSound();
 
   // 흔들림은 잠깐만
   useEffect(() => {
@@ -28,7 +30,11 @@ export default function ShapesField({ scene, mode, onDone }: { scene: Scene; mod
     return () => clearTimeout(timer);
   }, [shaking]);
 
-  const tap = (i: number) => (scene.shapes[i].shape === scene.target ? pick(i) : setShaking(i));
+  const tap = (i: number) => {
+    if (scene.shapes[i].shape === scene.target) return pick(i);
+    setShaking(i);
+    play.nope();
+  };
 
   return (
     <div className="flex flex-col items-center gap-4">

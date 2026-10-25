@@ -3,7 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
-import GuideBubble from './components/GuideBubble';
+import GuideBubble from '../../components/GuideBubble';
 import StageProgress from './components/StageProgress';
 import ChoiceButtons from './components/ChoiceButtons';
 import SceneField from './fields/SceneField';
@@ -17,9 +17,10 @@ import { hintLevel, initialLessonState, lessonReducer, type LessonState } from '
 import { answerOf, sceneVars } from './answers';
 import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
+import { useSound } from '../../services/audio/SoundProvider';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
-import type { Expression } from '../../data/characters/characters';
+import type { CharacterId, Expression } from '../../data/characters/characters';
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
 function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode: FieldMode } {
@@ -55,6 +56,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const lesson = getLesson(lessonId);
   const [state, dispatch] = useReducer(lessonReducer, initialLessonState);
   const { game, dispatch: gameDispatch } = useGame();
+  const { play } = useSound();
   // 이번에 받은 보상 (보상 화면에 보여준다)
   const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; newRegion: RegionId | null } | null>(null);
 
@@ -63,6 +65,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     const after = game.completedLessons.includes(lesson.id) ? game.completedLessons : [...game.completedLessons, lesson.id];
     const newRegion = REGIONS.find((r) => !isRegionOpen(r.id, game.completedLessons) && isRegionOpen(r.id, after))?.id ?? null;
     setEarned({ ...rewardFor(lesson, game), newRegion });
+    play.reward();
+    if (newRegion) play.unlock();
     gameDispatch({ type: 'completeLesson', lesson });
     dispatch({ type: 'next' });
   };
@@ -115,10 +119,21 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     }
   })();
 
+  // 안내하는 친구: 도토리 마을은 루루, 달빛 숲은 모모
+  const speaker: CharacterId = lesson.region === 'moonlightForest' ? 'momo' : 'lulu';
+
   const field = fieldFor(lesson, state);
   // 장면이나 방식이 바뀌면 새로 그린다 (센 숫자 초기화)
   const fieldKey = `${state.stage}-${field.mode}`;
-  const onFieldDone = state.stage === 'manipulate' ? () => dispatch({ type: 'manipulated' }) : state.stage === 'verify' ? () => dispatch({ type: 'verified' }) : undefined;
+  const onFieldDone =
+    state.stage === 'manipulate'
+      ? () => {
+          dispatch({ type: 'manipulated' });
+          play.correct();
+        }
+      : state.stage === 'verify'
+        ? () => dispatch({ type: 'verified' })
+        : undefined;
 
   const nextButton = (enabled: boolean) => (
     <BigButton size="lg" className="w-full" disabled={!enabled} onClick={() => dispatch({ type: 'next' })}>
@@ -149,7 +164,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
             <StageProgress stage={state.stage} />
           </div>
           <div className="[grid-area:guide]">
-            <GuideBubble text={guide} expression={expression} />
+            <GuideBubble text={guide} expression={expression} speaker={speaker} />
           </div>
 
           <section className="flex min-h-[220px] items-center justify-center overflow-auto rounded-[2rem] bg-cream/60 p-4 [grid-area:field] [@media(max-height:500px)]:min-h-0">
@@ -172,7 +187,12 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
                   labels={lesson.applyLabels}
                   tried={state.wrong}
                   chosen={state.solved ? applyAnswer : null}
-                  onChoose={(answer) => dispatch({ type: 'answer', answer, correct: applyAnswer })}
+                  onChoose={(answer) => {
+                    // 맞히면 밝은 소리, 아니면 부드러운 '다시 해 볼까' 소리
+                    if (answer === applyAnswer) play.correct();
+                    else play.tryAgain();
+                    dispatch({ type: 'answer', answer, correct: applyAnswer });
+                  }}
                 />
                 {state.solved && (
                   <BigButton size="lg" className="w-full" onClick={finish}>

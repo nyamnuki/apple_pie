@@ -26,7 +26,12 @@ export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center gap-6 text-center [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:gap-10">
-        <Character expression="cheer" size={150} bob />
+        {/* 루루와 친구들 (도토·모모) */}
+        <div className="flex items-end gap-1">
+          <Character id="doto" expression="happy" size={92} />
+          <Character expression="cheer" size={150} bob />
+          <Character id="momo" expression="happy" size={92} />
+        </div>
         <div className="flex w-full max-w-xs flex-col items-center gap-6">
           <div>
             <h1 className="text-5xl font-bold sm:text-6xl">{t('app.title')}</h1>

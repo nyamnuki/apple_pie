@@ -67,7 +67,8 @@ function frontFace(area: Area) {
 
 type Painter = (area: Area) => JSX.Element;
 
-const PAINTERS: Record<PlaceholderShape, Painter> = {
+// 바닥 가구 모양 (벽 장식 모양은 WallPlaceholder 가 그린다)
+const PAINTERS: Partial<Record<PlaceholderShape, Painter>> = {
   // 나뭇잎 침대: 나무 틀 + 매트리스 + 베개 + 나뭇잎 이불
   bed: (a) => {
     const long = a.d >= a.w; // 침대 머리는 긴 쪽의 뒤
@@ -235,7 +236,7 @@ export default function FurniturePlaceholder({ def, area }: { def: FurnitureDef;
     <g>
       {/* 바닥 그림자 */}
       {def.placeholder.shape !== 'rug' && <polygon points={toPoints([c.top, c.right, c.bottom, c.left])} fill={SHADE} fillOpacity="0.12" />}
-      {PAINTERS[def.placeholder.shape](area)}
+      {(PAINTERS[def.placeholder.shape] ?? PAINTERS.box!)(area)}
     </g>
   );
 }

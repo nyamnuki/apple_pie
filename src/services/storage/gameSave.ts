@@ -8,7 +8,7 @@ import type { RoomLayout } from '../../types/furniture';
 // 언어 설정(mathTown.locale)과는 다른 칸에 저장한다.
 export const SAVE_KEY = 'mathTown.save';
 export const BACKUP_KEY = 'mathTown.save.backup'; // 읽을 수 없던 저장본을 버리지 않고 보관하는 칸
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 // 저장 데이터의 모양 (schemaVersion 이 바뀌면 아래 MIGRATIONS 에 변환 방법을 추가한다)
 export interface SaveData {
@@ -19,9 +19,15 @@ export interface SaveData {
 }
 
 // 옛 버전 저장본을 다음 버전 모양으로 바꾸는 방법.
-// 예) 버전 1 → 2 로 바꿀 때:  1: (data) => ({ ...data, schemaVersion: 2, 새항목: 기본값 }),
+// 버전을 올릴 때마다 '이전 번호: 변환 방법' 을 한 줄씩 추가한다.
 type Migration = (data: Record<string, unknown>) => Record<string, unknown>;
-const MIGRATIONS: Record<number, Migration> = {};
+const MIGRATIONS: Record<number, Migration> = {
+  // 1 → 2: 벽 장식(wallItems)이 생겼다. 옛 저장본에는 벽 장식이 없으므로 빈 목록으로.
+  1: (data) => {
+    const room = typeof data.room === 'object' && data.room !== null ? data.room : {};
+    return { ...data, schemaVersion: 2, room: { ...room, wallItems: [] } };
+  },
+};
 
 // 불러온 결과: loaded(정상) / new(처음) / recovered(망가져서 새로 시작) / unavailable(저장 불가 브라우저)
 export type LoadStatus = 'loaded' | 'new' | 'recovered' | 'unavailable';

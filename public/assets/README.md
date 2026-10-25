@@ -7,7 +7,7 @@
 | 폴더 | 내용 | 지금 쓰는 파일 이름 |
 |---|---|---|
 | `backgrounds/` | 방 배경 (760×640, 바닥+벽) | `room-base.png` |
-| `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png` |
+| `furniture/` | 가구·벽지 | `leaf-bed.png`, `petal-rug.png`, `mushroom-lamp.png`, `forest-bookshelf.png`, `wooden-desk.png`, `flower-pot.png`, `toy-chest.png`, `woodland-wallpaper.png`, `mushroom-stool.png`, `apple-basket.png`, `moon-lantern.png` / 벽 장식: `leaf-frame.png`, `acorn-garland.png`, `starry-frame.png` |
 | `characters/` | 캐릭터 표정별 그림 | `lulu-default.png`, `lulu-happy.png`, `lulu-thinking.png`, `lulu-cheer.png`, `lulu-surprised.png` (도토: `doto-…`, 모모: `momo-…`) |
 | `items/` | 수학 놀이 물건, 재료 | 물건: `apple.png`, `pear.png`, `mushroom.png`, `moon.png`, `star.png`, `owl.png` … / 재료: `res-acorn.png`, `res-apple.png`, `res-golden-acorn.png`, `res-glow-branch.png`, `res-moon-dew.png` |
 | `pets/`, `ui/`, `effects/` | 나중에 쓸 자리 | — |
@@ -24,3 +24,4 @@
 - **위치 기준:** 그림의 '아래 가운데'가 가구가 차지한 바닥 영역의 '맨 아래 꼭짓점'에 맞춰집니다
 - **크기:** `furniture.ts` 의 `width` × `height` 비율로 그립니다 (2배 크기로 그려도 됩니다)
 - **벽지:** 이음새 없이 반복되는 정사각형 무늬
+- **벽 장식:** 정면에서 본 모습으로 그립니다 (가로 100×칸수 : 세로 띠 높이 비율, 예: 액자 100×80, 가랜드 200×32). 게임이 벽 각도에 맞게 비스듬히 바꿔 줍니다.

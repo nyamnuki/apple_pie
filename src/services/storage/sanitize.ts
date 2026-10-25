@@ -3,8 +3,8 @@ import { RESOURCES } from '../../data/resources/resources';
 import { LESSONS } from '../../data/math/lessons';
 import { createInitialGameState, type GameState } from '../../app/gameState';
 import { DEFAULT_LAYOUT } from '../../features/room/RoomProvider';
-import { canPlace } from '../../features/room/placement';
-import type { PlacedFurniture, RoomLayout } from '../../types/furniture';
+import { canPlace, canPlaceWall } from '../../features/room/placement';
+import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';
 import type { LessonId } from '../../types/math';
 
@@ -62,7 +62,21 @@ export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {
     usedUids.add(uid);
   }
 
+  // 벽 장식: 벽 이름·칸이 맞고, 가진 수 안에서, 겹치지 않는 것만
+  const wallItems: WallItem[] = [];
+  const rawWall = isObject(raw) && Array.isArray(raw.wallItems) ? (raw.wallItems as unknown[]) : [];
+  for (const item of rawWall) {
+    if (!isObject(item)) continue;
+    const { uid, furnitureId, wall, slot } = item;
+    if (typeof uid !== 'string' || usedUids.has(uid) || typeof furnitureId !== 'string') continue;
+    if ((wall !== 'left' && wall !== 'right') || !Number.isInteger(slot)) continue;
+    if (wallItems.filter((w) => w.furnitureId === furnitureId).length >= (game.furniture[furnitureId] ?? 0)) continue;
+    if (!canPlaceWall(wallItems, furnitureId, wall, slot as number)) continue;
+    wallItems.push({ uid, furnitureId, wall, slot: slot as number });
+    usedUids.add(uid);
+  }
+
   const wp = source.wallpaperId;
   const wallpaperId = typeof wp === 'string' && getFurniture(wp)?.category === 'wallpaper' && (game.furniture[wp] ?? 0) > 0 ? wp : null;
-  return { placed, wallpaperId };
+  return { placed, wallItems, wallpaperId };
 }
