@@ -8,6 +8,7 @@ import GroupsField from './GroupsField';
 import MeasureField from './MeasureField';
 import HopsField from './HopsField';
 import PairsField from './PairsField';
+import ClockField from './ClockField';
 import type { FieldMode } from './useSequence';
 import type { MathScene } from '../../../types/math';
 
@@ -34,5 +35,7 @@ export default function SceneField({ scene, mode, onDone }: { scene: MathScene; 
       return <HopsField scene={scene} mode={mode} onDone={onDone} />;
     case 'pairs':
       return <PairsField scene={scene} mode={mode} onDone={onDone} />;
+    case 'clock':
+      return <ClockField scene={scene} mode={mode} onDone={onDone} />;
   }
 }

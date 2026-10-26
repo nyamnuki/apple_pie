@@ -30,6 +30,15 @@ export const REGIONS: RegionDef[] = [
     art: 'items/sunflower.png',
     unlock: { type: 'lessons', region: 'crystalCave', count: 2 },
   },
+  // 햇살 들판 놀이를 2개 끝내면 열린다
+  {
+    id: 'windyHill',
+    nameKey: 'regions.windyHill',
+    topicsKey: 'regions.topics.windyHill',
+    emoji: '🪁',
+    art: 'items/kite.png',
+    unlock: { type: 'lessons', region: 'sunnyMeadow', count: 2 },
+  },
 ];
 
 export const getRegion = (id: RegionId) => REGIONS.find((r) => r.id === id)!;

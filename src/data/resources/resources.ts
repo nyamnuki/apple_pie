@@ -15,6 +15,9 @@ export const RESOURCES: ResourceDef[] = [
   // 햇살 들판
   { id: 'sunflowerSeed', nameKey: 'resources.sunflowerSeed', region: 'sunnyMeadow', rare: false, assetPath: 'items/res-sunflower-seed.png', placeholder: { emoji: '🌻', color: '#F5D0AD' } },
   { id: 'honey', nameKey: 'resources.honey', region: 'sunnyMeadow', rare: true, assetPath: 'items/res-honey.png', placeholder: { emoji: '🍯', color: '#F2CF5B' } },
+  // 바람 언덕
+  { id: 'feather', nameKey: 'resources.feather', region: 'windyHill', rare: false, assetPath: 'items/res-feather.png', placeholder: { emoji: '🪶', color: '#F3C6D2' } },
+  { id: 'cloudCotton', nameKey: 'resources.cloudCotton', region: 'windyHill', rare: true, assetPath: 'items/res-cloud-cotton.png', placeholder: { emoji: '☁️', color: '#D9D0EC' } },
   { id: 'mithril', nameKey: 'resources.mithril', region: 'crystalCave', rare: true, assetPath: 'items/res-mithril.png', placeholder: { emoji: '🪙', color: '#D9D0EC' } },
 ];
 

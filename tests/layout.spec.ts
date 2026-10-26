@@ -78,7 +78,7 @@ for (const locale of ['en', 'ko'] as const) {
       // 수정 동굴의 '10씩 묶어 세기' 만져 보기 (10묶음 버튼)
       await back();
       await back();
-      await page.locator('ol li button').nth(1).click(); // 지도 위에서 두 번째 = 수정 동굴 (맨 위 햇살 들판은 잠김)
+      await page.getByRole('button', { name: /^Crystal Cave|^수정 동굴/ }).click(); // 마을이 늘어도 이름으로 찾는다
       await page.locator('li button').last().click();
       await page.locator('main button:has(svg[data-icon="arrow-right"])').click();
       await check(page, 'lesson-groups');

@@ -12,8 +12,8 @@ export type UnlockCondition =
 // 그림 파일이 없을 때 코드로 그리는 모양 (src/features/room/placeholders/)
 export type PlaceholderShape =
   | 'bed' | 'rug' | 'lamp' | 'shelf' | 'desk' | 'pot' | 'chest' | 'stool' | 'basket' | 'lantern' | 'box'
-  | 'crystal' | 'mushroomBed' | 'cushion' | 'bench' | 'sunflowerPot' | 'honeyLamp'
-  | 'frame' | 'garland' | 'starFrame' | 'mirror' | 'gemGarland'; // 벽 장식
+  | 'crystal' | 'mushroomBed' | 'cushion' | 'bench' | 'sunflowerPot' | 'honeyLamp' | 'beanbag'
+  | 'frame' | 'garland' | 'starFrame' | 'mirror' | 'gemGarland' | 'kiteGarland'; // 벽 장식
 
 // 그림 파일이 없을 때 대신 쓰는 임시 그래픽 정보
 export interface PlaceholderStyle {

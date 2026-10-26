@@ -221,6 +221,36 @@ export const LESSONS: MathLesson[] = [
     apply: { kind: 'pairs', item: 'sunflower', total: 14 },
     applyChoices: ['even', 'odd'],
   },
+
+  // ===== 바람 언덕 =====
+  {
+    id: 'clock1',
+    rewards: { feather: 2 },
+    firstTimeBonus: { cloudCotton: 1 },
+    area: 'clock',
+    region: 'windyHill',
+    icon: 'windmill',
+    // 정각: 긴바늘은 12, 짧은바늘이 가리키는 수가 '몇 시'
+    explore: { kind: 'clock', hour: 3, half: false },
+    predict: { kind: 'clock', hour: 7, half: false },
+    predictChoices: ['6:00', '7:00', '8:00', '12:00'],
+    apply: { kind: 'clock', hour: 10, half: false },
+    applyChoices: ['9:00', '10:00', '10:30', '11:00'],
+  },
+  {
+    id: 'clock2',
+    rewards: { feather: 1, cloudCotton: 1 },
+    firstTimeBonus: { cloudCotton: 1 },
+    area: 'clock',
+    region: 'windyHill',
+    icon: 'kite',
+    // 30분: 긴바늘이 6, 짧은바늘은 두 수 사이 (앞의 수가 '몇 시')
+    explore: { kind: 'clock', hour: 4, half: true },
+    predict: { kind: 'clock', hour: 8, half: true },
+    predictChoices: ['6:00', '8:00', '8:30', '9:30'],
+    apply: { kind: 'clock', hour: 2, half: true },
+    applyChoices: ['1:30', '2:00', '2:30', '3:30'],
+  },
 ];
 
 export const getLesson = (id: LessonId) => LESSONS.find((l) => l.id === id)!;

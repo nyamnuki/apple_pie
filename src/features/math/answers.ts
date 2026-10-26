@@ -23,6 +23,8 @@ export function answerOf(scene: MathScene): MathAnswer {
       return scene.start + scene.hop;
     case 'pairs':
       return scene.total % 2 === 0 ? 'even' : 'odd';
+    case 'clock':
+      return `${scene.hour}:${scene.half ? '30' : '00'}`;
   }
 }
 
@@ -51,5 +53,7 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return { ...vars, start: formatNumber(scene.start), hop: formatNumber(Math.abs(scene.hop)) };
     case 'pairs':
       return { ...vars, total: formatNumber(scene.total), pairs: formatNumber(Math.floor(scene.total / 2)), left: formatNumber(scene.total % 2) };
+    case 'clock':
+      return { ...vars, hour: formatNumber(scene.hour) };
   }
 }

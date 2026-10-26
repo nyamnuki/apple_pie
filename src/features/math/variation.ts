@@ -95,6 +95,8 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
     }
     case 'pairs':
       return { ...scene, total: int(rng, 6, 15) };
+    case 'clock':
+      return { ...scene, hour: int(rng, 1, 12) };
     case 'pattern':
       return scene;
   }
@@ -114,8 +116,18 @@ export function numberChoices(scene: MathScene, rng: Rng): number[] {
   return [answer, ...pool.slice(0, 3)].sort((x, y) => x - y);
 }
 
+// 시계 선택지: 정답 + 한 시간 차이 + (30분이면 정각, 정각이면 30분) + 짧은바늘·긴바늘을 바꿔 읽은 실수
+export function clockChoices(scene: Extract<MathScene, { kind: 'clock' }>, rng: Rng): MathAnswer[] {
+  const t = (h: number, half: boolean) => `${((h + 11) % 12) + 1}:${half ? '30' : '00'}` as MathAnswer;
+  const right = t(scene.hour, scene.half);
+  const pool = [t(scene.hour + 1, scene.half), t(scene.hour - 1, scene.half), t(scene.hour, !scene.half), scene.half ? t(6, false) : t(12, false)];
+  const wrong = [...new Set(shuffle(rng, pool))].filter((x) => x !== right).slice(0, 3);
+  return [right, ...wrong].sort((a, b) => parseFloat(String(a).replace(':', '.')) - parseFloat(String(b).replace(':', '.')));
+}
+
 function choicesFor(scene: MathScene, original: MathAnswer[], rng: Rng): MathAnswer[] {
   if (scene.kind === 'compare' || scene.kind === 'pattern' || scene.kind === 'pairs') return original; // 'a/b/같다', '짝수/홀수', 그림 선택지는 그대로
+  if (scene.kind === 'clock') return clockChoices(scene, rng);
   return numberChoices(scene, rng);
 }
 
@@ -134,6 +146,7 @@ function makeVariant(lesson: MathLesson, rng: Rng): MathLesson {
 // '같은 문제'인지 비교하는 값: 보통은 정답, 비교 문제는 정답('많은 쪽')이 일부러 같으므로 두 수
 // (짝수·홀수는 답이 둘뿐이라 개수로 비교)
 export const sameKey = (scene: MathScene) => (scene.kind === 'compare' ? `${scene.a}:${scene.b}` : scene.kind === 'pairs' ? `${scene.total}` : String(answerOf(scene)));
+
 
 // 판마다 만든 문제를 기억해 둔다 (놀이 id → [0판, 1판, …])
 const cache = new Map<LessonId, MathLesson[]>();

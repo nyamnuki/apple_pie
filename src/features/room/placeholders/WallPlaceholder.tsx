@@ -72,6 +72,28 @@ function GemGarland({ w, h }: { w: number; h: number }) {
   );
 }
 
+// 연 가랜드: 줄에 매달린 작은 연들
+function KiteGarland({ w, h }: { w: number; h: number }) {
+  const n = Math.round(w / 40);
+  const colors = ['#F3C6D2', '#C8DFE8', '#F5D0AD', '#D9D0EC'];
+  return (
+    <g>
+      <path d={`M0 4 Q${w / 2} 20 ${w} 4`} fill="none" stroke="#B9855A" strokeWidth="2.5" />
+      {Array.from({ length: n }, (_, i) => {
+        const x = ((i + 0.5) / n) * w;
+        const y = 4 + Math.sin((x / w) * Math.PI) * 8;
+        const s = h * 0.36;
+        return (
+          <g key={i}>
+            <polygon points={`${x},${y} ${x + s * 0.8},${y + s} ${x},${y + s * 2.1} ${x - s * 0.8},${y + s}`} fill={colors[i % 4]} {...LINE} />
+            <path d={`M${x} ${y + s * 2.1} q-3 4 0 7`} fill="none" stroke="#6B5444" strokeOpacity="0.5" strokeWidth="1.2" />
+          </g>
+        );
+      })}
+    </g>
+  );
+}
+
 function Garland({ w, h }: { w: number; h: number }) {
   const n = Math.round(w / 34);
   const sag = (x: number) => 4 + Math.sin((x / w) * Math.PI) * 8; // 줄이 살짝 처진다
@@ -110,6 +132,8 @@ function wallArt(def: FurnitureDef, w: number, h: number) {
       return <MithrilMirror w={w} h={h} />;
     case 'gemGarland':
       return <GemGarland w={w} h={h} />;
+    case 'kiteGarland':
+      return <KiteGarland w={w} h={h} />;
     default:
       return <LeafFrame w={w} h={h} />;
   }

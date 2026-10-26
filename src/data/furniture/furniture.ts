@@ -198,6 +198,20 @@ export const FURNITURE: FurnitureDef[] = [
     placeholder: { shape: 'honeyLamp', color: '#F2CF5B', emoji: '🍯', height: 110 },
   },
   {
+    id: 'cloudBeanbag',
+    nameKey: 'furniture.cloudBeanbag.name',
+    descriptionKey: 'furniture.cloudBeanbag.description',
+    assetPath: 'furniture/cloud-beanbag.png',
+    category: 'seat',
+    width: 120,
+    height: 100,
+    gridWidth: 1,
+    gridHeight: 1,
+    // 바람 언덕 재료
+    unlockCondition: { type: 'recipe', cost: { cloudCotton: 2, feather: 1 } },
+    placeholder: { shape: 'beanbag', color: '#D9D0EC', emoji: '☁️', height: 34 },
+  },
+  {
     id: 'mushroomBed',
     nameKey: 'furniture.mushroomBed.name',
     descriptionKey: 'furniture.mushroomBed.description',
@@ -279,6 +293,20 @@ export const FURNITURE: FurnitureDef[] = [
     // 달빛 숲 재료
     unlockCondition: { type: 'recipe', cost: { glowBranch: 2, moonDew: 1 } },
     placeholder: { shape: 'starFrame', color: '#D9D0EC', emoji: '🌌', height: 0 },
+  },
+  {
+    id: 'kiteGarland',
+    nameKey: 'furniture.kiteGarland.name',
+    descriptionKey: 'furniture.kiteGarland.description',
+    assetPath: 'furniture/kite-garland.png',
+    category: 'wall',
+    wallBand: 'high',
+    width: 200,
+    height: 32,
+    gridWidth: 2,
+    gridHeight: 0,
+    unlockCondition: { type: 'recipe', cost: { feather: 3, apple: 1 } },
+    placeholder: { shape: 'kiteGarland', color: '#F3C6D2', emoji: '🪁', height: 0 },
   },
   {
     id: 'mithrilMirror',

@@ -28,12 +28,16 @@ test('친구는 가구가 없는 칸에서 돌아다닌다', async ({ page, cont
   await page.getByRole('button', { name: 'Start' }).click();
   await expect(page.locator('[data-pet]')).toHaveCount(2);
   const where = () => page.locator('[data-pet]').evaluateAll((els) => els.map((e) => e.getAttribute('data-spot')).join(' '));
+  // 걸음은 무작위라 제자리로 돌아올 수도 있으므로, 중간중간 본 자리 가운데 하나라도 달라졌는지 본다
   const before = await where();
-  await page.clock.runFor(20_000);
-  const after = await where();
-  expect(after).not.toBe(before);
+  const seen: string[] = [];
+  for (let i = 0; i < 8; i++) {
+    await page.clock.runFor(3_500);
+    seen.push(await where());
+  }
+  expect(seen.some((w) => w !== before)).toBe(true);
   // 침대(0,0~1,2)·화분(5,0)·버섯 조명(2,0) 칸에는 서지 않는다
-  for (const spot of after.split(' ')) expect(['0,0', '0,1', '0,2', '1,0', '1,1', '1,2', '5,0', '2,0']).not.toContain(spot);
+  for (const spot of seen.join(' ').split(' ')) expect(['0,0', '0,1', '0,2', '1,0', '1,1', '1,2', '5,0', '2,0']).not.toContain(spot);
 });
 
 test('놀이로 3번째 스티커를 받으면 새 친구가 왔다고 알려 준다 + 도감에 다음 친구까지 남은 수', async ({ page, context }) => {

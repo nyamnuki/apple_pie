@@ -7,7 +7,8 @@ export type MathItemId =
   | 'butterfly' | 'ladybug' | 'frog' | 'blueberry' | 'cookie'
   | 'moon' | 'star' | 'owl'
   | 'gem' | 'pebble' | 'bat' | 'candle'
-  | 'bee' | 'sunflower' | 'snail' | 'cloud';
+  | 'bee' | 'sunflower' | 'snail' | 'cloud'
+  | 'kite' | 'windmill' | 'dandelion' | 'bird';
 
 // 도형 종류와 도형 하나의 모습 (크기·색·돌림이 달라도 같은 도형이다)
 export type ShapeId = 'circle' | 'square' | 'triangle';
@@ -19,7 +20,7 @@ export interface ShapeSpec {
 }
 
 // 학습 영역
-export type MathArea = 'counting' | 'comparing' | 'addition' | 'subtraction' | 'patterns' | 'shapes' | 'skipCounting' | 'placeValue' | 'measuring' | 'numberLine' | 'evenOdd';
+export type MathArea = 'counting' | 'comparing' | 'addition' | 'subtraction' | 'patterns' | 'shapes' | 'skipCounting' | 'placeValue' | 'measuring' | 'numberLine' | 'evenOdd' | 'clock';
 
 // 한 장면의 수량 정보 — 언어와 상관없이 같은 값을 쓴다.
 export type MathScene =
@@ -36,13 +37,17 @@ export type MathScene =
   // 수직선 뛰기: start 에서 hop 칸 (음수면 왼쪽으로) 뛰어 어디에 닿는지
   | { kind: 'hops'; start: number; hop: number }
   // 짝짓기: total 개를 둘씩 짝지어 하나가 남으면 홀수, 딱 맞으면 짝수
-  | { kind: 'pairs'; item: MathItemId; total: number };
+  | { kind: 'pairs'; item: MathItemId; total: number }
+  // 시계 읽기: hour 시 (half 이면 30분)
+  | { kind: 'clock'; hour: number; half: boolean };
 
 // 길이를 재는 물건 (그림은 src/features/math/fields/MeasureField.tsx)
 export type MeasureThing = 'twig' | 'ribbon' | 'caterpillar';
 
 // 답: 숫자, 비교 문제의 'A 쪽이 많다 / B 쪽이 많다 / 똑같다', 또는 규칙 문제의 물건
-export type MathAnswer = number | 'a' | 'b' | 'same' | 'even' | 'odd' | MathItemId;
+// 시각 답: '7:00', '4:30'
+export type ClockTime = `${number}:${'00' | '30'}`;
+export type MathAnswer = number | 'a' | 'b' | 'same' | 'even' | 'odd' | MathItemId | ClockTime;
 
 // 비교 문제 선택지에 보일 그룹 이름 (번역 키)
 export interface CompareLabels {
@@ -68,7 +73,7 @@ export interface MathLesson {
 }
 
 // 놀이 id 목록 (언어 파일의 lessons.<id> 와 같아야 한다)
-export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1';
+export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2';
 
 // 놀이마다 언어 파일에 있어야 하는 문장들
 export type LessonTextPart =

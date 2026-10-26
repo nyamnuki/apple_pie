@@ -354,7 +354,83 @@ const Honey = () => (
   </g>
 );
 
+const Kite = () => (
+  <g>
+    <path d="M32 6 L50 26 L32 44 L14 26 Z" fill="#F3C6D2" {...L} />
+    <path d="M32 6 L32 44 M14 26 L50 26" stroke="#6B5444" strokeWidth="1.2" opacity="0.6" />
+    <path d="M32 6 L50 26 L32 26 Z" fill="#D9D0EC" opacity="0.8" />
+    <path d="M32 26 L32 44 L14 26 Z" fill="#C8DFE8" opacity="0.8" />
+    <path d="M32 44 C30 50 36 52 32 58" fill="none" {...L} />
+    <path d="M30 50 l-4 -2 l1 4 z M34 55 l4 -2 l-1 4 z" fill="#F5D0AD" {...L} strokeWidth={1} />
+  </g>
+);
+
+const Windmill = () => (
+  <g>
+    <Shadow rx={14} />
+    <path d="M26 58 L28 30 L36 30 L38 58 Z" fill="#FBF1DF" {...L} />
+    <path d="M30 58 V50 C30 47 34 47 34 50 V58 Z" fill="#B9855A" {...L} strokeWidth={1.2} />
+    {[0, 90, 180, 270].map((a) => (
+      <path key={a} d="M32 26 L34 8 L42 10 Z" fill={a % 180 ? '#C8DFE8' : '#F5D0AD'} {...L} strokeWidth={1.3} transform={`rotate(${a} 32 26)`} />
+    ))}
+    <circle cx="32" cy="26" r="3" fill="#B9855A" {...L} strokeWidth={1.2} />
+  </g>
+);
+
+const Dandelion = () => (
+  <g>
+    <Shadow rx={10} />
+    <path d="M32 30 C33 40 31 48 32 57" fill="none" stroke="#7FA077" strokeWidth="2.4" strokeLinecap="round" />
+    <path d="M32 48 C26 46 22 48 21 50 C25 52 29 52 32 48 Z" fill="#A8C3A0" {...L} strokeWidth={1.1} />
+    {Array.from({ length: 14 }, (_, i) => (i * 360) / 14).map((a) => (
+      <g key={a} transform={`rotate(${a} 32 22)`}>
+        <path d="M32 22 L32 9" stroke="#C9C3B6" strokeWidth="1" />
+        <circle cx="32" cy="8" r="2.4" fill="#FFFFFF" stroke="#C9C3B6" strokeWidth="0.8" />
+      </g>
+    ))}
+    <circle cx="32" cy="22" r="3" fill="#E8D9BF" {...L} strokeWidth={1} />
+  </g>
+);
+
+const Bird = () => (
+  <g>
+    <Shadow rx={14} />
+    <path d="M14 38 C14 26 24 18 34 20 C44 22 50 30 48 40 C46 50 34 54 24 52 C18 50 14 44 14 38 Z" fill="#C8DFE8" {...L} />
+    <path d="M22 36 C28 32 36 34 40 42 C32 44 26 42 22 36 Z" fill="#A9C6D6" {...L} strokeWidth={1.2} />
+    <path d="M46 30 L56 32 L47 36 Z" fill="#F5D0AD" {...L} strokeWidth={1.2} />
+    <circle cx="40" cy="29" r="2.2" fill="#59483C" />
+    <ellipse cx="38" cy="35" rx="2.6" ry="1.5" fill="#F3C6D2" />
+    <path d="M14 38 L6 34 L8 42 Z" fill="#A9C6D6" {...L} strokeWidth={1.2} />
+    <path d="M28 52 l-2 6 M34 52 l1 6" stroke="#E9A05A" strokeWidth="2" strokeLinecap="round" />
+    <Shine cx={24} cy={28} rx={4} ry={2.5} />
+  </g>
+);
+
+const Feather = () => (
+  <g>
+    <Shadow rx={14} />
+    <path d="M14 54 C18 34 30 16 50 8 C50 26 38 46 18 52 Z" fill="#F3C6D2" {...L} />
+    <path d="M14 56 C24 40 36 24 48 10" fill="none" stroke="#B5766A" strokeWidth="1.6" strokeLinecap="round" />
+    <path d="M24 42 L32 40 M28 36 L37 33 M33 29 L42 24 M22 46 L18 40 M27 38 L23 31 M33 31 L30 24" stroke="#E79BB0" strokeWidth="1.1" />
+  </g>
+);
+
+const CloudCotton = () => (
+  <g>
+    <Shadow rx={18} />
+    <path d="M14 48 C6 48 6 36 14 35 C14 26 26 22 31 29 C35 20 50 22 50 33 C58 33 59 48 50 48 Z" fill="#FFFFFF" {...L} />
+    <path d="M18 38 C20 33 25 31 29 33" fill="none" stroke="#D9D0EC" strokeWidth="3" strokeLinecap="round" />
+    <path d="M50 12 l1.4 3.4 l3.4 1.4 l-3.4 1.4 l-1.4 3.4 l-1.4 -3.4 l-3.4 -1.4 l3.4 -1.4 z" fill="#FFF0B8" {...L} strokeWidth={0.9} />
+  </g>
+);
+
 export const ITEM_ART: Record<string, () => ReactElement> = {
+  'items/kite.png': Kite,
+  'items/windmill.png': Windmill,
+  'items/dandelion.png': Dandelion,
+  'items/bird.png': Bird,
+  'items/res-feather.png': Feather,
+  'items/res-cloud-cotton.png': CloudCotton,
   'items/bee.png': Bee,
   'items/sunflower.png': Sunflower,
   'items/snail.png': Snail,

@@ -5,6 +5,7 @@ import { useI18n } from '../../../i18n';
 import type { CompareLabels, MathAnswer, MathItemId } from '../../../types/math';
 
 const isItem = (c: MathAnswer): c is MathItemId => typeof c === 'string' && c in MATH_ITEMS;
+const isTime = (c: MathAnswer) => typeof c === 'string' && /^\d{1,2}:\d\d$/.test(c);
 
 interface Props {
   choices: MathAnswer[];
@@ -17,6 +18,11 @@ interface Props {
 // 큰 답 버튼들. 상태를 색만이 아니라 ✓ / ✕ 표시로도 알려준다.
 export default function ChoiceButtons({ choices, labels, tried = [], chosen = null, onChoose }: Props) {
   const { t, formatNumber } = useI18n();
+  // 시각: 영어 '7:00' / 한국어 '7시', '7시 30분'
+  const timeLabel = (c: MathAnswer) => {
+    const [h, m] = String(c).split(':');
+    return t(m === '30' ? 'math.timeHalf' : 'math.timeHour', { h: formatNumber(Number(h)) });
+  };
   const labelOf = (c: MathAnswer) =>
     typeof c === 'number'
       ? formatNumber(c)
@@ -26,12 +32,14 @@ export default function ChoiceButtons({ choices, labels, tried = [], chosen = nu
           ? t('math.same')
           : c === 'even' || c === 'odd'
             ? t(c === 'even' ? 'math.even' : 'math.odd')
+            : isTime(c)
+              ? timeLabel(c)
           : t(c === 'a' ? labels!.a : labels!.b);
   const numeric = typeof choices[0] === 'number';
   const items = isItem(choices[0]);
 
   return (
-    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric || (items && choices.length > 3) ? 'grid-cols-4' : choices.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
+    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric || (items && choices.length > 3) ? 'grid-cols-4' : choices.length === 2 || isTime(choices[0]) ? 'grid-cols-2' : 'grid-cols-3'}`}>
       {choices.map((c) => {
         const isTried = tried.includes(c);
         const isChosen = chosen === c;

@@ -363,6 +363,19 @@ const PAINTERS: Partial<Record<PlaceholderShape, Painter>> = {
       </g>
     );
   },
+  // 구름 빈백: 폭신한 구름 모양 의자
+  beanbag: (a) => {
+    const e = flatEllipse(inset(a, 0.8), 0);
+    return (
+      <g {...LINE}>
+        <ellipse cx={e.cx} cy={e.cy - 10} rx={e.rx} ry={e.ry + 10} fill="#F1E9F7" />
+        <circle cx={e.cx - e.rx * 0.45} cy={e.cy - 26} r={e.rx * 0.42} fill="#FFFFFF" />
+        <circle cx={e.cx + e.rx * 0.35} cy={e.cy - 28} r={e.rx * 0.48} fill="#FFFFFF" />
+        <circle cx={e.cx} cy={e.cy - 34} r={e.rx * 0.4} fill="#FFFFFF" />
+        <path d={`M${e.cx - e.rx * 0.6} ${e.cy - 30} q6 -8 14 -6`} fill="none" stroke="#D9D0EC" strokeWidth="3" />
+      </g>
+    );
+  },
   // 기본 상자 (모양을 아직 정하지 않은 가구)
   box: (a) => <Box area={a} h={40} color="#D5E4C8" />,
 };

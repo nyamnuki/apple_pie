@@ -26,6 +26,8 @@ export function sizeOk(scene: MathScene): boolean {
       return scene.hop !== 0 && Math.abs(scene.hop) <= 9 && scene.start >= 0 && scene.start <= MAX && scene.start + scene.hop >= 0 && scene.start + scene.hop <= MAX;
     case 'pairs':
       return scene.total >= 4 && scene.total <= 16;
+    case 'clock':
+      return Number.isInteger(scene.hour) && scene.hour >= 1 && scene.hour <= 12;
   }
 }
 
