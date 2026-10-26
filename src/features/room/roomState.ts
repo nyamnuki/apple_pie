@@ -29,6 +29,7 @@ export type RoomAction =
   | { type: 'placeWall'; item: WallItem }
   | { type: 'moveWall'; uid: string; wall: WallSide; slot: number }
   | { type: 'setWallpaper'; wallpaperId: string | null }
+  | { type: 'clear' } // 가구·벽 장식을 모두 가방으로 (벽지는 그대로)
   | { type: 'reset' }; // 처음 방 모습으로
 
 // 가진 가구 개수 (플레이어 상태에서 받아 온다)
@@ -95,6 +96,8 @@ export function applyRoomAction(state: RoomLayout, action: RoomAction, owned: Ow
       if (id !== null && (getFurniture(id)?.category !== 'wallpaper' || (owned[id] ?? 0) < 1)) return state;
       return { ...state, wallpaperId: id };
     }
+    case 'clear':
+      return state.placed.length === 0 && state.wallItems.length === 0 ? state : { ...state, placed: [], wallItems: [] };
     case 'reset':
       return DEFAULT_LAYOUT;
     case 'load':

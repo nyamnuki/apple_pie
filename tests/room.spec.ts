@@ -201,3 +201,25 @@ test('낮에는 조명이 버튼이 아니다', async ({ page, context }) => {
   await expect(page.getByRole('button', { name: 'Play' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Mushroom Lamp light' })).toHaveCount(0);
 });
+
+test('꾸미기 모두 치우기: 한 번 더 묻고, 치운 뒤 다시 원래대로 되돌릴 수 있다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Decorate' }).click();
+  await page.getByRole('button', { name: 'Put everything away' }).click();
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.getByRole('button', { name: 'Leaf Bed in your room' })).toBeVisible();
+  await page.getByRole('button', { name: 'Put everything away' }).click();
+  await expect(page.getByRole('alertdialog', { name: 'Put all the furniture back in your bag?' })).toBeVisible();
+  await page.getByRole('button', { name: 'Yes, put away' }).click();
+  await expect(guide(page)).toHaveText('Everything is back in your bag. Your room is ready to decorate again!');
+  await expect(page.getByRole('button', { name: /in your room$/ })).toHaveCount(0);
+  await page.waitForTimeout(400);
+  expect((await readSave(page)).room.placed).toEqual([]);
+  await page.getByRole('button', { name: 'Put it all back' }).click();
+  await expect(guide(page)).toHaveText('Everything is back where it was!');
+  await expect(page.getByRole('button', { name: 'Leaf Bed in your room' })).toBeVisible();
+  await page.waitForTimeout(400);
+  expect((await readSave(page)).room.placed).toHaveLength(4);
+});

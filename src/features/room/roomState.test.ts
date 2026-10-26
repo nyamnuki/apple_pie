@@ -131,6 +131,14 @@ describe('벽지와 초기화', () => {
     expect(apply(room, { type: 'setWallpaper', wallpaperId: 'leafBed' })).toBe(room);
   });
 
+  it('모두 치우기: 가구·벽 장식은 비우고 벽지는 그대로, 빈 방이면 그대로', () => {
+    let s = apply(room, { type: 'placeWall', item: { uid: 'f1', furnitureId: 'leafFrame', wall: 'left', slot: 0 } });
+    s = apply(s, { type: 'setWallpaper', wallpaperId: 'woodlandWallpaper' });
+    const cleared = apply(s, { type: 'clear' });
+    expect(cleared).toEqual({ placed: [], wallItems: [], wallpaperId: 'woodlandWallpaper' });
+    expect(apply(cleared, { type: 'clear' })).toBe(cleared);
+  });
+
   it('초기화는 처음 방으로', () => {
     expect(apply(room, { type: 'reset' })).toBe(DEFAULT_LAYOUT);
   });

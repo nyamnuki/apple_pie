@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ZoomableRoom from './ZoomableRoom';
 import AppShell from '../../../components/AppShell';
 import ScreenHeader from '../../../components/ScreenHeader';
+import BigButton from '../../../components/BigButton';
+import { PackageOpen, RotateCcw } from '../../../components/icons';
 import RoomView, { spotKey, wallKey, type FloorGhost, type WallGhostSpot } from '../RoomView';
 import FurnitureTray from './FurnitureTray';
 import SelectedActions from './SelectedActions';
@@ -13,7 +15,7 @@ import { getFurniture } from '../../../data/furniture/furniture';
 import { useGame } from '../../../app/GameProvider';
 import { useSound } from '../../../services/audio/SoundProvider';
 import { useI18n, type TranslationKey } from '../../../i18n';
-import type { PlacedFurniture, WallItem, WallSide } from '../../../types/furniture';
+import type { PlacedFurniture, RoomLayout, WallItem, WallSide } from '../../../types/furniture';
 
 // 꾸미기 화면의 상태
 type Mode =
@@ -84,7 +86,17 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
   const [celebrate, setCelebrate] = useState<{ uid: string; n: number } | null>(null);
   const [shake, setShake] = useState<{ uid: string; n: number } | null>(null);
 
+  // 모두 치우기: 한 번 더 묻는 중인지, 치운 뒤 되돌릴 예전 방
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [undo, setUndo] = useState<RoomLayout | null>(null);
+  // 묻는 상자가 화면 아래에 가려지지 않게
+  useEffect(() => {
+    if (confirmClear) document.getElementById('clear-q')?.parentElement?.scrollIntoView({ block: 'nearest' });
+  }, [confirmClear]);
+
   const change = (next: Mode, message: TranslationKey | null = null) => {
+    setConfirmClear(false);
+    setUndo(null);
     setMode(next);
     setFlash(message);
     setSuggest(null);
@@ -217,6 +229,19 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     setFlash('decorate.painted');
   };
 
+  const clearAll = () => {
+    const before = layout;
+    dispatch({ type: 'clear' });
+    change({ kind: 'idle' }, 'decorate.cleared');
+    setUndo(before);
+    play.place();
+  };
+  const restore = () => {
+    if (!undo) return;
+    dispatch({ type: 'load', layout: undo });
+    change({ kind: 'idle' }, 'decorate.restored');
+  };
+
   const putAway = () => {
     if (!activeUid) return;
     dispatch({ type: 'remove', uid: activeUid });
@@ -287,7 +312,35 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
               onCancel={() => change(mode.kind === 'moving' ? { kind: 'selected', uid: mode.uid } : { kind: 'idle' })}
             />
           ) : (
-            <FurnitureTray layout={layout} owned={game.furniture} onPick={pick} />
+            <div className="flex flex-col gap-3">
+              <FurnitureTray layout={layout} owned={game.furniture} onPick={pick} />
+              {/* 모두 치우기 (한 번 더 묻기) → 치운 뒤에는 되돌리기 */}
+              {undo ? (
+                <BigButton variant="sage" onClick={restore}>
+                  <RotateCcw size={24} aria-hidden />
+                  {t('decorate.undoClear')}
+                </BigButton>
+              ) : confirmClear ? (
+                <div role="alertdialog" aria-labelledby="clear-q" className="flex flex-col gap-2 rounded-3xl bg-cream/90 p-3">
+                  <p id="clear-q" className="text-lg font-semibold">
+                    {t('decorate.clearAsk')}
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <BigButton onClick={clearAll}>{t('decorate.clearYes')}</BigButton>
+                    <BigButton variant="soft" onClick={() => setConfirmClear(false)}>
+                      {t('decorate.cancel')}
+                    </BigButton>
+                  </div>
+                </div>
+              ) : (
+                (layout.placed.length > 0 || layout.wallItems.length > 0) && (
+                  <BigButton variant="soft" onClick={() => setConfirmClear(true)}>
+                    <PackageOpen size={24} aria-hidden />
+                    {t('decorate.clearAll')}
+                  </BigButton>
+                )
+              )}
+            </div>
           )}
         </div>
       </div>
