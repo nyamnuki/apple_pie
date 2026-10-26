@@ -1,3 +1,5 @@
+import ResourceChip from '../../components/ResourceChip';
+import { STAMPS_PER_GOLDEN, goldenForStamp } from '../../app/gameState';
 import { useMemo, useState } from 'react';
 import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -25,6 +27,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
   const lesson = useMemo(() => dailyLesson(today, game.completedLessons), [today, game.completedLessons]);
   const [wrong, setWrong] = useState<MathAnswer[]>([]);
   const [solved, setSolved] = useState(game.dailyDone.includes(key));
+  const [justSolved, setJustSolved] = useState(false); // 이 화면에서 방금 풀었는지 (선물은 그때만 보여 준다)
 
   if (!lesson) return null;
   const answer = answerOf(lesson.apply);
@@ -38,6 +41,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
     if (c === answer) {
       play.reward();
       setSolved(true);
+      setJustSolved(true);
       dispatch({ type: 'dailyDone', date: key });
     } else {
       play.tryAgain();
@@ -63,6 +67,14 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
               </span>
               <span className="text-xl font-bold">{t('daily.stamps', { n: formatNumber(game.dailyDone.length) })}</span>
             </div>
+            {justSolved && goldenForStamp(game.dailyDone.length) ? (
+              <div role="status" className="flex animate-rise items-center gap-3 text-xl font-bold" style={{ animationDelay: '300ms' }}>
+                {t('daily.golden')}
+                <ResourceChip id="goldenAcorn" amount={1} prefix="+" size="lg" />
+              </div>
+            ) : (
+              <p className="text-lg font-semibold">{t('daily.nextGolden', { n: formatNumber(STAMPS_PER_GOLDEN - (game.dailyDone.length % STAMPS_PER_GOLDEN)) })}</p>
+            )}
             <BigButton size="lg" className="w-full" onClick={onBack}>
               {t('daily.back')}
             </BigButton>

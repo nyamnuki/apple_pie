@@ -59,6 +59,10 @@ function addPlay(prev: LessonStats | undefined, wrongTries: number, at: string):
   return { plays: s.plays + 1, firstTry: s.firstTry + (wrongTries === 0 ? 1 : 0), hints: s.hints + Math.min(Math.max(wrongTries, 0), 3), lastPlayed: at };
 }
 
+// 오늘의 문제 도장 n번째에 황금 도토리를 받는지 (3개마다)
+export const STAMPS_PER_GOLDEN = 3;
+export const goldenForStamp = (n: number) => n > 0 && n % STAMPS_PER_GOLDEN === 0;
+
 // 그날 끝낸 놀이 수 +1 (오래된 날은 지워 최근 60일만 남긴다)
 export const PLAY_DAYS_KEPT = 60;
 function addDay(days: Record<string, number>, day: string): Record<string, number> {
@@ -83,8 +87,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return createInitialGameState();
     case 'load':
       return action.state;
-    case 'dailyDone':
-      return state.dailyDone.includes(action.date) ? state : { ...state, dailyDone: [...state.dailyDone, action.date] };
+    case 'dailyDone': {
+      if (state.dailyDone.includes(action.date)) return state;
+      const dailyDone = [...state.dailyDone, action.date];
+      // 도장 3개마다 황금 도토리 1개 (처음 보너스로만 받던 재료라, 다 쓰면 못 만드는 가구가 생기지 않게)
+      const resources = goldenForStamp(dailyDone.length) ? addBundle(state.resources, { goldenAcorn: 1 }) : state.resources;
+      return { ...state, dailyDone, resources };
+    }
     case 'wear': {
       if (state.outfit[action.slot] === action.id) return state;
       if (action.id !== null && !canWear(action.slot, action.id, state.stickers.length)) return state;

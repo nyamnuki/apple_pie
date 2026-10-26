@@ -485,6 +485,8 @@ export const ko: Messages = {
     from: '나온 놀이: {lesson}',
     stamp: '도장을 받았어요!',
     stamps: '오늘의 문제 도장: {n}개',
+    golden: '도장 3개 선물:',
+    nextGolden: '도장을 {n}개 더 모으면 황금 도토리를 받아요!',
     back: '지도로 돌아가기',
   },
   pets: {
@@ -522,6 +524,7 @@ export const ko: Messages = {
     goal: '{name} 만들기!',
     stillNeed: '더 필요한 재료',
     getFrom: '이 놀이에서 모을 수 있어요: {games}',
+    getDaily: '황금 도토리는 오늘의 문제 도장 3개마다 하나씩 받아요.',
   },
   inventory: {
     title: '내 가방',

@@ -483,6 +483,8 @@ export const en = {
     from: 'From: {lesson}',
     stamp: 'You got a stamp!',
     stamps: 'Puzzle stamps: {n}',
+    golden: 'A gift for 3 stamps:',
+    nextGolden: '{n} more stamps for a golden acorn!',
     back: 'Back to the map',
   },
   pets: {
@@ -520,6 +522,7 @@ export const en = {
     goal: 'Make the {name}!',
     stillNeed: 'Still need',
     getFrom: 'Play to get them: {games}',
+    getDaily: "Get golden acorns from Today's puzzle stamps (one for every 3).",
   },
   inventory: {
     title: 'My Bag',

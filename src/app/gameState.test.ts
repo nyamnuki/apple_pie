@@ -52,6 +52,19 @@ describe('스티커 도감', () => {
   });
 });
 
+describe('오늘의 문제 도장', () => {
+  it('같은 날은 한 번, 도장 3개마다 황금 도토리 1개', () => {
+    let s = createInitialGameState();
+    for (const d of ['2026-10-01', '2026-10-02', '2026-10-02', '2026-10-03']) s = gameReducer(s, { type: 'dailyDone', date: d });
+    expect(s.dailyDone).toHaveLength(3);
+    expect(s.resources.goldenAcorn).toBe(1);
+    for (const d of ['2026-10-04', '2026-10-05']) s = gameReducer(s, { type: 'dailyDone', date: d });
+    expect(s.resources.goldenAcorn).toBe(1);
+    s = gameReducer(s, { type: 'dailyDone', date: '2026-10-06' });
+    expect(s.resources.goldenAcorn).toBe(2);
+  });
+});
+
 describe('루루 옷장', () => {
   const withStickers = (n: number): GameState => ({ ...createInitialGameState(), stickers: Array.from({ length: n }, (_, i) => `s${i}`) });
 

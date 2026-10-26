@@ -106,6 +106,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
               ))}
             </div>
             {goal.from.length > 0 && <p className="text-base">{t('workshop.getFrom', { games: goal.from.map((l) => t(lessonKey(l.id, 'title'))).join(', ') })}</p>}
+            {goal.daily && <p className="text-base">{t('workshop.getDaily')}</p>}
           </div>
         </section>
       )}

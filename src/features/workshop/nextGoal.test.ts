@@ -29,13 +29,15 @@ describe('공방 다음 목표', () => {
     expect(nextGoal(state({ resources: all }))).toBeNull();
   });
 
-  it('처음 보너스로만 받는 재료(황금 도토리)를 더 모을 수 없으면 그 가구는 목표로 삼지 않는다', () => {
-    const done = ['counting1', 'comparing1', 'addition1', 'subtraction1'] as GameState['completedLessons'];
-    const goal = nextGoal(state({ resources: { acorn: 99, apple: 99 }, completedLessons: done }));
-    expect(goal?.missing.some(([id]) => id === 'goldenAcorn') ?? false).toBe(false);
-    // 아직 안 끝낸 놀이가 있으면 그 놀이를 권한다
+  it('황금 도토리: 처음 보너스가 남았으면 그 놀이, 다 받았으면 오늘의 문제 도장', () => {
     const open = nextGoal(state({ resources: { acorn: 99, apple: 99 }, completedLessons: ['counting1'] }))!;
     expect(open.missing).toEqual([['goldenAcorn', 1]]);
     expect(open.from.map((l) => l.id)).not.toContain('counting1');
+    expect(open.daily).toBe(false);
+    const done = ['counting1', 'comparing1', 'addition1', 'subtraction1'] as GameState['completedLessons'];
+    const later = nextGoal(state({ resources: { acorn: 99, apple: 99 }, completedLessons: done }))!;
+    expect(later.missing).toEqual([['goldenAcorn', 1]]);
+    expect(later.from).toEqual([]);
+    expect(later.daily).toBe(true);
   });
 });
