@@ -8,15 +8,17 @@ export const SETTINGS_KEY = 'mathTown.settings';
 interface Settings {
   sound: boolean; // 효과음
   music: boolean; // 배경 음악
+  voice: boolean; // 말풍선이 바뀌면 자동으로 읽어 주기
 }
 
 function loadSettings(): Settings {
   try {
     const raw = JSON.parse(readString(SETTINGS_KEY) ?? '{}');
-    // 처음에는 둘 다 켬
-    return { sound: typeof raw?.sound === 'boolean' ? raw.sound : true, music: typeof raw?.music === 'boolean' ? raw.music : true };
+    // 처음에는 모두 켬 (글을 아직 못 읽는 아이를 위해 읽어 주기도 켬)
+    const flag = (v: unknown) => (typeof v === 'boolean' ? v : true);
+    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice) };
   } catch {
-    return { sound: true, music: true };
+    return { sound: true, music: true, voice: true };
   }
 }
 
@@ -25,6 +27,8 @@ interface SoundValue {
   setSoundOn: (on: boolean) => void;
   musicOn: boolean;
   setMusicOn: (on: boolean) => void;
+  voiceOn: boolean; // 자동 읽어 주기
+  setVoiceOn: (on: boolean) => void;
   // 아이가 화면을 한 번이라도 눌렀는지 (브라우저 규칙상 그 뒤에만 음악을 틀 수 있다)
   interacted: boolean;
   play: typeof SOUNDS; // 효과음이 꺼져 있으면 아무것도 하지 않는다
@@ -45,6 +49,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, []);
   const setSoundOn = useCallback((on: boolean) => update({ sound: on }), [update]);
   const setMusicOn = useCallback((on: boolean) => update({ music: on }), [update]);
+  const setVoiceOn = useCallback((on: boolean) => update({ voice: on }), [update]);
 
   // 첫 터치·클릭·키 입력을 기다린다.
   // 브라우저는 손가락을 '뗄 때'(pointerup·touchend·click)나 키를 누를 때만 소리를 허락하므로
@@ -66,8 +71,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, [settings.sound]);
 
   const value = useMemo(
-    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, interacted, play }),
-    [settings, setSoundOn, setMusicOn, interacted, play],
+    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, interacted, play }),
+    [settings, setSoundOn, setMusicOn, setVoiceOn, interacted, play],
   );
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
 }

@@ -99,6 +99,9 @@ export const ko: Messages = {
     music: '배경 음악',
     musicOn: '음악 켜짐',
     musicOff: '음악 꺼짐',
+    voice: '읽어 주기',
+    voiceOn: '말을 소리 내어 읽어 줘요',
+    voiceOff: '스피커를 누를 때만 읽어 줘요',
   },
   math: {
     title: '수학 놀이',
@@ -394,6 +397,7 @@ export const ko: Messages = {
     },
   },
   a11y: {
+    readAloud: '소리 내어 읽기',
     openSettings: '설정 열기',
     goBack: '뒤로 가기',
     floorSpot: '바닥 {row}번째 줄 {col}번째 칸',

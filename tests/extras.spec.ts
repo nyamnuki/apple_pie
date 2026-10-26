@@ -47,7 +47,7 @@ test.describe('효과음', () => {
     await sw.click();
     await expect(sw).toHaveAttribute('aria-checked', 'false');
     await expect(sw).toContainText('Sound is off');
-    expect(await page.evaluate(() => localStorage.getItem('mathTown.settings'))).toBe('{"sound":false,"music":false}');
+    expect(JSON.parse((await page.evaluate(() => localStorage.getItem('mathTown.settings')))!)).toMatchObject({ sound: false, music: false });
 
     await page.reload();
     await countApples(page);
@@ -92,7 +92,7 @@ test.describe('배경 음악', () => {
     const afterOff = (await types(page)).length;
     await page.waitForTimeout(1500);
     expect((await types(page)).length).toBe(afterOff); // 끈 뒤에는 새 음이 없다
-    expect(JSON.parse((await page.evaluate(() => localStorage.getItem('mathTown.settings')))!)).toEqual({ sound: true, music: false });
+    expect(JSON.parse((await page.evaluate(() => localStorage.getItem('mathTown.settings')))!)).toMatchObject({ sound: true, music: false });
 
     await page.reload();
     await page.getByRole('button', { name: 'Open settings' }).click();

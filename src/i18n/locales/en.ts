@@ -98,6 +98,9 @@ export const en = {
     music: 'Music',
     musicOn: 'Music is on',
     musicOff: 'Music is off',
+    voice: 'Read aloud',
+    voiceOn: 'Words are read aloud',
+    voiceOff: 'Read only when I tap the speaker',
   },
   math: {
     title: 'Math Play',
@@ -392,6 +395,7 @@ export const en = {
     },
   },
   a11y: {
+    readAloud: 'Read it aloud',
     openSettings: 'Open settings',
     goBack: 'Go back',
     floorSpot: 'Floor spot, row {row}, column {col}',

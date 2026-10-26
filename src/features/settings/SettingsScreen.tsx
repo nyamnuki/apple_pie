@@ -1,4 +1,4 @@
-import { Languages, Save, Lock, Volume2, VolumeX, Music } from 'lucide-react';
+import { Languages, Save, Lock, Volume2, VolumeX, Music, MessageCircle } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -13,7 +13,7 @@ import { SOUNDS } from '../../services/audio/sound';
 export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: () => void; onParent: () => void; canSave: boolean }) {
   const { t, formatDateTime } = useI18n();
   const savedAt = canSave ? readSavedAt() : null;
-  const { soundOn, setSoundOn, musicOn, setMusicOn } = useSound();
+  const { soundOn, setSoundOn, musicOn, setMusicOn, voiceOn, setVoiceOn } = useSound();
   return (
     <AppShell>
       <ScreenHeader title={t('settings.title')} onBack={onBack} />
@@ -47,6 +47,15 @@ export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: 
         onLabel={t('settings.musicOn')}
         offLabel={t('settings.musicOff')}
         onToggle={() => setMusicOn(!musicOn)}
+      />
+      <SettingSwitch
+        id="voice-heading"
+        title={t('settings.voice')}
+        icon={<MessageCircle size={28} aria-hidden />}
+        on={voiceOn}
+        onLabel={t('settings.voiceOn')}
+        offLabel={t('settings.voiceOff')}
+        onToggle={() => setVoiceOn(!voiceOn)}
       />
 
       <section aria-labelledby="save-heading" className="selectable mt-4 rounded-[2rem] border-2 border-bark/10 bg-moss/60 p-5 shadow-[inset_0_2px_0_rgb(255_255_255/0.5)]">
