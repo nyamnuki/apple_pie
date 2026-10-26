@@ -1,3 +1,5 @@
+import { Check } from '../../components/icons';
+import { useGame } from '../../app/GameProvider';
 import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
 import AssetIcon from '../../components/AssetIcon';
@@ -33,6 +35,7 @@ interface Props {
 // 수학 놀이 고르기 (고른 마을의 놀이만)
 export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
   const { t, tKey } = useI18n();
+  const { game } = useGame();
   const region = getRegion(regionId);
   const lessons = LESSONS.filter((l) => l.region === regionId);
   return (
@@ -56,9 +59,26 @@ export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
                 <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-apricot">
                   <AssetIcon path={icon.assetPath} emoji={icon.emoji} size={44} />
                 </span>
-                <span>
+                <span className="min-w-0 flex-1">
                   <span className="block text-sm font-semibold text-wood">{t(AREA_KEY[lesson.area])}</span>
                   <span className="block text-2xl font-bold leading-tight">{t(lessonKey(lesson.id, 'title'))}</span>
+                  {/* 해 본 놀이: 체크, '해 보기'를 한 번에 맞힌 적이 있으면 별 (글자와 모양으로 표시) */}
+                  {game.completedLessons.includes(lesson.id) && (
+                    <span className="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-sm font-semibold">
+                      <span className="inline-flex items-center gap-1">
+                        <Check size={16} strokeWidth={3} aria-hidden />
+                        {t('math.played')}
+                      </span>
+                      {(game.lessonStats[lesson.id]?.firstTry ?? 0) > 0 && (
+                        <span className="inline-flex items-center gap-1" data-star={lesson.id}>
+                          <svg viewBox="0 0 20 20" width="18" height="18" aria-hidden="true">
+                            <path d="M10 1.8 l2.5 5.2 l5.7 .7 l-4.2 3.9 l1.1 5.6 l-5.1 -2.8 l-5.1 2.8 l1.1 -5.6 l-4.2 -3.9 l5.7 -.7 z" fill="#F2C84B" stroke="#6B5444" strokeWidth="1.4" strokeLinejoin="round" />
+                          </svg>
+                          {t('math.firstTryStar')}
+                        </span>
+                      )}
+                    </span>
+                  )}
                 </span>
               </button>
             </li>

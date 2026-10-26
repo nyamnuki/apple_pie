@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { seed, makeSave } from './helpers';
+import { seed, makeSave, goToRegion } from './helpers';
 
 // 그래픽·화면 다듬기 점검: 없는 그림 요청 없음, 목록 그림, 권하는 자리 화면 배치, 상태 표시, 글자 선택, 움직임 줄이기
 
@@ -141,4 +141,24 @@ test('그림 모아 보기(#gallery)에 캐릭터 15장, 가구, 물건·재료�
   await expect(page.getByRole('heading', { name: 'Characters' })).toBeVisible();
   await expect(page.getByRole('img', { name: /Lulu|Doto|Momo/ })).toHaveCount(15);
   expect(await page.evaluate(() => document.body.innerText.match(/\p{Extended_Pictographic}/gu))).toBeNull();
+});
+
+test('놀이 메뉴: 해 본 놀이는 체크, 한 번에 맞힌 적이 있으면 별', async ({ page, context }) => {
+  await seed(context, {
+    save: makeSave({
+      completedLessons: ['counting1', 'addition1'],
+      lessonStats: {
+        counting1: { plays: 2, firstTry: 1, hints: 1, lastPlayed: '2026-10-26T09:00:00Z' },
+        addition1: { plays: 1, firstTry: 0, hints: 2, lastPlayed: '2026-10-26T09:00:00Z' },
+      },
+    }),
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await expect(page.getByRole('button', { name: /Counting Apples/ })).toContainText('PlayedFirst-try star');
+  await expect(page.getByRole('button', { name: /Adding/ })).toContainText('Played');
+  await expect(page.locator('[data-star]')).toHaveCount(1);
+  await expect(page.getByRole('button', { name: /Taking Away/ })).not.toContainText('Played');
 });

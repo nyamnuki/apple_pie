@@ -135,6 +135,8 @@ export const en = {
   },
   math: {
     title: 'Math Play',
+    played: 'Played',
+    firstTryStar: 'First-try star',
     chooseLesson: 'Choose a game to play!',
     tryAgain: "Let's try another way!",
     next: 'Next',

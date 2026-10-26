@@ -136,6 +136,8 @@ export const ko: Messages = {
   },
   math: {
     title: '수학 놀이',
+    played: '해 봤어요',
+    firstTryStar: '한 번에 맞힘',
     chooseLesson: '하고 싶은 놀이를 골라요!',
     tryAgain: '다른 방법으로 해 볼까?',
     next: '다음',
