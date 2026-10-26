@@ -17,10 +17,11 @@ interface Props {
   onBack: () => void;
   onWorkshop: () => void;
   onDecorate: () => void;
+  onPlace: (furnitureId: string) => void; // 가구를 누르면 꾸미기로 가서 바로 놓기
 }
 
 // 인벤토리: 모은 재료와 가진 가구를 한눈에 본다
-export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Props) {
+export default function InventoryScreen({ onBack, onWorkshop, onDecorate, onPlace }: Props) {
   const { t, tKey, formatNumber } = useI18n();
   const { game } = useGame();
   const { layout } = useRoom();
@@ -72,12 +73,19 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
         </h2>
         <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {owned.map((f) => (
-            <li key={f.id} className="flex flex-col items-center gap-1 rounded-2xl bg-moss/60 p-3 text-center">
-              <AssetThumb def={f} size={56} />
-              <span className="text-base font-semibold leading-tight">{tKey(f.nameKey)}</span>
-              <span className="text-sm">
-                {t('inventory.inRoomOf', { placed: formatNumber(inRoom(f.id)), owned: formatNumber(game.furniture[f.id]) })}
-              </span>
+            <li key={f.id}>
+              {/* 누르면 꾸미기 화면에서 이 가구를 고른 상태로 (놓을 자리 고르기 / 이미 놓았으면 그 가구 고르기) */}
+              <button
+                type="button"
+                onClick={() => onPlace(f.id)}
+                className="flex h-full w-full flex-col items-center gap-1 rounded-2xl bg-moss/60 p-3 text-center shadow-pop-sm transition-transform active:translate-y-0.5"
+              >
+                <AssetThumb def={f} size={56} />
+                <span className="text-base font-semibold leading-tight">{tKey(f.nameKey)}</span>
+                <span className="text-sm">
+                  {t('inventory.inRoomOf', { placed: formatNumber(inRoom(f.id)), owned: formatNumber(game.furniture[f.id]) })}
+                </span>
+              </button>
             </li>
           ))}
         </ul>

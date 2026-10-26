@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import ZoomableRoom from './ZoomableRoom';
 import AppShell from '../../../components/AppShell';
 import ScreenHeader from '../../../components/ScreenHeader';
@@ -71,7 +71,8 @@ function findSpots(placed: PlacedFurniture[], furnitureId: string, rotation: 0 |
   return spots;
 }
 
-export default function DecorateScreen({ onBack }: { onBack: () => void }) {
+// initialPick: 가방에서 고른 가구 (들어오자마자 그 가구를 고른 것처럼)
+export default function DecorateScreen({ onBack, initialPick = null }: { onBack: () => void; initialPick?: string | null }) {
   const { t } = useI18n();
   const { layout, dispatch } = useRoom();
   const { game } = useGame();
@@ -150,6 +151,15 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     if (free.size === 0) return change({ kind: 'idle' }, isWallItem(def) ? 'decorate.noWallSpace' : 'decorate.noSpace');
     change({ kind: 'placing', furnitureId }, isWallItem(def) ? 'decorate.hintPlaceWall' : null);
   };
+
+  // 가방에서 고른 가구가 있으면 처음 한 번 그것을 고른다
+  const picked = useRef(false);
+  useEffect(() => {
+    if (picked.current || !initialPick) return;
+    picked.current = true;
+    pick(initialPick);
+    // 처음 한 번만 (pick 은 매번 새로 만들어지므로 의존성에 넣지 않는다)
+  }, [initialPick]);
 
   // 바닥 칸을 눌렀을 때
   // 바닥 칸에 놓기·옮기기 (놓을 수 있는 칸인지 미리 확인된 상태)

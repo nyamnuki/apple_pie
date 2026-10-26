@@ -240,3 +240,19 @@ test('꾸미기 되돌리기: 방금 바꾼 것 하나를 되돌린다', async (
   await page.waitForTimeout(400);
   expect((await readSave(page)).room.placed.some((p: { furnitureId: string }) => p.furnitureId === 'flowerPot')).toBe(true);
 });
+
+test('가방에서 가구를 누르면 꾸미기에서 바로 놓을 자리를 고른다', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 } }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'My Bag' }).click();
+  await page.getByRole('button', { name: /Toy Chest/ }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Decorate');
+  await expect(guide(page)).toHaveText('Tap a spot with a + to put it there.');
+  await page.getByRole('button', { name: 'Floor spot, row 5, column 4' }).click({ force: true });
+  await expect(guide(page)).toHaveText('Nice! It fits just right.');
+  // 다시 들어오면 아무것도 고르지 않은 처음 모습
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Decorate' }).click();
+  await expect(guide(page)).toHaveText('Pick something for your room!');
+});

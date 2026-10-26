@@ -29,6 +29,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
   const [settingsFrom, setSettingsFrom] = useState<Screen>('title');
   const [lessonId, setLessonId] = useState<LessonId>('counting1');
   const [regionId, setRegionId] = useState<RegionId>('acornVillage');
+  const [placeFirst, setPlaceFirst] = useState<string | null>(null); // 가방에서 고른 가구 (꾸미기에서 바로 놓기)
 
   const openSettings = (from: Screen) => {
     setSettingsFrom(from);
@@ -65,7 +66,15 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
           />
         );
       case 'decorate':
-        return <DecorateScreen onBack={() => setScreen('room')} />;
+        return (
+          <DecorateScreen
+            initialPick={placeFirst}
+            onBack={() => {
+              setPlaceFirst(null);
+              setScreen('room');
+            }}
+          />
+        );
       case 'settings':
         return <SettingsScreen onBack={() => setScreen(settingsFrom)} onParent={() => setScreen('parentGate')} canSave={loadStatus !== 'unavailable'} />;
       case 'parentGate':
@@ -114,7 +123,17 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
       case 'stickers':
         return <StickerBookScreen onBack={() => setScreen('room')} />;
       case 'inventory':
-        return <InventoryScreen onBack={() => setScreen('room')} onWorkshop={() => setScreen('workshop')} onDecorate={() => setScreen('decorate')} />;
+        return (
+          <InventoryScreen
+            onBack={() => setScreen('room')}
+            onWorkshop={() => setScreen('workshop')}
+            onDecorate={() => setScreen('decorate')}
+            onPlace={(id) => {
+              setPlaceFirst(id);
+              setScreen('decorate');
+            }}
+          />
+        );
     }
   }
 }
