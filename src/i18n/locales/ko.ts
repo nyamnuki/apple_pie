@@ -227,6 +227,14 @@ export const ko: Messages = {
     sunnyMeadow: '햇살 들판',
     windyHill: '바람 언덕',
     rainbowLake: '무지개 호수',
+    intro: {
+      acornVillage: '도토리 마을에 온 걸 환영해요! 여기서는 세고, 비교하고, 더하고, 빼요.',
+      moonlightForest: '여기는 달빛 숲이에요. 규칙과 도형을 찾고, 길이를 재어 봐요.',
+      crystalCave: '수정 동굴에 온 걸 환영해요! 2씩 뛰어 세고, 10개씩 묶어 봐요.',
+      sunnyMeadow: '햇살 들판이에요! 개구리는 수직선을 뛰고, 벌은 짝을 찾아요.',
+      windyHill: '바람 언덕에서는 시계 보는 법을 배워요.',
+      rainbowLake: '무지개 호수예요! 똑같이 나누고, 물에 비친 두 배를 찾아요.',
+    },
     topics: {
       acornVillage: '수 세기 · 비교하기 · 더하기 · 빼기',
       moonlightForest: '규칙 찾기 · 도형 · 길이 재기',

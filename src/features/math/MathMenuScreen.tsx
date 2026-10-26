@@ -8,6 +8,8 @@ import { MATH_ITEMS } from '../../data/math/items';
 import { useI18n, type TranslationKey } from '../../i18n';
 import { getRegion } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
+import GuideBubble from '../../components/GuideBubble';
+import { GUIDE_OF } from '../../data/regions/guides';
 import type { LessonId, MathArea } from '../../types/math';
 import type { RegionId } from '../../types/resources';
 
@@ -46,7 +48,10 @@ export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
       <p className="mb-1 text-lg font-semibold text-wood">
         <RegionIcon id={region.id} size={34} inline /> {tKey(region.nameKey)}
       </p>
-      <p className="mb-4 text-xl">{t('math.chooseLesson')}</p>
+      {/* 그 마을 안내 친구의 소개 (자동 읽기를 켜면 소리로도) */}
+      <div className="mb-4">
+        <GuideBubble compact speaker={GUIDE_OF[region.id]} expression="happy" text={`${t(`regions.intro.${region.id}`)} ${t('math.chooseLesson')}`} />
+      </div>
 
       <ul className="grid gap-3 sm:grid-cols-2">
         {lessons.map((lesson) => {

@@ -12,6 +12,7 @@ import RewardPanel from '../rewards/RewardPanel';
 import { useGame } from '../../app/GameProvider';
 import { rewardFor } from '../../app/gameState';
 import { REGIONS } from '../../data/regions/regions';
+import { GUIDE_OF } from '../../data/regions/guides';
 import { isRegionOpen, regionProgress } from '../../utils/regions';
 import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState, type Stage } from './lessonFlow';
@@ -24,13 +25,10 @@ import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
-import type { CharacterId, Expression } from '../../data/characters/characters';
+import type { Expression } from '../../data/characters/characters';
 
 // 다시 보기 버튼이 나오는 단계 (살펴보기·만져 보기 중에는 이미 그 장면을 보고 있다)
 const WATCH_STAGES: Stage[] = ['predict', 'verify', 'discover', 'apply'];
-
-// 안내하는 친구: 도토리 마을·햇살 들판은 루루, 달빛 숲·바람 언덕은 모모, 수정 동굴·무지개 호수는 도토
-export const GUIDE_OF: Record<RegionId, CharacterId> = { acornVillage: 'lulu', moonlightForest: 'momo', crystalCave: 'doto', sunnyMeadow: 'lulu', windyHill: 'momo', rainbowLake: 'doto' };
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
 function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode: FieldMode } {

@@ -7,7 +7,7 @@ import GuideBubble from '../../components/GuideBubble';
 import BigButton from '../../components/BigButton';
 import ChoiceButtons from '../math/components/ChoiceButtons';
 import SceneField from '../math/fields/SceneField';
-import { GUIDE_OF } from '../math/LessonScreen';
+import { GUIDE_OF } from '../../data/regions/guides';
 import { answerOf, sceneVars } from '../math/answers';
 import { lessonKey } from '../../data/math/lessons';
 import { streak, dailyLesson, dateKey } from './daily';

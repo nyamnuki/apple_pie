@@ -226,6 +226,14 @@ export const en = {
     sunnyMeadow: 'Sunny Meadow',
     windyHill: 'Windy Hill',
     rainbowLake: 'Rainbow Lake',
+    intro: {
+      acornVillage: 'Welcome to Acorn Village! Here we count, compare, add and take away.',
+      moonlightForest: "This is Moonlight Forest. Let's find patterns and shapes, and measure how long things are.",
+      crystalCave: 'Welcome to Crystal Cave! We count by twos and make groups of ten.',
+      sunnyMeadow: 'Sunny Meadow! Frogs hop on the number line and bees look for partners.',
+      windyHill: 'Windy Hill is where we learn to tell the time.',
+      rainbowLake: 'Rainbow Lake! We share things fairly and find doubles in the water.',
+    },
     topics: {
       acornVillage: 'Counting · Comparing · Adding · Taking away',
       moonlightForest: 'Patterns · Shapes · Measuring',

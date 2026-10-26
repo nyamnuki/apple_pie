@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { seed, makeSave, goToRegion } from './helpers';
+import { seed, makeSave, goToRegion, guide } from './helpers';
 
 // 그래픽·화면 다듬기 점검: 없는 그림 요청 없음, 목록 그림, 권하는 자리 화면 배치, 상태 표시, 글자 선택, 움직임 줄이기
 
@@ -160,6 +160,7 @@ test('놀이 메뉴: 해 본 놀이는 체크, 한 번에 맞힌 적이 있으�
   await expect(page.getByRole('button', { name: /Counting Apples/ })).toContainText('PlayedFirst-try star');
   await expect(page.getByRole('button', { name: /Adding/ })).toContainText('Played');
   await expect(page.locator('[data-star]')).toHaveCount(1);
+  await expect(guide(page)).toHaveText('Welcome to Acorn Village! Here we count, compare, add and take away. Choose a game to play!');
   await expect(page.getByRole('button', { name: /Taking Away/ })).not.toContainText('Played');
 });
 
