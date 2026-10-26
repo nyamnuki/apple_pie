@@ -28,6 +28,10 @@ export const MATH_ITEMS: Record<MathItemId, { emoji: string; assetPath: string }
   windmill: { emoji: '🌬️', assetPath: 'items/windmill.png' },
   dandelion: { emoji: '🌼', assetPath: 'items/dandelion.png' },
   bird: { emoji: '🐦', assetPath: 'items/bird.png' },
+  fish: { emoji: '🐟', assetPath: 'items/fish.png' },
+  duck: { emoji: '🦆', assetPath: 'items/duck.png' },
+  shell: { emoji: '🐚', assetPath: 'items/shell.png' },
+  lily: { emoji: '🪷', assetPath: 'items/lily.png' },
 };
 
 // 물건 이름 번역 키 (규칙 문제의 답 버튼, 화면 읽기용)

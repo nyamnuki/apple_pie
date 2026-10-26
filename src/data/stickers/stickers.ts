@@ -44,6 +44,12 @@ export const STICKERS: StickerDef[] = [
   s('bird', 'windyHill', 'items/bird.png', 'mathItems.bird'),
   s('feather', 'windyHill', 'items/res-feather.png', 'resources.feather'),
   s('cloudCotton', 'windyHill', 'items/res-cloud-cotton.png', 'resources.cloudCotton'),
+  s('fish', 'rainbowLake', 'items/fish.png', 'mathItems.fish'),
+  s('duck', 'rainbowLake', 'items/duck.png', 'mathItems.duck'),
+  s('shell', 'rainbowLake', 'items/shell.png', 'mathItems.shell'),
+  s('lily', 'rainbowLake', 'items/lily.png', 'mathItems.lily'),
+  s('lilyPad', 'rainbowLake', 'items/res-lily-pad.png', 'resources.lilyPad'),
+  s('pearl', 'rainbowLake', 'items/res-pearl.png', 'resources.pearl'),
 ];
 
 export const getSticker = (id: string) => STICKERS.find((x) => x.id === id);

@@ -251,6 +251,36 @@ export const LESSONS: MathLesson[] = [
     apply: { kind: 'clock', hour: 2, half: true },
     applyChoices: ['1:30', '2:00', '2:30', '3:30'],
   },
+
+  // ===== 무지개 호수 =====
+  {
+    id: 'share1',
+    rewards: { lilyPad: 2 },
+    firstTimeBonus: { pearl: 1 },
+    area: 'sharing',
+    region: 'rainbowLake',
+    icon: 'shell',
+    // 똑같이 나누기: 하나씩 번갈아 나눠 주면 두 친구가 똑같이 갖는다
+    explore: { kind: 'share', item: 'shell', total: 6 }, // 3
+    predict: { kind: 'share', item: 'fish', total: 10 }, // 5 (10 은 나누기 전 전체)
+    predictChoices: [4, 5, 6, 10],
+    apply: { kind: 'share', item: 'lily', total: 14 }, // 7
+    applyChoices: [6, 7, 8, 14],
+  },
+  {
+    id: 'double1',
+    rewards: { lilyPad: 1, pearl: 1 },
+    firstTimeBonus: { pearl: 1 },
+    area: 'doubling',
+    region: 'rainbowLake',
+    icon: 'duck',
+    // 두 배: 물가의 오리가 호수에 비치면 같은 수가 한 번 더 (n + n)
+    explore: { kind: 'double', item: 'duck', n: 4 }, // 8
+    predict: { kind: 'double', item: 'fish', n: 6 }, // 12 (6 은 한쪽만 센 실수)
+    predictChoices: [6, 11, 12, 13],
+    apply: { kind: 'double', item: 'shell', n: 8 }, // 16
+    applyChoices: [8, 15, 16, 17],
+  },
 ];
 
 export const getLesson = (id: LessonId) => LESSONS.find((l) => l.id === id)!;

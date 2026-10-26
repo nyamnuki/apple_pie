@@ -28,6 +28,10 @@ export function sizeOk(scene: MathScene): boolean {
       return scene.total >= 4 && scene.total <= 16;
     case 'clock':
       return Number.isInteger(scene.hour) && scene.hour >= 1 && scene.hour <= 12;
+    case 'share':
+      return scene.total >= 4 && scene.total <= 16 && scene.total % 2 === 0; // 똑같이 나눠지는 수만
+    case 'double':
+      return scene.n >= 1 && scene.n * 2 <= MAX;
   }
 }
 

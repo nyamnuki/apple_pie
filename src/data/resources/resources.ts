@@ -18,6 +18,8 @@ export const RESOURCES: ResourceDef[] = [
   // 바람 언덕
   { id: 'feather', nameKey: 'resources.feather', region: 'windyHill', rare: false, assetPath: 'items/res-feather.png', placeholder: { emoji: '🪶', color: '#F3C6D2' } },
   { id: 'cloudCotton', nameKey: 'resources.cloudCotton', region: 'windyHill', rare: true, assetPath: 'items/res-cloud-cotton.png', placeholder: { emoji: '☁️', color: '#D9D0EC' } },
+  { id: 'lilyPad', nameKey: 'resources.lilyPad', region: 'rainbowLake', rare: false, assetPath: 'items/res-lily-pad.png', placeholder: { emoji: '🪷', color: '#A8C3A0' } },
+  { id: 'pearl', nameKey: 'resources.pearl', region: 'rainbowLake', rare: true, assetPath: 'items/res-pearl.png', placeholder: { emoji: '🫧', color: '#F1E9F7' } },
   { id: 'mithril', nameKey: 'resources.mithril', region: 'crystalCave', rare: true, assetPath: 'items/res-mithril.png', placeholder: { emoji: '🪙', color: '#D9D0EC' } },
 ];
 

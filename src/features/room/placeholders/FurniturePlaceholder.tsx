@@ -363,6 +363,43 @@ const PAINTERS: Partial<Record<PlaceholderShape, Painter>> = {
       </g>
     );
   },
+  // 연잎 러그: 둥근 초록 연잎 (한쪽이 갈라진 모양) 위에 분홍 연꽃 하나
+  lilyRug: (a) => {
+    const e = flatEllipse(a, 2, 0.82);
+    const notch = `M${e.cx} ${e.cy} L${e.cx + e.rx * 0.95} ${e.cy - e.ry * 0.25} L${e.cx + e.rx * 0.95} ${e.cy + e.ry * 0.2} Z`;
+    return (
+      <g>
+        <ellipse cx={e.cx} cy={e.cy} rx={e.rx} ry={e.ry} fill="#A8C3A0" {...LINE} />
+        <path d={notch} fill="#E8DCC4" stroke="none" />
+        {[0, 1, 2, 3, 4, 5].map((i) => {
+          const ang = Math.PI * (0.15 + i * 0.3);
+          return <path key={i} d={`M${e.cx} ${e.cy} L${e.cx + Math.cos(ang) * e.rx * 0.85} ${e.cy + Math.sin(ang) * e.ry * 0.85}`} stroke="#7FA077" strokeWidth="2" opacity="0.6" />;
+        })}
+        <ellipse cx={e.cx} cy={e.cy} rx={e.rx * 0.62} ry={e.ry * 0.62} fill="none" stroke="#C8DFE8" strokeWidth="4" opacity="0.6" />
+        {[0, 72, 144, 216, 288].map((r) => (
+          <ellipse key={r} cx={e.cx - e.rx * 0.35} cy={e.cy - e.ry * 0.15 - 8} rx="7" ry="13" fill="#F3C6D2" {...LINE} transform={`rotate(${r} ${e.cx - e.rx * 0.35} ${e.cy - e.ry * 0.15})`} />
+        ))}
+        <circle cx={e.cx - e.rx * 0.35} cy={e.cy - e.ry * 0.15} r="6" fill="#F5D0AD" {...LINE} />
+      </g>
+    );
+  },
+  // 조개 등불: 나무 받침 위 부채꼴 조개, 안에 빛나는 진주
+  shellLamp: (a) => {
+    const e = flatEllipse(inset(a, 0.42), 84);
+    const ribs = [-60, -35, -12, 12, 35, 60];
+    return (
+      <g>
+        <Box area={inset(a, 0.45)} h={8} color="#B9855A" />
+        <Box area={inset(a, 0.1)} z={8} h={56} color="#B9855A" />
+        <circle cx={e.cx} cy={e.cy - 6} r="34" fill="#FFE9B0" opacity="0.45" />
+        <path d={`M${e.cx - 30} ${e.cy + 8} Q${e.cx} ${e.cy - 52} ${e.cx + 30} ${e.cy + 8} Q${e.cx} ${e.cy + 16} ${e.cx - 30} ${e.cy + 8} Z`} fill="#F7D6DF" {...LINE} />
+        {ribs.map((r) => (
+          <path key={r} d={`M${e.cx} ${e.cy + 10} L${e.cx + Math.sin((r * Math.PI) / 180) * 30} ${e.cy + 8 - Math.cos((r * Math.PI) / 180) * 34}`} stroke="#E79BB0" strokeWidth="1.6" opacity="0.8" />
+        ))}
+        <circle cx={e.cx} cy={e.cy + 4} r="7" fill="#FFFDF7" {...LINE} />
+      </g>
+    );
+  },
   // 구름 빈백: 폭신한 구름 모양 의자
   beanbag: (a) => {
     const e = flatEllipse(inset(a, 0.8), 0);

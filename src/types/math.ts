@@ -8,7 +8,8 @@ export type MathItemId =
   | 'moon' | 'star' | 'owl'
   | 'gem' | 'pebble' | 'bat' | 'candle'
   | 'bee' | 'sunflower' | 'snail' | 'cloud'
-  | 'kite' | 'windmill' | 'dandelion' | 'bird';
+  | 'kite' | 'windmill' | 'dandelion' | 'bird'
+  | 'fish' | 'duck' | 'shell' | 'lily';
 
 // 도형 종류와 도형 하나의 모습 (크기·색·돌림이 달라도 같은 도형이다)
 export type ShapeId = 'circle' | 'square' | 'triangle';
@@ -20,7 +21,7 @@ export interface ShapeSpec {
 }
 
 // 학습 영역
-export type MathArea = 'counting' | 'comparing' | 'addition' | 'subtraction' | 'patterns' | 'shapes' | 'skipCounting' | 'placeValue' | 'measuring' | 'numberLine' | 'evenOdd' | 'clock';
+export type MathArea = 'counting' | 'comparing' | 'addition' | 'subtraction' | 'patterns' | 'shapes' | 'skipCounting' | 'placeValue' | 'measuring' | 'numberLine' | 'evenOdd' | 'clock' | 'sharing' | 'doubling';
 
 // 한 장면의 수량 정보 — 언어와 상관없이 같은 값을 쓴다.
 export type MathScene =
@@ -39,7 +40,11 @@ export type MathScene =
   // 짝짓기: total 개를 둘씩 짝지어 하나가 남으면 홀수, 딱 맞으면 짝수
   | { kind: 'pairs'; item: MathItemId; total: number }
   // 시계 읽기: hour 시 (half 이면 30분)
-  | { kind: 'clock'; hour: number; half: boolean };
+  | { kind: 'clock'; hour: number; half: boolean }
+  // 똑같이 나누기: total 개를 두 친구에게 하나씩 번갈아 나눠 주면 한 친구가 몇 개를 갖는지
+  | { kind: 'share'; item: MathItemId; total: number }
+  // 두 배: 물가의 n 개가 호수에 비치면 모두 몇 개인지 (n + n)
+  | { kind: 'double'; item: MathItemId; n: number };
 
 // 길이를 재는 물건 (그림은 src/features/math/fields/MeasureField.tsx)
 export type MeasureThing = 'twig' | 'ribbon' | 'caterpillar';
@@ -73,7 +78,7 @@ export interface MathLesson {
 }
 
 // 놀이 id 목록 (언어 파일의 lessons.<id> 와 같아야 한다)
-export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2';
+export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2' | 'share1' | 'double1';
 
 // 놀이마다 언어 파일에 있어야 하는 문장들
 export type LessonTextPart =

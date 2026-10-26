@@ -39,6 +39,15 @@ export const REGIONS: RegionDef[] = [
     art: 'items/kite.png',
     unlock: { type: 'lessons', region: 'sunnyMeadow', count: 2 },
   },
+  // 바람 언덕 놀이를 2개 끝내면 열린다
+  {
+    id: 'rainbowLake',
+    nameKey: 'regions.rainbowLake',
+    topicsKey: 'regions.topics.rainbowLake',
+    emoji: '🌈',
+    art: 'items/fish.png',
+    unlock: { type: 'lessons', region: 'windyHill', count: 2 },
+  },
 ];
 
 export const getRegion = (id: RegionId) => REGIONS.find((r) => r.id === id)!;

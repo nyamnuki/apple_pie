@@ -17,6 +17,7 @@ const CARD_STYLE: Record<RegionId, string> = {
   crystalCave: 'bg-mist',
   sunnyMeadow: 'bg-apricot',
   windyHill: 'bg-petal',
+  rainbowLake: 'bg-mist',
 };
 
 // 마을 사이 오솔길: 세로 화면은 위아래로, 높이가 낮은 가로 화면은 옆으로 구불구불

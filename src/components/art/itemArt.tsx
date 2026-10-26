@@ -424,7 +424,82 @@ const CloudCotton = () => (
   </g>
 );
 
+const Fish = () => (
+  <g>
+    <Shadow rx={16} />
+    <path d="M10 34 C16 22 34 20 44 32 C34 44 16 44 10 34 Z" fill="#F5D0AD" {...L} />
+    <path d="M44 32 L56 22 L54 34 L56 46 Z" fill="#E9A08C" {...L} />
+    <path d="M24 26 C28 22 32 22 34 24 L30 28 Z" fill="#E9A08C" {...L} strokeWidth={1.2} />
+    <path d="M28 30 C30 34 30 38 28 40 M34 30 C36 34 36 38 34 40" fill="none" stroke="#E9A08C" strokeWidth="1.6" strokeLinecap="round" />
+    <circle cx="18" cy="31" r="2.2" fill="#59483C" />
+    <Shine cx={20} cy={27} rx={3} ry={2} />
+  </g>
+);
+
+const Duck = () => (
+  <g>
+    <Shadow rx={18} />
+    <path d="M10 42 C10 32 20 28 30 32 C30 20 38 14 46 18 C52 22 50 30 46 32 C54 36 52 50 36 52 C22 54 10 50 10 42 Z" fill="#FFF0B8" {...L} />
+    <path d="M18 40 C24 36 32 38 36 44 C28 46 22 46 18 40 Z" fill="#F2DA8A" {...L} strokeWidth={1.2} />
+    <path d="M49 22 L58 24 L49 27 Z" fill="#E9A05A" {...L} strokeWidth={1.2} />
+    <circle cx="44" cy="22" r="2" fill="#59483C" />
+    <ellipse cx="42" cy="28" rx="2.6" ry="1.6" fill="#F3C6D2" />
+    <Shine cx={36} cy={20} rx={3.5} ry={2} />
+  </g>
+);
+
+const Shell = () => (
+  <g>
+    <Shadow rx={16} />
+    <path d="M10 46 C10 26 22 12 32 12 C42 12 54 26 54 46 C44 52 20 52 10 46 Z" fill="#F7D6DF" {...L} />
+    {[-24, -12, 0, 12, 24].map((d) => (
+      <path key={d} d={`M32 48 L${32 + d} 16`} stroke="#E79BB0" strokeWidth="1.6" opacity="0.85" />
+    ))}
+    <path d="M24 48 C26 54 38 54 40 48 Z" fill="#F3C6D2" {...L} strokeWidth={1.2} />
+    <Shine cx={22} cy={26} rx={4} ry={2.4} />
+  </g>
+);
+
+const Lily = () => (
+  <g>
+    <Shadow rx={20} />
+    <ellipse cx="32" cy="50" rx="24" ry="7" fill="#A8C3A0" {...L} />
+    <path d="M32 50 L52 46 L50 52 Z" fill="#E8DCC4" />
+    {[-60, -30, 0, 30, 60].map((a) => (
+      <ellipse key={a} cx="32" cy="30" rx="6" ry="14" fill="#F3C6D2" {...L} strokeWidth={1.3} transform={`rotate(${a} 32 44)`} />
+    ))}
+    <circle cx="32" cy="40" r="4" fill="#F5D0AD" {...L} strokeWidth={1.2} />
+  </g>
+);
+
+const LilyPad = () => (
+  <g>
+    <Shadow rx={20} />
+    <path d="M32 34 L56 28 C58 46 46 54 32 54 C16 54 6 46 8 34 C10 20 24 14 36 16 Z" fill="#A8C3A0" {...L} />
+    {[200, 240, 280, 320, 160].map((a) => (
+      <path key={a} d={`M32 34 L${32 + Math.cos((a * Math.PI) / 180) * 18} ${34 - Math.sin((a * Math.PI) / 180) * 16}`} stroke="#7FA077" strokeWidth="1.4" />
+    ))}
+    <circle cx="22" cy="26" r="2" fill="#FFFFFF" opacity="0.8" />
+  </g>
+);
+
+const Pearl = () => (
+  <g>
+    <Shadow rx={14} />
+    <circle cx="32" cy="34" r="16" fill="#F1E9F7" {...L} />
+    <circle cx="32" cy="34" r="16" fill="url(#wc-ball)" />
+    <Shine cx={26} cy={27} rx={5} ry={3.5} />
+    <path d="M50 14 l1.2 3 l3 1.2 l-3 1.2 l-1.2 3 l-1.2 -3 l-3 -1.2 l3 -1.2 z" fill="#FFF0B8" {...L} strokeWidth={0.9} />
+  </g>
+);
+
 export const ITEM_ART: Record<string, () => ReactElement> = {
+  'items/fish.png': Fish,
+  'items/duck.png': Duck,
+  'items/shell.png': Shell,
+  'items/lily.png': Lily,
+  'items/res-lily-pad.png': LilyPad,
+  'items/res-pearl.png': Pearl,
   'items/kite.png': Kite,
   'items/windmill.png': Windmill,
   'items/dandelion.png': Dandelion,

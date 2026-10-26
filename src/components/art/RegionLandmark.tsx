@@ -132,7 +132,38 @@ function WindyHill() {
   );
 }
 
-const SCENES: Record<RegionId, () => JSX.Element> = { acornVillage: AcornVillage, moonlightForest: MoonlightForest, crystalCave: CrystalCave, sunnyMeadow: SunnyMeadow, windyHill: WindyHill };
+function RainbowLake() {
+  return (
+    <g>
+      <path d="M0 0 H160 V110 H0 Z" fill="#EAF3F4" />
+      {/* 무지개 */}
+      {['#F3C6D2', '#F5D0AD', '#FFF0B8', '#C9E0BE', '#C8DFE8', '#D9D0EC'].map((c, i) => (
+        <path key={c} d={`M${18 + i * 6} 62 A${62 - i * 6} ${46 - i * 5} 0 0 1 ${142 - i * 6} 62`} fill="none" stroke={c} strokeWidth="6" />
+      ))}
+      <path d="M0 110 L0 70 C30 64 50 70 80 68 C110 66 130 62 160 68 L160 110 Z" fill="#B9D1AD" />
+      {/* 호수 */}
+      <ellipse cx="80" cy="88" rx="62" ry="16" fill="#C8DFE8" {...L} />
+      <path d="M40 86 C50 84 58 88 68 86 M92 92 C102 90 110 94 120 92" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round" />
+      {/* 연잎과 연꽃 */}
+      <ellipse cx="54" cy="92" rx="10" ry="4" fill="#A8C3A0" {...L} strokeWidth={1.2} />
+      <g transform="translate(56 88)">
+        {[0, 72, 144, 216, 288].map((a) => (
+          <ellipse key={a} cx="0" cy="-3" rx="2.2" ry="3.6" fill="#F3C6D2" stroke="#6B5444" strokeWidth="0.8" transform={`rotate(${a})`} />
+        ))}
+      </g>
+      {/* 오리 (물에 비친 모습은 흐리게 거꾸로) */}
+      <g transform="translate(100 84)">
+        <path d="M-9 0 C-9 -6 -3 -8 2 -6 C3 -11 9 -11 9 -6 C9 -3 7 -2 5 -2 C8 0 6 4 0 4 C-6 4 -9 3 -9 0 Z" fill="#FFF0B8" {...L} strokeWidth={1.2} />
+        <path d="M9 -7 L13 -6 L9 -5 Z" fill="#E9A05A" />
+        <g transform="scale(1 -1) translate(0 -9)" opacity="0.35">
+          <path d="M-9 0 C-9 -6 -3 -8 2 -6 C3 -11 9 -11 9 -6 C9 -3 7 -2 5 -2 C8 0 6 4 0 4 C-6 4 -9 3 -9 0 Z" fill="#FFF0B8" />
+        </g>
+      </g>
+    </g>
+  );
+}
+
+const SCENES: Record<RegionId, () => JSX.Element> = { acornVillage: AcornVillage, moonlightForest: MoonlightForest, crystalCave: CrystalCave, sunnyMeadow: SunnyMeadow, windyHill: WindyHill, rainbowLake: RainbowLake };
 
 export default function RegionLandmark({ id, locked }: { id: RegionId; locked: boolean }) {
   const Scene = SCENES[id];
