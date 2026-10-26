@@ -53,3 +53,14 @@ test('공방: 아래쪽 가구를 만들어도 완성 안내가 화면에 보인
   await page.getByRole('listitem').filter({ hasText: 'Apple Basket' }).getByRole('button', { name: 'Make it!' }).click();
   await expect(page.getByText('Ta-da! The Apple Basket is ready!')).toBeInViewport();
 });
+
+test('공방 다음 목표: 곧 만들 가구, 모자란 재료, 그 재료를 주는 놀이', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ resources: { acorn: 3, apple: 1 }, completedLessons: ['counting1'] }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Workshop' }).click();
+  const goal = page.getByRole('region', { name: /Next goal/ });
+  await expect(goal).toContainText('Make the Clover Cushion!');
+  await expect(goal.getByRole('img', { name: 'Apple 1' })).toBeVisible();
+  await expect(goal).toContainText('Play to get them: Counting Apples');
+});

@@ -516,6 +516,10 @@ export const ko: Messages = {
     placeIt: '내 방에 놓기',
     keepMaking: '더 만들기',
     lockedRegion: '{region}에 갈 수 있게 되면 만들 수 있어요.',
+    goalTitle: '다음 목표',
+    goal: '{name} 만들기!',
+    stillNeed: '더 필요한 재료',
+    getFrom: '이 놀이에서 모을 수 있어요: {games}',
   },
   inventory: {
     title: '내 가방',

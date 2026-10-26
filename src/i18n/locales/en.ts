@@ -514,6 +514,10 @@ export const en = {
     placeIt: 'Put it in my room',
     keepMaking: 'Keep making',
     lockedRegion: 'You can make this when you can visit {region}.',
+    goalTitle: 'Next goal',
+    goal: 'Make the {name}!',
+    stillNeed: 'Still need',
+    getFrom: 'Play to get them: {games}',
   },
   inventory: {
     title: 'My Bag',

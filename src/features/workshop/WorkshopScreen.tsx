@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Hammer, Lock, Sofa } from '../../components/icons';
+import { lessonKey } from '../../data/math/lessons';
+import { nextGoal } from './nextGoal';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -27,6 +29,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
   const shownResources = RESOURCES.filter((r) => isRegionOpen(r.region, game.completedLessons) || (game.resources[r.id] ?? 0) > 0);
 
   const madeDef = made ? getFurniture(made) : undefined;
+  const goal = nextGoal(game);
   // 아래쪽 레시피를 만들었어도 완성 안내가 보이게 화면 위로 데려간다
   const madeRef = useRef<HTMLElement>(null);
   useEffect(() => {
@@ -86,6 +89,26 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
           <ResourceChip key={r.id} id={r.id} amount={game.resources[r.id] ?? 0} />
         ))}
       </section>
+
+      {/* 다음 목표: 곧 만들 수 있는 가구 하나와 모자란 재료, 그 재료를 주는 놀이 */}
+      {goal && (
+        <section aria-labelledby="goal-h" data-goal={goal.def.id} className="mb-4 flex items-center gap-3 rounded-3xl border-4 border-dashed border-oak/50 bg-cream/70 p-4">
+          <AssetThumb def={goal.def} size={64} />
+          <div className="flex min-w-0 flex-1 flex-col gap-2">
+            <h2 id="goal-h" className="text-xl font-bold leading-tight">
+              <span className="block text-base font-semibold text-wood">{t('workshop.goalTitle')}</span>
+              {t('workshop.goal', { name: tKey(goal.def.nameKey) })}
+            </h2>
+            <div className="flex flex-wrap items-center gap-2" aria-label={t('workshop.stillNeed')}>
+              <span className="text-base font-semibold">{t('workshop.stillNeed')}</span>
+              {goal.missing.map(([id, n]) => (
+                <ResourceChip key={id} id={id} amount={n} />
+              ))}
+            </div>
+            {goal.from.length > 0 && <p className="text-base">{t('workshop.getFrom', { games: goal.from.map((l) => t(lessonKey(l.id, 'title'))).join(', ') })}</p>}
+          </div>
+        </section>
+      )}
 
       {/* 레시피 목록 */}
       <ul className="grid gap-3 pb-4 sm:grid-cols-2">
