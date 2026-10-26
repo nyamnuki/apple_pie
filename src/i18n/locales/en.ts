@@ -11,7 +11,6 @@ export const en = {
     start: 'Start',
     play: 'Play',
     decorate: 'Decorate',
-    settings: 'Settings',
     workshop: 'Workshop',
     inventory: 'My Bag',
     stickers: 'Sticker Book',

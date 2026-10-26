@@ -12,7 +12,6 @@ export const ko: Messages = {
     start: '시작하기',
     play: '놀이하기',
     decorate: '방 꾸미기',
-    settings: '설정',
     workshop: '공방',
     inventory: '내 가방',
     stickers: '스티커 도감',

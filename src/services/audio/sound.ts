@@ -64,5 +64,3 @@ export const SOUNDS = {
   // 새 마을 열림: 짧은 팡파르
   unlock: () => [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, 0.4 + i * 0.1, i === 3 ? 0.5 : 0.18, 'triangle', 0.13)),
 };
-
-export type SoundName = keyof typeof SOUNDS;
