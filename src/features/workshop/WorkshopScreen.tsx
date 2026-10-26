@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Hammer, Lock, Sofa } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
@@ -27,6 +27,13 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
   const shownResources = RESOURCES.filter((r) => isRegionOpen(r.region, game.completedLessons) || (game.resources[r.id] ?? 0) > 0);
 
   const madeDef = made ? getFurniture(made) : undefined;
+  // 아래쪽 레시피를 만들었어도 완성 안내가 보이게 화면 위로 데려간다
+  const madeRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!made) return;
+    const still = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    madeRef.current?.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+  }, [made]);
 
   return (
     <AppShell background="bg-gradient-to-b from-apricot/50 via-cream to-moss">
@@ -34,10 +41,27 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
 
       {/* 방금 만든 가구 안내 */}
       {madeDef ? (
-        <section aria-live="polite" className="storybook-card mb-4 flex flex-col items-center gap-3 rounded-3xl p-5 text-center">
-          <div className="flex items-end gap-2">
-            <Character id="doto" expression="happy" size={88} />
-            <AssetThumb def={madeDef} size={88} />
+        <section ref={madeRef} aria-live="polite" className="storybook-card mb-4 scroll-mt-4 flex flex-col items-center gap-3 rounded-3xl p-5 text-center">
+          {/* 도토가 망치질(폴짝) → 완성된 가구가 톡 커지며 둘레에 반짝 (소리와 같은 박자) */}
+          <div key={made} className="flex items-end gap-2">
+            <span className="animate-hop">
+              <Character id="doto" expression="happy" size={88} />
+            </span>
+            <span className="relative">
+              <span className="block animate-pop" style={{ animationDelay: '450ms' }}>
+                <AssetThumb def={madeDef} size={96} />
+              </span>
+              {[
+                [-8, -6],
+                [86, 0],
+                [-4, 80],
+                [90, 76],
+              ].map(([x, y], i) => (
+                <svg key={i} viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" className="absolute animate-pulse" style={{ left: x, top: y, animationDelay: `${500 + i * 150}ms` }}>
+                  <path d="M10 1 l2.4 6.2 l6.2 2.4 l-6.2 2.4 l-2.4 6.2 l-2.4 -6.2 l-6.2 -2.4 l6.2 -2.4 z" fill="#FFF0B8" stroke="#946539" strokeWidth="1.2" strokeLinejoin="round" />
+                </svg>
+              ))}
+            </span>
           </div>
           <p className="text-2xl font-bold">{t('workshop.made', { name: tKey(madeDef.nameKey) })}</p>
           <div className="grid w-full max-w-sm grid-cols-2 gap-3">

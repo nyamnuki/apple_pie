@@ -32,7 +32,7 @@ test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', as
   await page.getByRole('button', { name: 'Make something in the Workshop' }).click();
   await expect(bookshelf.getByRole('img', { name: 'Acorn: you have 6, need 4' })).toBeVisible();
   await bookshelf.getByRole('button', { name: 'Make it!' }).click();
-  await expect(page.getByText('You made a Forest Bookshelf!')).toBeVisible();
+  await expect(page.getByText('Ta-da! The Forest Bookshelf is ready!')).toBeVisible();
 
   await page.getByRole('button', { name: 'Put it in my room' }).click();
   await expect(page.getByLabel('1 ready to place')).toBeVisible();
@@ -43,4 +43,13 @@ test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', as
   await page.getByRole('button', { name: 'Go back' }).click();
   await page.getByRole('button', { name: 'My Bag' }).click();
   await expect(page.getByRole('listitem').filter({ hasText: 'Forest Bookshelf' })).toContainText('1 of 1 in room');
+});
+
+test('공방: 아래쪽 가구를 만들어도 완성 안내가 화면에 보인다', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ resources: { acorn: 9, apple: 9 }, completedLessons: ['counting1'] }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Workshop' }).click();
+  await page.getByRole('listitem').filter({ hasText: 'Apple Basket' }).getByRole('button', { name: 'Make it!' }).click();
+  await expect(page.getByText('Ta-da! The Apple Basket is ready!')).toBeInViewport();
 });

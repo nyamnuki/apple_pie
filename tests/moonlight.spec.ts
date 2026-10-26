@@ -113,10 +113,10 @@ test('달빛 숲이 열리면 달빛 숲 재료 가구를 만들 수 있다', as
   await expect(page.getByText('You can make this when you can visit Moonlight Forest.')).toHaveCount(0);
   const lantern = page.getByRole('listitem').filter({ hasText: 'Moon Lantern' });
   await lantern.getByRole('button', { name: 'Make it!' }).click();
-  await expect(page.getByText('You made a Moon Lantern!')).toBeVisible();
+  await expect(page.getByText('Ta-da! The Moon Lantern is ready!')).toBeVisible();
   await page.getByRole('button', { name: 'Keep making' }).click();
   await page.getByRole('listitem').filter({ hasText: 'Woodland Wallpaper' }).getByRole('button', { name: 'Make it!' }).click();
-  await expect(page.getByText('You made a Woodland Wallpaper!')).toBeVisible();
+  await expect(page.getByText('Ta-da! The Woodland Wallpaper is ready!')).toBeVisible();
 });
 
 test('한국어: 지도와 규칙 찾기 놀이', async ({ page, context }) => {
