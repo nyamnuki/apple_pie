@@ -10,6 +10,7 @@ import { getRegion } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
 import { useGame } from '../../app/GameProvider';
 import { useRoom } from '../room/RoomProvider';
+import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 
 interface Props {
@@ -25,6 +26,11 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
   const { layout } = useRoom();
   const materials = RESOURCES.filter((r) => (game.resources[r.id] ?? 0) > 0);
   const owned = FURNITURE.filter((f) => (game.furniture[f.id] ?? 0) > 0);
+  // 그 재료를 보상으로 주는 놀이 이름 (없으면 황금 도토리처럼 오늘의 문제 도장으로 모은다)
+  const whereFrom = (id: (typeof materials)[number]['id']) => {
+    const games = LESSONS.filter((l) => (l.rewards[id] ?? 0) > 0).map((l) => t(lessonKey(l.id, 'title')));
+    return games.length > 0 ? t('inventory.from', { games: games.join(', ') }) : t('inventory.fromDaily');
+  };
 
   // 방에 놓인 개수 (벽지는 붙였으면 1)
   const inRoom = (id: string) =>
@@ -49,6 +55,9 @@ export default function InventoryScreen({ onBack, onWorkshop, onDecorate }: Prop
                   <span className="block text-lg font-semibold">{tKey(r.nameKey)}</span>
                   <span className="block text-sm text-bark/85">
                     <RegionIcon id={r.region} size={24} inline /> {tKey(getRegion(r.region).nameKey)}
+                  </span>
+                  <span className="block text-sm text-bark/85" data-from={r.id}>
+                    {whereFrom(r.id)}
                   </span>
                 </span>
               </li>

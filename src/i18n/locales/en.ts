@@ -580,6 +580,8 @@ export const en = {
     getDaily: "Get golden acorns from Today's puzzle stamps (one for every 3).",
   },
   inventory: {
+    from: 'More from: {games}',
+    fromDaily: "More from Today's puzzle stamps (one for every 3)",
     title: 'My Bag',
     materials: 'Materials',
     furniture: 'Furniture',

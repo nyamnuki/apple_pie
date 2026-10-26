@@ -582,6 +582,8 @@ export const ko: Messages = {
     getDaily: '황금 도토리는 오늘의 문제 도장 3개마다 하나씩 받아요.',
   },
   inventory: {
+    from: '더 얻는 곳: {games}',
+    fromDaily: '오늘의 문제 도장 3개마다 하나씩 받아요',
     title: '내 가방',
     materials: '재료',
     furniture: '가구',

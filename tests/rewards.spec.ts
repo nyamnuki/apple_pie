@@ -87,3 +87,12 @@ test('마을 완성: 마지막 놀이를 처음 끝내면 축하, 지도에 리�
   await expect(page.getByRole('heading', { name: 'You discovered something new!' })).toBeVisible();
   await expect(page.getByText('You finished every game in Acorn Village!')).toHaveCount(0);
 });
+
+test('가방: 재료마다 더 얻을 수 있는 놀이 (황금 도토리는 오늘의 문제 도장)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ resources: { acorn: 2, goldenAcorn: 1 } }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'My Bag' }).click();
+  await expect(page.locator('[data-from="acorn"]')).toContainText('More from: Counting Apples');
+  await expect(page.locator('[data-from="goldenAcorn"]')).toHaveText("More from Today's puzzle stamps (one for every 3)");
+});
