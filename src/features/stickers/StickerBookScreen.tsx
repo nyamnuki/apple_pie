@@ -19,6 +19,7 @@ export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
     <AppShell background="bg-gradient-to-b from-apricot/40 via-cream to-moss">
       <ScreenHeader title={t('stickers.title')} onBack={onBack} />
       <p className="mb-1 text-lg">{t('stickers.intro', { n: formatNumber(owned.size), total: formatNumber(STICKERS.length) })}</p>
+      {game.dailyDone.length > 0 && <p className="mb-1 text-base font-semibold">{t('stickers.stamps', { n: formatNumber(game.dailyDone.length) })}</p>}
       {goal && <p className="mb-3 text-base font-semibold text-wood">{t('stickers.petGoal', { n: formatNumber(goal.stickers - owned.size) })}</p>}
       <div className="flex flex-col gap-4 pb-4">
         {REGIONS.map((region) => {

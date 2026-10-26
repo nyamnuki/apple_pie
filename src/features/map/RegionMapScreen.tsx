@@ -1,4 +1,4 @@
-import { Lock, ChevronRight } from '../../components/icons';
+import { Lock, ChevronRight, Check, Question } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
 import { REGIONS, getRegion } from '../../data/regions/regions';
@@ -6,6 +6,7 @@ import { useGame } from '../../app/GameProvider';
 import { isRegionOpen, regionProgress } from '../../utils/regions';
 import { useI18n } from '../../i18n';
 import RegionLandmark from '../../components/art/RegionLandmark';
+import { dateKey } from '../daily/daily';
 import type { RegionId } from '../../types/resources';
 
 // 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲, 수정 동굴: 푸른 동굴)
@@ -35,16 +36,35 @@ function Trail() {
 }
 
 // 마을 지도: 가고 싶은 마을을 고른다. 잠긴 마을은 열리는 조건과 진행 정도를 보여준다.
-export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: RegionId) => void; onBack: () => void }) {
+export default function RegionMapScreen({ onPick, onBack, onDaily }: { onPick: (id: RegionId) => void; onBack: () => void; onDaily?: () => void }) {
   const { t, tKey, formatNumber } = useI18n();
   const { game } = useGame();
   // 지도는 아래(처음 마을)에서 위(다음 마을)로 올라간다
   const regions = [...REGIONS].reverse();
+  const doneToday = game.dailyDone.includes(dateKey(new Date()));
 
   return (
     <AppShell background="bg-gradient-to-b from-lavender/70 via-mist/60 to-moss">
       <ScreenHeader title={t('map.title')} onBack={onBack} />
       <p className="mb-4 text-xl">{t('map.intro')}</p>
+
+      {/* 오늘의 문제: 끝낸 놀이가 있으면. 오늘 이미 풀었으면 도장 표시 */}
+      {onDaily && game.completedLessons.length > 0 && (
+        <button
+          type="button"
+          onClick={onDaily}
+          className="mb-4 flex min-h-[72px] w-full items-center gap-3 rounded-[2rem] border-2 border-bark/10 bg-cream px-4 py-3 text-left shadow-pop active:translate-y-1 active:shadow-pop-sm"
+        >
+          <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-4 ${doneToday ? 'rotate-[-8deg] border-wood text-wood' : 'border-dashed border-bark/40 text-bark/60'}`} aria-hidden="true">
+            {doneToday ? <Check size={24} strokeWidth={3} /> : <Question size={24} />}
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-xl font-bold">{t('daily.title')}</span>
+            <span className="block text-base">{t(doneToday ? 'daily.doneToday' : 'daily.waiting')}</span>
+          </span>
+          <ChevronRight size={28} aria-hidden className="shrink-0" />
+        </button>
+      )}
 
       <ol className="flex flex-1 flex-col justify-center [@media(max-height:500px)]:flex-row-reverse [@media(max-height:500px)]:items-center">
         {regions.map((region, index) => {

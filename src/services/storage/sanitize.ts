@@ -54,7 +54,10 @@ export function sanitizeGame(raw: unknown): GameState {
   // 스티커 (예전 저장본에는 없다): 아는 스티커만, 겹치지 않게
   const stickers = Array.isArray(raw.stickers) ? [...new Set(raw.stickers.filter((id): id is string => typeof id === 'string' && Boolean(getSticker(id))))] : [];
 
-  return { resources, furniture, completedLessons, lessonStats, stickers };
+  // 오늘의 문제 도장 (날짜 글자만, 겹치지 않게)
+  const dailyDone = Array.isArray(raw.dailyDone) ? [...new Set(raw.dailyDone.filter((d): d is string => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)))].slice(-1000) : [];
+
+  return { resources, furniture, completedLessons, lessonStats, stickers, dailyDone };
 }
 
 export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {

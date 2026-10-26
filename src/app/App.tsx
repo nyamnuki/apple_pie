@@ -10,6 +10,7 @@ import WorkshopScreen from '../features/workshop/WorkshopScreen';
 import InventoryScreen from '../features/inventory/InventoryScreen';
 import StickerBookScreen from '../features/stickers/StickerBookScreen';
 import BreakReminder from '../features/breaks/BreakReminder';
+import DailyScreen from '../features/daily/DailyScreen';
 import ParentGate from '../features/settings/ParentGate';
 import ParentScreen from '../features/settings/ParentScreen';
 import RegionMapScreen from '../features/map/RegionMapScreen';
@@ -74,6 +75,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
       case 'map':
         return (
           <RegionMapScreen
+            onDaily={() => setScreen('daily')}
             onPick={(id) => {
               setRegionId(id);
               setScreen('math');
@@ -106,6 +108,8 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
         );
       case 'workshop':
         return <WorkshopScreen onBack={() => setScreen('room')} onDecorate={() => setScreen('decorate')} />;
+      case 'daily':
+        return <DailyScreen onBack={() => setScreen('map')} />;
       case 'stickers':
         return <StickerBookScreen onBack={() => setScreen('room')} />;
       case 'inventory':

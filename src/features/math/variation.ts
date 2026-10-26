@@ -166,3 +166,8 @@ export function lessonForPlay(lesson: MathLesson, play: number): MathLesson {
   }
   return list[play];
 }
+
+// 판 번호와 상관없는 한 번짜리 문제 (오늘의 문제: 날짜로 seed 를 정한다)
+export function lessonForSeed(lesson: MathLesson, seed: number): MathLesson {
+  return makeVariant(lesson, makeRng(hash(lesson.id) + seed * 104729));
+}

@@ -442,6 +442,7 @@ export const ko: Messages = {
     missing: '아직 못 찾은 스티커',
     got: '새 스티커: {name}!',
     petGoal: '스티커를 {n}장 더 모으면 새 친구가 방에 놀러 와요!',
+    stamps: '오늘의 문제 도장: {n}개',
   },
   breaks: {
     title: '잠깐 쉬어 가요!',
@@ -451,6 +452,15 @@ export const ko: Messages = {
     settingBody: '이만큼 놀면 루루가 잠깐 쉬자고 해요 (게임 화면을 보고 있는 시간만 세요).',
     off: '끔',
     minutes: '{n}분',
+  },
+  daily: {
+    title: '오늘의 문제',
+    waiting: '했던 놀이에서 한 문제! 날마다 새 문제가 나와요.',
+    doneToday: '오늘 문제를 풀었어요. 내일 새 문제를 만나요!',
+    from: '나온 놀이: {lesson}',
+    stamp: '도장을 받았어요!',
+    stamps: '오늘의 문제 도장: {n}개',
+    back: '지도로 돌아가기',
   },
   pets: {
     duckling: '아기 오리 두두',

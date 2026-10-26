@@ -20,6 +20,7 @@ export interface GameState {
   completedLessons: LessonId[];
   lessonStats: Partial<Record<LessonId, LessonStats>>;
   stickers: string[]; // 모은 스티커 id (받은 순서)
+  dailyDone: string[]; // 오늘의 문제를 푼 날짜 ('2026-10-26', 기기 날짜)
 }
 
 // 처음 상태: 재료 없음, '처음부터 가진' 가구 1개씩
@@ -30,6 +31,7 @@ export function createInitialGameState(): GameState {
     completedLessons: [],
     lessonStats: {},
     stickers: [],
+    dailyDone: [],
   };
 }
 
@@ -56,7 +58,8 @@ export type GameAction =
   | { type: 'completeLesson'; lesson: MathLesson; wrongTries: number; at: string }
   | { type: 'craft'; furnitureId: string }
   | { type: 'reset' } // 부모 설정에서 진행 상황 모두 지우기
-  | { type: 'load'; state: GameState }; // 백업 파일에서 되살리기 (검사를 마친 상태)
+  | { type: 'load'; state: GameState } // 백업 파일에서 되살리기 (검사를 마친 상태)
+  | { type: 'dailyDone'; date: string }; // 오늘의 문제를 풀었다 (도장)
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -64,6 +67,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return createInitialGameState();
     case 'load':
       return action.state;
+    case 'dailyDone':
+      return state.dailyDone.includes(action.date) ? state : { ...state, dailyDone: [...state.dailyDone, action.date] };
     case 'completeLesson': {
       const { rewards, bonus, sticker } = rewardFor(action.lesson, state);
       return {

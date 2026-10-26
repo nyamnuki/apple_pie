@@ -440,6 +440,7 @@ export const en = {
     missing: 'Sticker not found yet',
     got: 'New sticker: {name}!',
     petGoal: 'Collect {n} more and a new friend will visit your room!',
+    stamps: 'Puzzle stamps: {n}',
   },
   breaks: {
     title: 'Time for a little rest!',
@@ -449,6 +450,15 @@ export const en = {
     settingBody: 'Lulu suggests a short rest after this much playing time (counted only while the game is on screen).',
     off: 'Off',
     minutes: '{n} min',
+  },
+  daily: {
+    title: "Today's puzzle",
+    waiting: 'One quick puzzle from a game you played. A new one every day!',
+    doneToday: 'Solved today. Come back tomorrow for a new one!',
+    from: 'From: {lesson}',
+    stamp: 'You got a stamp!',
+    stamps: 'Puzzle stamps: {n}',
+    back: 'Back to the map',
   },
   pets: {
     duckling: 'Dudu the duckling',
