@@ -401,6 +401,15 @@ export const ko: Messages = {
     got: '새 스티커: {name}!',
     petGoal: '스티커를 {n}장 더 모으면 새 친구가 방에 놀러 와요!',
   },
+  breaks: {
+    title: '잠깐 쉬어 가요!',
+    body: '한참 놀았어요. 팔을 쭉 뻗어 기지개를 켜고, 먼 곳을 바라봐요.',
+    back: '다시 놀래요!',
+    setting: '쉬어 가기 알림',
+    settingBody: '이만큼 놀면 루루가 잠깐 쉬자고 해요 (게임 화면을 보고 있는 시간만 세요).',
+    off: '끔',
+    minutes: '{n}분',
+  },
   pets: {
     duckling: '아기 오리 두두',
     foxKit: '아기 여우 보리',

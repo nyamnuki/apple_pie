@@ -10,6 +10,7 @@ interface Settings {
   music: boolean; // 배경 음악
   voice: boolean; // 말풍선이 바뀌면 자동으로 읽어 주기
   bigText: boolean; // 큰 글씨 (앱 전체 글자 12.5% 크게)
+  breakMinutes: 0 | 15 | 20 | 30; // 쉬어 가기 알림 (0 = 끔). 어른 설정에서 바꾼다
 }
 
 function loadSettings(): Settings {
@@ -17,9 +18,10 @@ function loadSettings(): Settings {
     const raw = JSON.parse(readString(SETTINGS_KEY) ?? '{}');
     // 처음에는 모두 켬 (글을 아직 못 읽는 아이를 위해 읽어 주기도 켬)
     const flag = (v: unknown) => (typeof v === 'boolean' ? v : true);
-    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice), bigText: raw?.bigText === true };
+    const breakMinutes = [0, 15, 20, 30].includes(raw?.breakMinutes) ? raw.breakMinutes : 20;
+    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice), bigText: raw?.bigText === true, breakMinutes };
   } catch {
-    return { sound: true, music: true, voice: true, bigText: false };
+    return { sound: true, music: true, voice: true, bigText: false, breakMinutes: 20 };
   }
 }
 
@@ -32,6 +34,8 @@ interface SoundValue {
   setVoiceOn: (on: boolean) => void;
   bigText: boolean;
   setBigText: (on: boolean) => void;
+  breakMinutes: Settings['breakMinutes'];
+  setBreakMinutes: (m: Settings['breakMinutes']) => void;
   // 아이가 화면을 한 번이라도 눌렀는지 (브라우저 규칙상 그 뒤에만 음악을 틀 수 있다)
   interacted: boolean;
   play: typeof SOUNDS; // 효과음이 꺼져 있으면 아무것도 하지 않는다
@@ -54,6 +58,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const setMusicOn = useCallback((on: boolean) => update({ music: on }), [update]);
   const setVoiceOn = useCallback((on: boolean) => update({ voice: on }), [update]);
   const setBigText = useCallback((on: boolean) => update({ bigText: on }), [update]);
+  const setBreakMinutes = useCallback((m: Settings['breakMinutes']) => update({ breakMinutes: m }), [update]);
 
   // 큰 글씨: <html> 에 표시해 두면 CSS 가 글자 기준 크기를 키운다 (모든 글자가 rem 단위라 함께 커진다)
   useEffect(() => {
@@ -80,8 +85,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, [settings.sound]);
 
   const value = useMemo(
-    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, bigText: settings.bigText, setBigText, interacted, play }),
-    [settings, setSoundOn, setMusicOn, setVoiceOn, setBigText, interacted, play],
+    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, bigText: settings.bigText, setBigText, breakMinutes: settings.breakMinutes, setBreakMinutes, interacted, play }),
+    [settings, setSoundOn, setMusicOn, setVoiceOn, setBigText, setBreakMinutes, interacted, play],
   );
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
 }

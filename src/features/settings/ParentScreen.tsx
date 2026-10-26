@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldCheck, BarChart3, BookOpen, Trash2 } from '../../components/icons';
+import { ShieldCheck, BarChart3, BookOpen, Trash2, Clock } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -9,12 +9,14 @@ import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { REGIONS } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
 import BackupSection from './BackupSection';
+import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
 
 // 부모 설정: 개인정보 안내, 진행 요약, 진행 상황 지우기 (언어 설정은 그대로 둔다)
 export default function ParentScreen({ onBack }: { onBack: () => void }) {
   const { t, tKey, formatNumber, formatDateTime } = useI18n();
   const { game, dispatch } = useGame();
+  const { breakMinutes, setBreakMinutes } = useSound();
   const { dispatch: roomDispatch } = useRoom();
   const [step, setStep] = useState<'idle' | 'confirm' | 'done'>('idle');
   const furnitureCount = Object.values(game.furniture).reduce((a, b) => a + b, 0);
@@ -85,6 +87,29 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
               </ul>
             </div>
           ))}
+        </section>
+
+        {/* 쉬어 가기 알림 */}
+        <section aria-labelledby="break-h" className={card}>
+          <h2 id="break-h" className={heading}>
+            <Clock size={28} aria-hidden />
+            {t('breaks.setting')}
+          </h2>
+          <p className="mb-3 text-lg">{t('breaks.settingBody')}</p>
+          <div role="radiogroup" aria-labelledby="break-h" className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {([0, 15, 20, 30] as const).map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="radio"
+                aria-checked={breakMinutes === m}
+                onClick={() => setBreakMinutes(m)}
+                className={`min-h-[56px] rounded-3xl border-4 px-3 text-lg font-bold ${breakMinutes === m ? 'border-wood bg-apricot' : 'border-transparent bg-cream'}`}
+              >
+                {m === 0 ? t('breaks.off') : t('breaks.minutes', { n: formatNumber(m) })}
+              </button>
+            ))}
+          </div>
         </section>
 
         <BackupSection className={card} />

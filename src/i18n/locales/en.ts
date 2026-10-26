@@ -399,6 +399,15 @@ export const en = {
     got: 'New sticker: {name}!',
     petGoal: 'Collect {n} more and a new friend will visit your room!',
   },
+  breaks: {
+    title: 'Time for a little rest!',
+    body: "We've been playing for a while. Let's stretch our arms up high and look at something far away.",
+    back: "I'm back!",
+    setting: 'Rest reminder',
+    settingBody: 'Lulu suggests a short rest after this much playing time (counted only while the game is on screen).',
+    off: 'Off',
+    minutes: '{n} min',
+  },
   pets: {
     duckling: 'Dudu the duckling',
     foxKit: 'Bori the fox kit',

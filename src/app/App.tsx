@@ -9,6 +9,7 @@ import LessonScreen from '../features/math/LessonScreen';
 import WorkshopScreen from '../features/workshop/WorkshopScreen';
 import InventoryScreen from '../features/inventory/InventoryScreen';
 import StickerBookScreen from '../features/stickers/StickerBookScreen';
+import BreakReminder from '../features/breaks/BreakReminder';
 import ParentGate from '../features/settings/ParentGate';
 import ParentScreen from '../features/settings/ParentScreen';
 import RegionMapScreen from '../features/map/RegionMapScreen';
@@ -41,6 +42,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
     <>
       <MusicManager track={track} />
       {renderScreen()}
+      <BreakReminder />
     </>
   );
 

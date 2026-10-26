@@ -164,3 +164,6 @@ export const Question = make('question', () => (
     <circle cx="12.1" cy="15" r="0.9" fill="currentColor" />
   </>
 ));
+export const Clock = make('clock', () => (
+  <path d="M12 3.8 C16.6 3.8 20.2 7.4 20.2 12 C20.2 16.6 16.6 20.2 12 20.2 C7.4 20.2 3.8 16.6 3.8 12 C3.8 7.4 7.4 3.8 12 3.8 Z M12 7.4 C12.1 9.2 11.9 10.6 12 12.2 L15.2 14" />
+));
