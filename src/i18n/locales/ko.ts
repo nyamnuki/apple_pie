@@ -701,6 +701,7 @@ export const ko: Messages = {
   },
   a11y: {
     readAloud: '소리 내어 읽기',
+    hear: '이름 듣기',
     openSettings: '설정 열기',
     goBack: '뒤로 가기',
     floorSpot: '바닥 {row}번째 줄 {col}번째 칸',

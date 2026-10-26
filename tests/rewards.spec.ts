@@ -9,7 +9,7 @@ test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', as
 
   await page.getByRole('button', { name: 'Workshop' }).click();
   const bookshelf = page.getByRole('listitem').filter({ hasText: 'Forest Bookshelf' });
-  await expect(bookshelf.getByRole('button')).toBeDisabled();
+  await expect(bookshelf.getByRole('button', { name: /Make it!|Need more materials/ })).toBeDisabled();
   await expect(page.getByText('You can make this when you can visit Moonlight Forest.').first()).toBeVisible();
   await page.getByRole('button', { name: 'Go back' }).click();
 

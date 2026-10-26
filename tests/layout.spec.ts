@@ -79,7 +79,7 @@ for (const locale of ['en', 'ko'] as const) {
       await back();
       await back();
       await page.getByRole('button', { name: /^Crystal Cave|^수정 동굴/ }).click(); // 마을이 늘어도 이름으로 찾는다
-      await page.locator('li button').last().click();
+      await page.locator('main ul li > button:first-child').last().click(); // 놀이 카드 (이름 듣기 버튼 말고)
       await page.locator('main button:has(svg[data-icon="arrow-right"])').click();
       await check(page, 'lesson-groups');
       expect(problems).toEqual([]);

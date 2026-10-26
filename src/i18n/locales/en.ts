@@ -699,6 +699,7 @@ export const en = {
   },
   a11y: {
     readAloud: 'Read it aloud',
+    hear: 'Hear the name',
     openSettings: 'Open settings',
     goBack: 'Go back',
     floorSpot: 'Floor spot, row {row}, column {col}',

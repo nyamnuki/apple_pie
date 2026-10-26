@@ -9,6 +9,7 @@ import AssetThumb from '../../components/AssetThumb';
 import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';
 import GuideBubble from '../../components/GuideBubble';
+import SpeakButton from '../../components/SpeakButton';
 import { FURNITURE, getFurniture } from '../../data/furniture/furniture';
 import { RESOURCES } from '../../data/resources/resources';
 import { getRegion } from '../../data/regions/regions';
@@ -134,6 +135,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
                   <p className="text-xl font-bold leading-tight">{tKey(def.nameKey)}</p>
                   {owned > 0 && <p className="text-base text-bark/85">{t('workshop.youHave', { n: formatNumber(owned) })}</p>}
                 </div>
+                <SpeakButton text={tKey(def.nameKey)} />
               </div>
 
               <div className="flex flex-wrap gap-2" aria-label={t('workshop.needs')}>

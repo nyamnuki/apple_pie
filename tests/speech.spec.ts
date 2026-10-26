@@ -104,3 +104,19 @@ test('세기 놀이: 물건을 누를 때마다 센 수를 읽어 준다 (한국
   await items.nth(1).click();
   await expect.poll(async () => (await spoken(page)).at(-1)?.text).toBe('둘');
 });
+
+test('이름 듣기: 놀이 고르기 카드와 공방 가구 이름을 소리로', async ({ page, context }) => {
+  await mockSpeech(context);
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await page.getByRole('button', { name: /^Acorn Village/ }).click();
+  await page.getByRole('listitem').filter({ hasText: 'Which Has More?' }).getByRole('button', { name: 'Hear the name' }).click();
+  await expect.poll(async () => (await spoken(page)).at(-1)).toEqual({ text: 'Which Has More?', lang: 'en-US' });
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Workshop' }).click();
+  await page.getByRole('listitem').filter({ hasText: 'Forest Bookshelf' }).getByRole('button', { name: 'Hear the name' }).click();
+  await expect.poll(async () => (await spoken(page)).at(-1)?.text).toBe('Forest Bookshelf');
+});

@@ -9,6 +9,7 @@ import { useI18n, type TranslationKey } from '../../i18n';
 import { getRegion } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
 import GuideBubble from '../../components/GuideBubble';
+import SpeakButton from '../../components/SpeakButton';
 import { GUIDE_OF } from '../../data/regions/guides';
 import type { LessonId, MathArea } from '../../types/math';
 import type { RegionId } from '../../types/resources';
@@ -57,11 +58,11 @@ export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
         {lessons.map((lesson) => {
           const icon = MATH_ITEMS[lesson.icon];
           return (
-            <li key={lesson.id}>
+            <li key={lesson.id} className="relative">
               <button
                 type="button"
                 onClick={() => onPick(lesson.id)}
-                className="flex min-h-[88px] w-full items-center gap-4 rounded-3xl bg-cream px-4 py-3 text-left shadow-pop transition-transform active:translate-y-1 active:shadow-pop-sm"
+                className="flex min-h-[88px] w-full items-center gap-4 rounded-3xl bg-cream py-3 pl-4 pr-16 text-left shadow-pop transition-transform active:translate-y-1 active:shadow-pop-sm"
               >
                 <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-apricot">
                   <AssetIcon path={icon.assetPath} emoji={icon.emoji} size={44} />
@@ -88,6 +89,8 @@ export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
                   )}
                 </span>
               </button>
+              {/* 놀이 이름 듣기 (카드 버튼 밖, 오른쪽 위) */}
+              <SpeakButton text={t(lessonKey(lesson.id, 'title'))} className="absolute right-2 top-2" />
             </li>
           );
         })}
