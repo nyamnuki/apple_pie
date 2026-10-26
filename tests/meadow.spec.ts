@@ -71,3 +71,30 @@ test('놀이: 짝이 될까, 하나 남을까? (한국어)', async ({ page, cont
   await expect(guide(page)).toHaveText('맞아요! 7쌍, 남은 것 0개예요.');
   expect(await englishWords(page)).toBeNull();
 });
+
+test('놀이: 10 만들기 (빈칸을 채우며 몇 개 더인지 세기)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ completedLessons: ['counting1', 'comparing1', 'patterns1', 'shapes1', 'skipCount1', 'tens1'] }) });
+  const problems = collectProblems(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Sunny Meadow/);
+  await page.getByRole('button', { name: /Make Ten/ }).click();
+  await expect(guide(page)).toHaveText('This box has 10 spots. There are 7 bees in it. How many more bees would fill it up?');
+  await page.getByRole('button', { name: 'Next' }).click();
+  const fill = page.getByRole('button', { name: 'Fill this spot' });
+  await expect(fill).toHaveCount(3);
+  while (await fill.count()) await fill.first().click();
+  await expect(page.getByRole('status', { name: 'Count: 3' })).toBeVisible();
+  await expect(guide(page)).toHaveText('7 and 3 make 10! The box is full.');
+  await page.getByRole('button', { name: 'Next' }).click();
+  const choices = page.getByRole('group', { name: 'Answer choices' });
+  await choices.getByRole('button', { name: '14', exact: true }).click();
+  await waitLastButtonEnabled(page);
+  await expect(guide(page)).toHaveText(/6 more make 10!/);
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await choices.getByRole('button', { name: '2', exact: true }).click();
+  await expect(guide(page)).toHaveText('Yes! 8 and 2 make 10.');
+  expect(problems).toEqual([]);
+});

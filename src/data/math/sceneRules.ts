@@ -32,6 +32,8 @@ export function sizeOk(scene: MathScene): boolean {
       return scene.total >= 4 && scene.total <= 16 && scene.total % 2 === 0; // 똑같이 나눠지는 수만
     case 'double':
       return scene.n >= 1 && scene.n * 2 <= MAX;
+    case 'makeTen':
+      return Number.isInteger(scene.have) && scene.have >= 1 && scene.have <= 9;
   }
 }
 

@@ -236,6 +236,21 @@ export const LESSONS: MathLesson[] = [
     applyChoices: ['even', 'odd'],
   },
 
+  {
+    id: 'makeTen1',
+    rewards: { honey: 1, sunflowerSeed: 1 },
+    firstTimeBonus: { sunflowerSeed: 1 },
+    area: 'makingTen',
+    region: 'sunnyMeadow',
+    icon: 'sunflower',
+    // 10 만들기: 10칸 틀의 빈칸 수가 '몇 개 더'
+    explore: { kind: 'makeTen', item: 'bee', have: 7 }, // 3
+    predict: { kind: 'makeTen', item: 'snail', have: 4 }, // 6 (4 는 있는 수, 14 는 10 에 더한 실수)
+    predictChoices: [4, 5, 6, 14],
+    apply: { kind: 'makeTen', item: 'sunflower', have: 8 }, // 2
+    applyChoices: [2, 3, 8, 18],
+  },
+
   // ===== 바람 언덕 =====
   {
     id: 'clock1',

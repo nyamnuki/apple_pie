@@ -29,6 +29,7 @@ const AREA_KEY: Record<MathArea, TranslationKey> = {
   clock: 'math.areas.clock',
   sharing: 'math.areas.sharing',
   doubling: 'math.areas.doubling',
+  makingTen: 'math.areas.makingTen',
 };
 
 interface Props {

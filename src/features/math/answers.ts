@@ -29,6 +29,8 @@ export function answerOf(scene: MathScene): MathAnswer {
       return scene.total / 2;
     case 'double':
       return scene.n * 2;
+    case 'makeTen':
+      return 10 - scene.have;
   }
 }
 
@@ -63,5 +65,7 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return { ...vars, total: formatNumber(scene.total), each: formatNumber(scene.total / 2) };
     case 'double':
       return { ...vars, n: formatNumber(scene.n), total: formatNumber(scene.n * 2) };
+    case 'makeTen':
+      return { ...vars, have: formatNumber(scene.have), more: formatNumber(10 - scene.have) };
   }
 }

@@ -11,6 +11,7 @@ import PairsField from './PairsField';
 import ClockField from './ClockField';
 import ShareField from './ShareField';
 import DoubleField from './DoubleField';
+import MakeTenField from './MakeTenField';
 import type { FieldMode } from './useSequence';
 import type { MathScene } from '../../../types/math';
 
@@ -43,5 +44,7 @@ export default function SceneField({ scene, mode, onDone }: { scene: MathScene; 
       return <ShareField scene={scene} mode={mode} onDone={onDone} />;
     case 'double':
       return <DoubleField scene={scene} mode={mode} onDone={onDone} />;
+    case 'makeTen':
+      return <MakeTenField scene={scene} mode={mode} onDone={onDone} />;
   }
 }

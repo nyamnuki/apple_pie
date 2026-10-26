@@ -103,6 +103,8 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
       return { ...scene, total: int(rng, 3, 8) * 2 };
     case 'double':
       return { ...scene, n: int(rng, 2, 9) };
+    case 'makeTen':
+      return { ...scene, have: int(rng, 2, 8) };
     case 'pattern':
       return scene;
   }
@@ -121,6 +123,7 @@ export function numberChoices(scene: MathScene, rng: Rng): number[] {
   else if (scene.kind === 'hops') likely = [scene.start - scene.hop]; // 반대쪽으로 뛰기
   else if (scene.kind === 'share') likely = [scene.total]; // 나누기 전 전체 수
   else if (scene.kind === 'double') likely = [scene.n, scene.n + 1]; // 한쪽만 세기, 하나만 더하기
+  else if (scene.kind === 'makeTen') likely = [scene.have, 10 + scene.have]; // 있는 수를 답하기, 10 에 더하기
   const pool = [...new Set([...shuffle(rng, likely), ...shuffle(rng, near)])].filter((n) => n > 0 && n !== answer);
   return [answer, ...pool.slice(0, 3)].sort((x, y) => x - y);
 }
