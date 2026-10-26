@@ -506,6 +506,7 @@ export const ko: Messages = {
     flowerCrown: '꽃 화관',
     starScarf: '별 스카프',
     moonHat: '달님 모자',
+    rainbowScarf: '무지개 스카프',
   },
   stickers: {
     title: '스티커 도감',
@@ -545,6 +546,7 @@ export const ko: Messages = {
     duckling: '아기 오리 두두',
     foxKit: '아기 여우 보리',
     owlet: '아기 부엉이 후',
+    turtle: '아기 거북 콩콩',
     sayHi: '{name}: 눌러서 인사하기',
   },
   reward: {

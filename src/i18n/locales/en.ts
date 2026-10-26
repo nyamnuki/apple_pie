@@ -504,6 +504,7 @@ export const en = {
     flowerCrown: 'Flower Crown',
     starScarf: 'Star Scarf',
     moonHat: 'Moon Hat',
+    rainbowScarf: 'Rainbow Scarf',
   },
   stickers: {
     title: 'Sticker Book',
@@ -543,6 +544,7 @@ export const en = {
     duckling: 'Dudu the duckling',
     foxKit: 'Bori the fox kit',
     owlet: 'Hoo the owlet',
+    turtle: 'Pebble the baby turtle',
     sayHi: '{name}: tap to say hi',
   },
   reward: {

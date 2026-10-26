@@ -72,7 +72,27 @@ function Owlet() {
   );
 }
 
-const ART: Record<PetId, () => JSX.Element> = { duckling: Duckling, foxKit: FoxKit, owlet: Owlet };
+function Turtle() {
+  return (
+    <g>
+      <ellipse cx="32" cy="60" rx="20" ry="3" fill="#59483C" opacity="0.15" />
+      {/* 발과 머리 */}
+      <path d="M16 54 C14 58 20 60 22 56 M42 56 C44 60 50 58 48 54" fill="#B9D1AD" {...L} />
+      <path d="M44 44 C50 38 60 40 58 48 C56 54 48 52 44 50 Z" fill="#B9D1AD" {...L} />
+      <circle cx="53" cy="45" r="1.8" fill="#59483C" />
+      <path d="M52 49 C54 50 56 49 57 48" fill="none" stroke="#59483C" strokeWidth="1.2" strokeLinecap="round" />
+      <ellipse cx="55" cy="49" rx="1.8" ry="1" fill="#F3C6D2" />
+      {/* 등딱지: 둥근 지붕과 육각 무늬 */}
+      <path d="M10 52 C10 30 22 22 32 22 C42 22 52 30 50 52 Z" fill="#8FB58A" {...L} />
+      <path d="M10 52 C10 30 22 22 32 22 C42 22 52 30 50 52 Z" fill="url(#wc-ball)" stroke="none" />
+      <path d="M24 34 L30 30 L36 34 L36 41 L30 45 L24 41 Z" fill="#B9D1AD" {...L} strokeWidth={1.3} />
+      <path d="M14 46 L20 42 M40 42 L46 46 M30 45 L30 52 M24 34 L18 30 M36 34 L42 30" fill="none" stroke="#6F9468" strokeWidth="1.3" />
+      <path d="M10 52 C20 55 40 55 50 52" fill="none" stroke="#F5D0AD" strokeWidth="3" strokeLinecap="round" />
+    </g>
+  );
+}
+
+const ART: Record<PetId, () => JSX.Element> = { duckling: Duckling, foxKit: FoxKit, owlet: Owlet, turtle: Turtle };
 
 export default function PetArt({ id }: { id: PetId }) {
   const Art = ART[id];

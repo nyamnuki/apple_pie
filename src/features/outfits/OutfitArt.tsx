@@ -10,6 +10,7 @@ export const OUTFIT_VIEWBOX: Record<OutfitId, string> = {
   moonHat: '30 -4 64 60',
   berryScarf: '30 92 62 40',
   starScarf: '30 92 62 40',
+  rainbowScarf: '30 92 62 40',
 };
 
 function Scarf({ main, stripe, dots }: { main: string; stripe: string; dots?: boolean }) {
@@ -79,5 +80,15 @@ export default function OutfitArt({ id }: { id: OutfitId }) {
       return <Scarf main="#E58E8E" stripe="#FFF6E6" />;
     case 'starScarf':
       return <Scarf main="#8FA6D8" stripe="#C9D8F0" dots />;
+    case 'rainbowScarf':
+      // 무지개 스카프: 목에 두른 부분에 여섯 색 줄
+      return (
+        <g>
+          <Scarf main="#F3C6D2" stripe="#FFF0B8" />
+          {['#F5D0AD', '#FFF0B8', '#C9E0BE', '#C8DFE8', '#D9D0EC'].map((c, i) => (
+            <path key={c} d={`M${38 + i * 2} ${103 + i * 1.8} C${48} ${109 + i * 1.6} ${72} ${109 + i * 1.6} ${82 - i * 2} ${103 + i * 1.8}`} fill="none" stroke={c} strokeWidth="2" strokeLinecap="round" />
+          ))}
+        </g>
+      );
   }
 }

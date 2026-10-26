@@ -5,19 +5,21 @@ import { GRID } from '../room/iso';
 
 // 반려 친구: 스티커 수로 찾아오고, 가구가 없는 칸만 걸어 다닌다
 describe('반려 친구', () => {
-  it('스티커 3·9·15장에 한 명씩', () => {
+  it('스티커 3·9·15·21장에 한 명씩', () => {
     expect(petsFor(2)).toEqual([]);
     expect(petsFor(3).map((p) => p.id)).toEqual(['duckling']);
     expect(petsFor(18).map((p) => p.id)).toEqual(['duckling', 'foxKit', 'owlet']);
     expect(newPet(2, 3)?.id).toBe('duckling');
     expect(newPet(3, 4)).toBeNull();
     expect(nextPetGoal(4)?.id).toBe('foxKit');
-    expect(nextPetGoal(15)).toBeNull();
+    expect(nextPetGoal(15)?.id).toBe('turtle');
+    expect(petsFor(36).map((p) => p.id)).toEqual(['duckling', 'foxKit', 'owlet', 'turtle']);
+    expect(nextPetGoal(21)).toBeNull();
   });
 
   it('처음 자리와 걸음은 언제나 방 안의 빈 칸 (침대·화분 위 아님, 러그 위는 괜찮음)', () => {
     let spots = startSpots(DEFAULT_LAYOUT, PETS.length);
-    expect(spots).toHaveLength(3);
+    expect(spots).toHaveLength(4);
     for (let n = 0; n < 2000; n++) {
       const i = n % spots.length;
       const others = spots.filter((_, k) => k !== i);

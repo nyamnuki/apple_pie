@@ -5,7 +5,7 @@ import type { RoomLayout } from '../../types/furniture';
 
 // ===== 반려 친구 =====
 // 스티커를 모으면 방에 친구가 하나씩 찾아온다 (저장할 것 없음: 모은 스티커 수로 정해진다).
-export type PetId = 'duckling' | 'foxKit' | 'owlet';
+export type PetId = 'duckling' | 'foxKit' | 'owlet' | 'turtle';
 
 export interface PetDef {
   id: PetId;
@@ -17,6 +17,7 @@ export const PETS: PetDef[] = [
   { id: 'duckling', nameKey: 'pets.duckling', stickers: 3 },
   { id: 'foxKit', nameKey: 'pets.foxKit', stickers: 9 },
   { id: 'owlet', nameKey: 'pets.owlet', stickers: 15 },
+  { id: 'turtle', nameKey: 'pets.turtle', stickers: 21 },
 ];
 
 export const petsFor = (stickerCount: number) => PETS.filter((p) => stickerCount >= p.stickers);
