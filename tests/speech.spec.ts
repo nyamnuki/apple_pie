@@ -9,7 +9,10 @@ async function mockSpeech(context: BrowserContext) {
     Object.defineProperty(window, 'speechSynthesis', {
       configurable: true,
       value: {
-        speak: (u: SpeechSynthesisUtterance) => w.__spoken.push({ text: u.text, lang: u.lang }),
+        speak: (u: SpeechSynthesisUtterance) => {
+          w.__spoken.push({ text: u.text, lang: u.lang });
+          (window as unknown as { __rates: number[] }).__rates = [...((window as unknown as { __rates?: number[] }).__rates ?? []), u.rate];
+        },
         cancel: () => {},
         getVoices: () => [{ lang: 'en-US' }, { lang: 'ko-KR' }],
       },
@@ -129,4 +132,16 @@ test('방 친구를 누르면 이름을 불러 준다', async ({ page, context }
   await page.getByRole('button', { name: '시작하기' }).click();
   await page.getByRole('button', { name: /아기 오리 두두/ }).click();
   await expect.poll(async () => (await spoken(page)).at(-1)).toEqual({ text: '아기 오리 두두, 안녕!', lang: 'ko-KR' });
+});
+
+test('읽어 주는 빠르기: 천천히로 바꾸면 바로 천천히 들려주고 저장된다', async ({ page, context }) => {
+  await mockSpeech(context);
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('switch', { name: /Reading speed/ }).click();
+  await expect.poll(async () => (await spoken(page)).at(-1)?.text).toBe('Slow and clear');
+  const rates = await page.evaluate(() => (window as unknown as { __rates: number[] }).__rates);
+  expect(rates.at(-1)).toBeCloseTo(0.675);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mathTown.settings')!).slowVoice)).toBe(true);
 });

@@ -22,6 +22,12 @@ function voiceFor(locale: Locale): SpeechSynthesisVoice | undefined {
   return voices.find((v) => v.lang.replace('_', '-').toLowerCase() === lang) ?? voices.find((v) => v.lang.toLowerCase().startsWith(lang.slice(0, 2)));
 }
 
+// 천천히 읽기 (설정). 처음 읽기를 배우는 아이가 따라오기 쉽게
+let slow = false;
+export const setSlowSpeech = (on: boolean) => {
+  slow = on;
+};
+
 // 지금 읽는 것이 안내 문장인지 세는 수인지 (수는 안내 문장을 끊지 않는다)
 let reading: 'line' | 'number' | null = null;
 
@@ -60,7 +66,7 @@ function say(s: SpeechSynthesis, text: string, locale: Locale, kind: 'line' | 'n
   } catch {
     // 목소리를 고를 수 없으면 기기 기본 목소리로 읽는다
   }
-  u.rate = kind === 'number' ? 1 : 0.9;
+  u.rate = (kind === 'number' ? 1 : 0.9) * (slow ? 0.75 : 1);
   u.pitch = 1.1;
   u.onend = () => {
     if (reading === kind) reading = null;

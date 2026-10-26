@@ -1,4 +1,5 @@
-import { Languages, Save, Lock, Volume2, VolumeX, Music, MessageCircle, BookOpen } from '../../components/icons';
+import { Languages, Save, Lock, Volume2, VolumeX, Music, MessageCircle, BookOpen, Clock } from '../../components/icons';
+import { speak, setSlowSpeech } from '../../services/speech/speech';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -11,9 +12,9 @@ import { SOUNDS } from '../../services/audio/sound';
 
 // 설정 화면: 언어 선택, 효과음·배경 음악 켜기/끄기, 저장 상태 안내, 어른 전용 설정으로 가는 버튼
 export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: () => void; onParent: () => void; canSave: boolean }) {
-  const { t, formatDateTime } = useI18n();
+  const { t, formatDateTime, locale } = useI18n();
   const savedAt = canSave ? readSavedAt() : null;
-  const { soundOn, setSoundOn, musicOn, setMusicOn, voiceOn, setVoiceOn, bigText, setBigText } = useSound();
+  const { soundOn, setSoundOn, musicOn, setMusicOn, voiceOn, setVoiceOn, bigText, setBigText, slowVoice, setSlowVoice } = useSound();
   return (
     <AppShell>
       <ScreenHeader title={t('settings.title')} onBack={onBack} />
@@ -56,6 +57,19 @@ export default function SettingsScreen({ onBack, onParent, canSave }: { onBack: 
         onLabel={t('settings.voiceOn')}
         offLabel={t('settings.voiceOff')}
         onToggle={() => setVoiceOn(!voiceOn)}
+      />
+      <SettingSwitch
+        id="slow-heading"
+        title={t('settings.slowVoice')}
+        icon={<Clock size={28} aria-hidden />}
+        on={slowVoice}
+        onLabel={t('settings.slowVoiceOn')}
+        offLabel={t('settings.slowVoiceOff')}
+        onToggle={() => {
+          setSlowVoice(!slowVoice);
+          setSlowSpeech(!slowVoice); // 저장된 설정이 반영되기 전에 바로 들려주므로 먼저 바꿔 둔다
+          speak(t(!slowVoice ? 'settings.slowVoiceOn' : 'settings.slowVoiceOff'), locale); // 바뀐 빠르기로 들려준다
+        }}
       />
       <SettingSwitch
         id="text-heading"

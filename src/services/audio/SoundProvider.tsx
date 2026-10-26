@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { SOUNDS, audio } from './sound';
 import { readString, writeString } from '../storage/localStore';
+import { setSlowSpeech } from '../speech/speech';
 
 // 설정은 게임 데이터·언어와 따로 저장한다
 export const SETTINGS_KEY = 'mathTown.settings';
@@ -10,6 +11,7 @@ interface Settings {
   music: boolean; // 배경 음악
   voice: boolean; // 말풍선이 바뀌면 자동으로 읽어 주기
   bigText: boolean; // 큰 글씨 (앱 전체 글자 12.5% 크게)
+  slowVoice: boolean; // 천천히 읽어 주기
   breakMinutes: 0 | 15 | 20 | 30; // 쉬어 가기 알림 (0 = 끔). 어른 설정에서 바꾼다
 }
 
@@ -19,9 +21,9 @@ function loadSettings(): Settings {
     // 처음에는 모두 켬 (글을 아직 못 읽는 아이를 위해 읽어 주기도 켬)
     const flag = (v: unknown) => (typeof v === 'boolean' ? v : true);
     const breakMinutes = [0, 15, 20, 30].includes(raw?.breakMinutes) ? raw.breakMinutes : 20;
-    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice), bigText: raw?.bigText === true, breakMinutes };
+    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice), bigText: raw?.bigText === true, slowVoice: raw?.slowVoice === true, breakMinutes };
   } catch {
-    return { sound: true, music: true, voice: true, bigText: false, breakMinutes: 20 };
+    return { sound: true, music: true, voice: true, bigText: false, slowVoice: false, breakMinutes: 20 };
   }
 }
 
@@ -34,6 +36,8 @@ interface SoundValue {
   setVoiceOn: (on: boolean) => void;
   bigText: boolean;
   setBigText: (on: boolean) => void;
+  slowVoice: boolean;
+  setSlowVoice: (on: boolean) => void;
   breakMinutes: Settings['breakMinutes'];
   setBreakMinutes: (m: Settings['breakMinutes']) => void;
   // 아이가 화면을 한 번이라도 눌렀는지 (브라우저 규칙상 그 뒤에만 음악을 틀 수 있다)
@@ -58,6 +62,10 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   const setMusicOn = useCallback((on: boolean) => update({ music: on }), [update]);
   const setVoiceOn = useCallback((on: boolean) => update({ voice: on }), [update]);
   const setBigText = useCallback((on: boolean) => update({ bigText: on }), [update]);
+  const setSlowVoice = useCallback((on: boolean) => update({ slowVoice: on }), [update]);
+
+  // 읽어 주는 빠르기는 음성 모듈이 직접 쓴다
+  useEffect(() => setSlowSpeech(settings.slowVoice), [settings.slowVoice]);
   const setBreakMinutes = useCallback((m: Settings['breakMinutes']) => update({ breakMinutes: m }), [update]);
 
   // 큰 글씨: <html> 에 표시해 두면 CSS 가 글자 기준 크기를 키운다 (모든 글자가 rem 단위라 함께 커진다)
@@ -85,8 +93,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, [settings.sound]);
 
   const value = useMemo(
-    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, bigText: settings.bigText, setBigText, breakMinutes: settings.breakMinutes, setBreakMinutes, interacted, play }),
-    [settings, setSoundOn, setMusicOn, setVoiceOn, setBigText, setBreakMinutes, interacted, play],
+    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, bigText: settings.bigText, setBigText, slowVoice: settings.slowVoice, setSlowVoice, breakMinutes: settings.breakMinutes, setBreakMinutes, interacted, play }),
+    [settings, setSoundOn, setMusicOn, setVoiceOn, setBigText, setSlowVoice, setBreakMinutes, interacted, play],
   );
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
 }
