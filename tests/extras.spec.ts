@@ -202,3 +202,16 @@ test('친구들 (한국어)', async ({ page, context }) => {
   await page.getByRole('button', { name: /도형 찾기/ }).click();
   await expect(guide(page)).toHaveAttribute('aria-label', /^모모의 말: /);
 });
+
+test('큰 글씨: 켜면 글자가 커지고 다시 열어도 유지된다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  const rootSize = () => page.evaluate(() => getComputedStyle(document.documentElement).fontSize);
+  expect(await rootSize()).toBe('16px');
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('switch', { name: /Bigger text/ }).click();
+  await expect(page.getByText('Text is bigger')).toBeVisible();
+  expect(await rootSize()).toBe('18px');
+  await page.reload();
+  expect(await rootSize()).toBe('18px');
+});

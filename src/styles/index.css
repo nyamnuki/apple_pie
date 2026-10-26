@@ -38,6 +38,10 @@
     touch-action: manipulation;
     overscroll-behavior: none;
   }
+  /* 설정의 '큰 글씨' */
+  html[data-big-text] {
+    font-size: 112.5%;
+  }
   body {
     @apply bg-cream font-display text-bark antialiased;
     overflow: hidden;

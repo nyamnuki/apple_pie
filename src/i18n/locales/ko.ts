@@ -123,6 +123,9 @@ export const ko: Messages = {
     voice: '읽어 주기',
     voiceOn: '말을 소리 내어 읽어 줘요',
     voiceOff: '스피커를 누를 때만 읽어 줘요',
+    bigText: '큰 글씨',
+    bigTextOn: '글씨를 크게 보여 줘요',
+    bigTextOff: '보통 크기 글씨예요',
   },
   math: {
     title: '수학 놀이',

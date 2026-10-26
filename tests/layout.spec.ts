@@ -27,10 +27,18 @@ async function check(page: Page, where: string) {
   expect(issues, where).toEqual([]);
 }
 
+// 큰 글씨 설정은 가장 좁은 세로 화면과 낮은 가로 화면에서 따로 확인한다
+const CASES = [
+  ...VIEWPORTS.map((vp) => ({ vp, big: false })),
+  { vp: VIEWPORTS[0], big: true },
+  { vp: VIEWPORTS[2], big: true },
+];
+
 for (const locale of ['en', 'ko'] as const) {
-  for (const vp of VIEWPORTS) {
-    test(`화면 배치 ${locale} ${vp.width}x${vp.height}`, async ({ browser }) => {
+  for (const { vp, big } of CASES) {
+    test(`화면 배치 ${locale} ${vp.width}x${vp.height}${big ? ' 큰 글씨' : ''}`, async ({ browser }) => {
       const context = await browser.newContext({ viewport: vp });
+      if (big) await context.addInitScript(() => localStorage.setItem('mathTown.settings', JSON.stringify({ sound: true, music: false, voice: false, bigText: true })));
       await seed(context, { save: makeSave({ resources: { acorn: 9, apple: 6 }, furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 }, completedLessons: ['counting1', 'comparing1', 'patterns1', 'shapes1'] }), locale });
       const page = await context.newPage();
       const problems = collectProblems(page);

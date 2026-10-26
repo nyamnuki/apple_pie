@@ -122,6 +122,9 @@ export const en = {
     voice: 'Read aloud',
     voiceOn: 'Words are read aloud',
     voiceOff: 'Read only when I tap the speaker',
+    bigText: 'Bigger text',
+    bigTextOn: 'Text is bigger',
+    bigTextOff: 'Text is normal size',
   },
   math: {
     title: 'Math Play',
