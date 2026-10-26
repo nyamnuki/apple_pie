@@ -170,8 +170,9 @@ test('방 사진 찍기: 꾸민 방을 그림 파일(PNG)로 내려받는다', a
   expect(download.suggestedFilename()).toMatch(/^my-room-\d{4}-\d{2}-\d{2}\.png$/);
   const bytes = Buffer.concat(await (await download.createReadStream()).toArray());
   expect(bytes.subarray(1, 4).toString()).toBe('PNG');
-  expect(bytes.readUInt32BE(16)).toBe(1680); // 너비 (760 + 여백 80) × 2
-  expect(bytes.readUInt32BE(20)).toBe(1440); // 높이 (640 + 80) × 2
+  expect(bytes.readUInt32BE(16)).toBe(1768); // 너비 (760 + 여백 80 + 액자 44) × 2
+  expect(bytes.readUInt32BE(20)).toBe(1656); // 높이 (640 + 여백 80 + 액자 44 + 글 띠 64) × 2
+  if (process.env.SHOT_DIR) await download.saveAs(`${process.env.SHOT_DIR}/room-photo.png`);
   expect(bytes.length).toBeGreaterThan(50_000); // 빈 그림이 아니다
 });
 

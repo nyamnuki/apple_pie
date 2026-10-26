@@ -17,6 +17,7 @@ export const en = {
     back: 'Back',
   },
   room: {
+    photoCaption: 'My Woodland Room · {date}',
     light: '{name} light',
     lightOn: 'The light is on.',
     lightOff: 'The light is off. Good night!',

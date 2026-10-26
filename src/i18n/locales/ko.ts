@@ -18,6 +18,7 @@ export const ko: Messages = {
     back: '뒤로',
   },
   room: {
+    photoCaption: '나만의 숲속 방 · {date}',
     light: '{name} 불빛',
     lightOn: '불을 켰어요.',
     lightOff: '불을 껐어요. 잘 자요!',

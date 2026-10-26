@@ -27,7 +27,7 @@ interface Props {
 
 // 내 방(홈) 화면: 지금 꾸며진 방을 보여주고, 놀이하기·방 꾸미기로 갈 수 있다.
 export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory, onStickers, onSettings, onBack }: Props) {
-  const { t, tKey } = useI18n();
+  const { t, tKey, locale } = useI18n();
   const { layout } = useRoom();
   const { game } = useGame();
   const tip = roomTip(game, layout);
@@ -56,7 +56,8 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
     if (!el) return;
     setFlash((n) => n + 1);
     play.place();
-    await saveRoomPhoto(el, `my-room-${new Date().toISOString().slice(0, 10)}.png`);
+    const now = new Date();
+    await saveRoomPhoto(el, `my-room-${now.toISOString().slice(0, 10)}.png`, t('room.photoCaption', { date: new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(now) }));
   };
   // 저녁·밤 조명 켜고 끄기 (이 화면에 있는 동안만 기억한다)
   const [lightsOff, setLightsOff] = useState<ReadonlySet<string>>(() => new Set());
