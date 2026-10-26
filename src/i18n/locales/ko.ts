@@ -408,6 +408,11 @@ export const ko: Messages = {
     sayHi: '{name}: 눌러서 인사하기',
   },
   reward: {
+    praise1: '혼자서 끝까지 생각했어요!',
+    praise2: '하나하나 차근차근 잘 셌어요!',
+    praise3: '포기하지 않고 계속 해 봤어요. 그렇게 배우는 거예요!',
+    praise4: '예상해 본 덕분에 답을 찾았어요!',
+    praise5: '정말 멋진 수학 탐험가예요!',
     title: '새로운 것을 발견했어요!',
     youGot: '모은 재료:',
     firstTimeBonus: '처음 해낸 보너스!',

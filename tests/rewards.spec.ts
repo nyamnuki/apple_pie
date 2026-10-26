@@ -21,11 +21,13 @@ test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', as
   await expect(page.getByRole('img', { name: 'Sweet Apple +1' })).toBeVisible();
   await expect(page.getByText('First-time bonus!')).toBeVisible();
   await expect(page.getByRole('img', { name: 'Golden Acorn +1' })).toBeVisible();
+  await expect(page.getByText('You thought it through all by yourself!')).toBeVisible(); // 첫 판 칭찬
 
   // 두 번째: 보너스 없음
   await page.getByRole('button', { name: 'Play again' }).click();
   await playCountingApples(page, false, 1); // 두 번째 판은 수가 바뀐다
   await expect(page.getByText('First-time bonus!')).toHaveCount(0);
+  await expect(page.getByText('Great counting, step by step!')).toBeVisible(); // 두 번째 판은 다른 칭찬
 
   await page.getByRole('button', { name: 'Make something in the Workshop' }).click();
   await expect(bookshelf.getByRole('img', { name: 'Acorn: you have 6, need 4' })).toBeVisible();

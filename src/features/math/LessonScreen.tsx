@@ -167,6 +167,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           discovery={t(k('discover'))}
           newRegion={earned.newRegion}
           sticker={earned.sticker}
+          guide={speaker}
+          praise={playNo}
           newPet={earned.newPet}
           onWorkshop={onWorkshop}
           onAgain={() => {

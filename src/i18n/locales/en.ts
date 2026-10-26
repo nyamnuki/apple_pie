@@ -406,6 +406,11 @@ export const en = {
     sayHi: '{name}: tap to say hi',
   },
   reward: {
+    praise1: 'You thought it through all by yourself!',
+    praise2: 'Great counting, step by step!',
+    praise3: 'You kept trying. That is how we learn!',
+    praise4: 'Your guess helped you find the answer!',
+    praise5: 'What a clever math explorer!',
     title: 'You discovered something new!',
     youGot: 'You collected:',
     firstTimeBonus: 'First-time bonus!',

@@ -1,11 +1,12 @@
-import { Hammer, LayoutGrid, RotateCcw } from '../../components/icons';
+import { Hammer, LayoutGrid, RotateCcw, Backpack } from '../../components/icons';
 import BigButton from '../../components/BigButton';
 import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';
 import { bundleEntries } from '../../utils/bundles';
 import { getRegion } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
-import { useI18n } from '../../i18n';
+import { useI18n, type TranslationKey } from '../../i18n';
+import type { CharacterId } from '../../data/characters/characters';
 import { ItemArt } from '../../components/art/itemArt';
 import { getSticker } from '../../data/stickers/stickers';
 import PetArt from '../pets/PetArt';
@@ -18,14 +19,18 @@ interface Props {
   discovery: string; // 이번 놀이에서 발견한 원리
   newRegion?: RegionId | null; // 이번에 새로 열린 마을
   sticker?: string | null; // 이번에 받은 스티커
+  guide?: CharacterId; // 칭찬해 주는 친구 (그 마을 안내 친구)
+  praise?: number; // 칭찬 말 번호 (판마다 달라진다)
   newPet?: PetId | null; // 이번에 방에 찾아온 친구
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
 }
 
+const PRAISE: TranslationKey[] = ['reward.praise1', 'reward.praise2', 'reward.praise3', 'reward.praise4', 'reward.praise5'];
+
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, onWorkshop, onAgain, onMoreGames }: Props) {
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames }: Props) {
   const { t, tKey } = useI18n();
   const bonusEntries = bundleEntries(bonus);
   const stickerDef = sticker ? getSticker(sticker) : undefined;
@@ -36,13 +41,23 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
     <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center [@media(max-height:500px)]:grid [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-4">
       <div className="flex w-full flex-col items-center gap-4">
         <div className="flex items-center gap-3">
-          <Character expression="happy" size={96} bob />
-          <h2 className="text-3xl font-bold sm:text-4xl [@media(max-height:500px)]:text-2xl">{t('reward.title')}</h2>
+          <span className="animate-hop">
+            <Character id={guide} expression="cheer" size={96} bob />
+          </span>
+          <div className="text-left">
+            <h2 className="text-3xl font-bold sm:text-4xl [@media(max-height:500px)]:text-2xl">{t('reward.title')}</h2>
+            {/* 판마다 다른 칭찬 한마디 */}
+            <p className="text-lg font-semibold text-wood">{t(PRAISE[praise % PRAISE.length])}</p>
+          </div>
         </div>
 
         <section aria-labelledby="reward-got" className="storybook-card w-full max-w-md rounded-3xl p-5">
-          <h3 id="reward-got" className="mb-3 text-xl font-semibold">
+          <h3 id="reward-got" className="mb-3 flex items-center justify-center gap-2 text-xl font-semibold">
             {t('reward.youGot')}
+            {/* 재료가 다 나타난 뒤 가방이 한 번 통통 (가방에 들어갔다는 느낌) */}
+            <span className="inline-flex animate-hop text-wood" style={{ animationDelay: `${(bundleEntries(rewards).length + 1) * 150 + 200}ms` }} aria-hidden="true">
+              <Backpack size={26} />
+            </span>
           </h3>
           <div className="flex flex-wrap justify-center gap-3">
             {bundleEntries(rewards).map(([id, n], i) => (
