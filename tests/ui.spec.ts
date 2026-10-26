@@ -162,3 +162,24 @@ test('놀이 메뉴: 해 본 놀이는 체크, 한 번에 맞힌 적이 있으�
   await expect(page.locator('[data-star]')).toHaveCount(1);
   await expect(page.getByRole('button', { name: /Taking Away/ })).not.toContainText('Played');
 });
+
+test('놀이 중 다시 보기: 살펴보기 시범을 다시 보고 닫으면 하던 단계 그대로', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await page.getByRole('button', { name: /Counting Apples/ }).click();
+  await expect(page.getByRole('button', { name: 'Watch again' })).toHaveCount(0); // 살펴보기 중에는 없음
+  await page.getByRole('button', { name: 'Next' }).click();
+  const tap = page.getByRole('button', { name: 'Count this one' });
+  while (await tap.count()) await tap.first().click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Watch again' }).click();
+  const dialog = page.getByRole('dialog', { name: "Let's watch how it works" });
+  await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
+  await expect(dialog.getByRole('status', { name: /^Count: [1-9]/ })).toBeVisible({ timeout: 10_000 }); // 하나씩 자동으로 센다
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('group', { name: 'Answer choices' })).toBeVisible(); // 예상하기 그대로
+});

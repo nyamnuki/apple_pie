@@ -1,11 +1,12 @@
 import { useMemo, useReducer, useRef, useState } from 'react';
-import { ArrowRight } from '../../components/icons';
+import { ArrowRight, RotateCcw } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
 import GuideBubble from '../../components/GuideBubble';
 import StageProgress from './components/StageProgress';
 import ChoiceButtons from './components/ChoiceButtons';
+import WatchAgain from './components/WatchAgain';
 import SceneField from './fields/SceneField';
 import RewardPanel from '../rewards/RewardPanel';
 import { useGame } from '../../app/GameProvider';
@@ -13,7 +14,7 @@ import { rewardFor } from '../../app/gameState';
 import { REGIONS } from '../../data/regions/regions';
 import { isRegionOpen, regionProgress } from '../../utils/regions';
 import type { FieldMode } from './fields/useSequence';
-import { hintLevel, initialLessonState, lessonReducer, type LessonState } from './lessonFlow';
+import { hintLevel, initialLessonState, lessonReducer, type LessonState, type Stage } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { lessonForPlay } from './variation';
 import { newPet, type PetId } from '../pets/pets';
@@ -24,7 +25,10 @@ import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 import type { CharacterId, Expression } from '../../data/characters/characters';
 
-// 안내하는 친구: 도토리 마을·햇살 들판은 루루, 달빛 숲·바람 언덕은 모모, 수정 동굴은 도토
+// 다시 보기 버튼이 나오는 단계 (살펴보기·만져 보기 중에는 이미 그 장면을 보고 있다)
+const WATCH_STAGES: Stage[] = ['predict', 'verify', 'discover', 'apply'];
+
+// 안내하는 친구: 도토리 마을·햇살 들판은 루루, 달빛 숲·바람 언덕은 모모, 수정 동굴·무지개 호수는 도토
 export const GUIDE_OF: Record<RegionId, CharacterId> = { acornVillage: 'lulu', moonlightForest: 'momo', crystalCave: 'doto', sunnyMeadow: 'lulu', windyHill: 'momo', rainbowLake: 'doto' };
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
@@ -70,6 +74,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
 
   // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
   const rewarded = useRef(false);
+  const [watching, setWatching] = useState(false); // 다시 보기 창
 
   // 끝내기: 보상을 계산해 지급하고 보상 화면으로. 이 놀이로 새 마을이 열리면 함께 알려준다.
   const finish = () => {
@@ -186,8 +191,20 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
         // 세로 화면: 단계 → 말풍선 → 장면 → 버튼 (위에서 아래로)
         // 높이가 낮은 가로 화면: 왼쪽에 장면, 오른쪽에 단계·말풍선·버튼
         <div className="grid flex-1 grid-rows-[auto_auto_1fr_auto] gap-4 [grid-template-areas:'progress'_'guide'_'field'_'controls'] [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:grid-rows-[auto_1fr_auto] [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:[grid-template-areas:'field_progress'_'field_guide'_'field_controls']">
-          <div className="[grid-area:progress]">
-            <StageProgress stage={state.stage} />
+          <div className="flex items-center gap-2 [grid-area:progress]">
+            <div className="min-w-0 flex-1">
+              <StageProgress stage={state.stage} />
+            </div>
+            {/* 다시 보기: 만져 본 뒤(예상하기부터) 언제든 살펴보기 시범을 다시 */}
+            {WATCH_STAGES.includes(state.stage) && (
+              // 좁은 화면에서는 아이콘만 (이름은 화면 읽기용으로 그대로)
+              <BigButton variant="soft" className="shrink-0 !min-h-[48px] !px-3 !text-base" aria-label={t('math.watchAgain')} onClick={() => setWatching(true)}>
+                <RotateCcw size={22} aria-hidden />
+                <span aria-hidden="true" className="hidden min-[420px]:inline">
+                  {t('math.watchAgain')}
+                </span>
+              </BigButton>
+            )}
           </div>
           <div className="[grid-area:guide]">
             <GuideBubble text={guide} expression={expression} speaker={speaker} />
@@ -230,6 +247,9 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
             )}
           </div>
         </div>
+      )}
+      {watching && (
+        <WatchAgain scene={lesson.explore} before={t(k('observe'), vars(lesson.explore))} after={t(k('manipulateDone'), vars(lesson.explore))} onClose={() => setWatching(false)} />
       )}
     </AppShell>
   );
