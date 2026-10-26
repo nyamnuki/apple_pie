@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import BigButton from '../../components/BigButton';
 import RegionIcon from '../../components/RegionIcon';
 import { ItemArt } from '../../components/art/itemArt';
@@ -7,7 +7,8 @@ import { getRegion } from '../../data/regions/regions';
 import type { StickerDef } from '../../data/stickers/stickers';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
-import { canSpeak, speak, stopSpeaking } from '../../services/speech/speech';
+import { speak, stopSpeaking } from '../../services/speech/speech';
+import { useCanSpeak } from '../../services/speech/useCanSpeak';
 
 interface Props {
   list: StickerDef[]; // 모은 스티커 (도감 순서). 화살표로 넘겨 본다
@@ -21,7 +22,7 @@ interface Props {
 export default function StickerCloseUp({ list, index, onIndex, onClose }: Props) {
   const { t, tKey, locale } = useI18n();
   const { voiceOn, interacted } = useSound();
-  const [speakable] = useState(() => canSpeak(locale));
+  const speakable = useCanSpeak(locale);
   const closeRef = useRef<HTMLButtonElement>(null);
   const sticker = list[index];
   const name = tKey(sticker.nameKey);

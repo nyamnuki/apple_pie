@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Volume2 } from './icons';
 import Character from './characters/Character';
 import { CHARACTERS, type CharacterId, type Expression } from '../data/characters/characters';
 import { useI18n } from '../i18n';
 import { useSound } from '../services/audio/SoundProvider';
-import { canSpeak, speak, stopSpeaking } from '../services/speech/speech';
+import { speak, stopSpeaking } from '../services/speech/speech';
+import { useCanSpeak } from '../services/speech/useCanSpeak';
 
 interface Props {
   text: string;
@@ -19,7 +20,7 @@ interface Props {
 export default function GuideBubble({ text, expression = 'default', speaker = 'lulu', compact = false }: Props) {
   const { t, tKey, locale } = useI18n();
   const { voiceOn, interacted } = useSound();
-  const [speakable] = useState(() => canSpeak(locale));
+  const speakable = useCanSpeak(locale);
 
   // 자동 읽기: 아이가 화면을 한 번 누른 뒤부터 (브라우저 규칙)
   useEffect(() => {

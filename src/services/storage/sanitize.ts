@@ -58,7 +58,8 @@ export function sanitizeGame(raw: unknown): GameState {
   const stickers = Array.isArray(raw.stickers) ? [...new Set(raw.stickers.filter((id): id is string => typeof id === 'string' && Boolean(getSticker(id))))] : [];
 
   // 오늘의 문제 도장 (날짜 글자만, 겹치지 않게)
-  const dailyDone = Array.isArray(raw.dailyDone) ? [...new Set(raw.dailyDone.filter((d): d is string => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)))].slice(-1000) : [];
+  // 도장 수가 그대로 화면의 개수와 황금 도토리 계산에 쓰이므로 넉넉히 남긴다 (이상하게 큰 파일만 막는다)
+  const dailyDone = Array.isArray(raw.dailyDone) ? [...new Set(raw.dailyDone.filter((d): d is string => typeof d === 'string' && DATE_KEY.test(d)))].slice(-20000) : [];
 
   // 루루 옷 (예전 저장본에는 없다): 모은 스티커로 열린 옷만
   const rawOutfit = isObject(raw.outfit) ? raw.outfit : {};

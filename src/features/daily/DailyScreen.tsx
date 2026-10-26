@@ -1,7 +1,7 @@
+import { useEffect, useMemo, useState } from 'react';
+import AppShell from '../../components/AppShell';
 import ResourceChip from '../../components/ResourceChip';
 import { STAMPS_PER_GOLDEN, goldenForStamp } from '../../app/gameState';
-import { useMemo, useState } from 'react';
-import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
 import GuideBubble from '../../components/GuideBubble';
 import BigButton from '../../components/BigButton';
@@ -10,12 +10,17 @@ import SceneField from '../math/fields/SceneField';
 import { GUIDE_OF } from '../../data/regions/guides';
 import { answerOf, sceneVars } from '../math/answers';
 import { lessonKey } from '../../data/math/lessons';
-import { streak, dailyLesson, dateKey } from './daily';
+import { streak, dailyLesson } from './daily';
+import { dateKey } from '../../utils/dates';
+import { readString, writeString } from '../../services/storage/localStore';
+
+// 오늘 보여 준 놀이를 기억하는 곳 (그날 놀이를 더 끝내도 같은 문제)
+const PICK_KEY = 'mathTown.dailyPick';
 import { useGame } from '../../app/GameProvider';
 import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
 import { Check } from '../../components/icons';
-import type { MathAnswer } from '../../types/math';
+import type { LessonId, MathAnswer } from '../../types/math';
 
 // 오늘의 문제: 끝낸 놀이에서 하루 한 문제. 틀리면 그 놀이의 힌트, 두 번 틀리면 직접 만져 보기, 세 번이면 같이 해 보기.
 export default function DailyScreen({ onBack }: { onBack: () => void }) {
@@ -24,7 +29,19 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
   const { play } = useSound();
   const [today] = useState(() => new Date());
   const key = dateKey(today);
-  const lesson = useMemo(() => dailyLesson(today, game.completedLessons), [today, game.completedLessons]);
+  const lesson = useMemo(() => {
+    let keep: LessonId | null = null;
+    try {
+      const saved = JSON.parse(readString(PICK_KEY) ?? 'null');
+      if (saved?.date === key && typeof saved.lessonId === 'string') keep = saved.lessonId;
+    } catch {
+      // 기억이 없거나 읽을 수 없으면 새로 고른다
+    }
+    return dailyLesson(today, game.completedLessons, keep);
+  }, [today, key, game.completedLessons]);
+  useEffect(() => {
+    if (lesson) writeString(PICK_KEY, JSON.stringify({ date: key, lessonId: lesson.id }));
+  }, [lesson, key]);
   const [wrong, setWrong] = useState<MathAnswer[]>([]);
   const [solved, setSolved] = useState(game.dailyDone.includes(key));
   const [justSolved, setJustSolved] = useState(false); // 이 화면에서 방금 풀었는지 (선물은 그때만 보여 준다)

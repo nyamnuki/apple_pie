@@ -4,7 +4,8 @@ import { startSpots, step, type PetDef, type Spot } from './pets';
 import { footprintCorners, TILE_H } from '../room/iso';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
-import { canSpeak, speak } from '../../services/speech/speech';
+import { speak } from '../../services/speech/speech';
+import { useCanSpeak } from '../../services/speech/useCanSpeak';
 import type { RoomLayout } from '../../types/furniture';
 
 const SIZE = 64; // 방 좌표에서 친구 그림 크기
@@ -15,7 +16,7 @@ const WALK_MS = 3200; // 몇 초마다 한 친구가 한 칸 걷는지
 export default function PetLayer({ pets, layout }: { pets: PetDef[]; layout: RoomLayout }) {
   const { t, tKey, locale } = useI18n();
   const { play, voiceOn } = useSound();
-  const [speakable] = useState(() => canSpeak(locale));
+  const speakable = useCanSpeak(locale);
   const [spots, setSpots] = useState<Spot[]>(() => startSpots(layout, pets.length));
   const [hop, setHop] = useState<{ i: number; n: number } | null>(null);
   const layoutRef = useRef(layout);

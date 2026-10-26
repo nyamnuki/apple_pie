@@ -7,7 +7,8 @@ import { isRegionOpen, regionProgress } from '../../utils/regions';
 import Rosette from '../../components/art/Rosette';
 import { useI18n } from '../../i18n';
 import RegionLandmark from '../../components/art/RegionLandmark';
-import { dateKey, streak } from '../daily/daily';
+import { streak } from '../daily/daily';
+import { dateKey } from '../../utils/dates';
 import type { RegionId } from '../../types/resources';
 
 // 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲, 수정 동굴: 푸른 동굴)

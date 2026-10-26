@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { dailyLesson, dateKey, streak } from './daily';
+import { dailyLesson, streak } from './daily';
+import { dateKey } from '../../utils/dates';
 import { answerOf } from '../math/answers';
 import { sizeOk } from '../../data/math/sceneRules';
 import { createInitialGameState, gameReducer } from '../../app/gameState';
@@ -42,5 +43,15 @@ describe('연속 기록', () => {
     expect(streak(['2026-10-31', '2026-11-01'], today)).toBe(2); // 오늘은 아직
     expect(streak(['2026-10-30', '2026-11-01', '2026-11-02'], today)).toBe(2); // 31일에 끊김
     expect(streak(['2026-10-30', '2026-10-31'], today)).toBe(0); // 어제도 안 풀었으면 끊김
+  });
+});
+
+describe('오늘 보여 준 놀이는 그날 그대로', () => {
+  it('놀이를 더 끝내도 기억해 둔 놀이로 같은 문제, 기억한 놀이가 없으면 새로 고른다', () => {
+    const day = new Date(2026, 9, 26, 9);
+    const first = dailyLesson(day, ['counting1', 'patterns1'])!;
+    const later = dailyLesson(day, ['counting1', 'patterns1', 'tens1', 'clock1'], first.id)!;
+    expect(later).toEqual(first);
+    expect(dailyLesson(day, ['counting1'], 'clock1')!.id).toBe('counting1'); // 끝낸 놀이에 없으면 무시
   });
 });

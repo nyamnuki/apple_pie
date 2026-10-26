@@ -27,7 +27,7 @@ interface Props {
 
 // 내 방(홈) 화면: 지금 꾸며진 방을 보여주고, 놀이하기·방 꾸미기로 갈 수 있다.
 export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory, onStickers, onSettings, onBack }: Props) {
-  const { t, tKey, locale } = useI18n();
+  const { t, tKey, locale, formatNumber } = useI18n();
   const { layout } = useRoom();
   const { game } = useGame();
   const tip = roomTip(game, layout);
@@ -89,7 +89,7 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
         {quiz ? (
           <GuideBubble
             compact
-            text={quiz.solved ? t('room.quiz.right', { n: quiz.q.answer }) : quiz.tried.length > 0 ? `${t('room.quiz.countTogether')} ${t(quiz.q.question)}` : t(quiz.q.question)}
+            text={quiz.solved ? t('room.quiz.right', { n: formatNumber(quiz.q.answer) }) : quiz.tried.length > 0 ? `${t('room.quiz.countTogether')} ${t(quiz.q.question)}` : t(quiz.q.question)}
             expression={quiz.solved ? 'happy' : quiz.tried.length > 0 ? 'cheer' : 'thinking'}
           />
         ) : (

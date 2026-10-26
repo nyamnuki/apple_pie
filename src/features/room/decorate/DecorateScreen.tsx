@@ -157,6 +157,8 @@ export default function DecorateScreen({ onBack, initialPick = null }: { onBack:
   useEffect(() => {
     if (picked.current || !initialPick) return;
     picked.current = true;
+    // 이미 붙인 벽지를 가방에서 누른 경우: 떼지 않는다 (pick 은 벽지를 켜고 끄기 때문)
+    if (initialPick === layout.wallpaperId) return;
     pick(initialPick);
     // 처음 한 번만 (pick 은 매번 새로 만들어지므로 의존성에 넣지 않는다)
   }, [initialPick]);

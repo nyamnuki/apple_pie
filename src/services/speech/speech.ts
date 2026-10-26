@@ -28,14 +28,15 @@ export const setSlowSpeech = (on: boolean) => {
   slow = on;
 };
 
-// 지금 읽는 것이 안내 문장인지 세는 수인지 (수는 안내 문장을 끊지 않는다)
-let reading: 'line' | 'number' | null = null;
+// 안내 문장을 읽는 중인지 (또는 아직 차례를 기다리는지). 세는 수는 이 문장을 끊지 않는다.
+let lineActive = false;
 
 // 읽기 (앞에 읽던 것은 멈춘다). 아이가 따라오기 쉽게 조금 천천히, 조금 높게.
 export function speak(text: string, locale: Locale) {
   const s = synth();
   if (!s || !text.trim()) return;
   s.cancel();
+  lineActive = false;
   say(s, text, locale, 'line');
 }
 
@@ -48,16 +49,16 @@ export function countWord(n: number, locale: Locale): string {
 }
 
 // 세는 수 읽기 ('하나, 둘, 셋'): 앞의 수는 끊고 바로 다음 수를 읽지만,
-// 안내 문장을 읽는 중이면 끊지 않고 그 뒤에 읽는다.
+// 안내 문장이 끝나지 않았으면 끊지 않고 그 뒤에 이어서 읽는다 (빠르게 여러 번 눌러도).
 export function speakNumber(n: number, locale: Locale) {
   const s = synth();
   if (!s) return;
-  if (!(reading === 'line' && s.speaking)) s.cancel();
+  if (!lineActive) s.cancel();
   say(s, countWord(n, locale), locale, 'number');
 }
 
 function say(s: SpeechSynthesis, text: string, locale: Locale, kind: 'line' | 'number') {
-  reading = kind;
+  if (kind === 'line') lineActive = true;
   const u = new SpeechSynthesisUtterance(text);
   u.lang = LANG[locale];
   try {
@@ -68,12 +69,15 @@ function say(s: SpeechSynthesis, text: string, locale: Locale, kind: 'line' | 'n
   }
   u.rate = (kind === 'number' ? 1 : 0.9) * (slow ? 0.75 : 1);
   u.pitch = 1.1;
-  u.onend = () => {
-    if (reading === kind) reading = null;
-  };
+  if (kind === 'line') {
+    // 끝나거나 끊기면 (speak·stopSpeaking 의 cancel) 수가 다시 앞의 수를 끊을 수 있다
+    u.onend = () => (lineActive = false);
+    u.onerror = () => (lineActive = false);
+  }
   s.speak(u);
 }
 
 export function stopSpeaking() {
+  lineActive = false;
   synth()?.cancel();
 }

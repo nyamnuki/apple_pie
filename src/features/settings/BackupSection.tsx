@@ -6,6 +6,7 @@ import { useRoom } from '../room/RoomProvider';
 import { backupText, parseSave } from '../../services/storage/gameSave';
 import { LESSONS } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
+import { downloadBlob } from '../../utils/download';
 import type { GameState } from '../../app/gameState';
 import type { RoomLayout } from '../../types/furniture';
 
@@ -21,15 +22,7 @@ export default function BackupSection({ className }: { className: string }) {
   const input = useRef<HTMLInputElement>(null);
 
   const download = () => {
-    const blob = new Blob([backupText(game, layout)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `math-town-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadBlob(new Blob([backupText(game, layout)], { type: 'application/json' }), `math-town-backup-${new Date().toISOString().slice(0, 10)}.json`);
     setStep({ kind: 'saved' });
   };
 

@@ -256,3 +256,14 @@ test('가방에서 가구를 누르면 꾸미기에서 바로 놓을 자리를 �
   await page.getByRole('button', { name: 'Decorate' }).click();
   await expect(guide(page)).toHaveText('Pick something for your room!');
 });
+
+test('가방에서 이미 붙인 벽지를 눌러도 떼지 않는다', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, woodlandWallpaper: 1 }, wallpaperId: 'woodlandWallpaper' }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'My Bag' }).click();
+  await page.getByRole('button', { name: /Woodland Wallpaper/ }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Decorate');
+  await page.waitForTimeout(400);
+  expect((await readSave(page)).room.wallpaperId).toBe('woodlandWallpaper');
+});

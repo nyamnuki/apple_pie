@@ -1,4 +1,5 @@
 import { VIEW_H, VIEW_W } from '../room/iso';
+import { downloadBlob } from '../../utils/download';
 
 // ===== 방 사진 =====
 // 화면의 방 그림(배경 SVG + 가구 SVG)을 한 장의 그림 파일(PNG)로 만들어 기기에 내려받는다.
@@ -53,14 +54,7 @@ export async function saveRoomPhoto(roomEl: HTMLElement, fileName: string, capti
     }
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
     if (!blob) return false;
-    const href = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = href;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(href), 1000);
+    downloadBlob(blob, fileName);
     return true;
   } catch {
     return false;
