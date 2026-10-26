@@ -62,7 +62,7 @@ export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
                           type="button"
                           aria-label={t('stickers.look', { name: tKey(s.nameKey) })}
                           onClick={() => setOpen(ownedList.findIndex((o) => o.id === s.id))}
-                          className="selectable flex h-full w-full flex-col items-center justify-center gap-1 rounded-3xl"
+                          className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-3xl"
                         >
                           <ItemArt path={s.art} size={56} />
                           <span className="text-sm font-semibold leading-tight">{tKey(s.nameKey)}</span>

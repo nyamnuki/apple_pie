@@ -44,7 +44,7 @@ export default function Closet() {
                   role="radio"
                   aria-checked={worn === null}
                   onClick={() => wear(null)}
-                  className={`selectable flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-cream p-1 text-sm font-bold shadow-pop-sm ring-4 ${worn === null ? 'ring-wood' : 'ring-transparent'}`}
+                  className={`flex h-[72px] w-[72px] items-center justify-center rounded-2xl bg-cream p-1 text-sm font-bold shadow-pop-sm ring-4 ${worn === null ? 'ring-wood' : 'ring-transparent'}`}
                 >
                   {t('outfits.none')}
                 </button>
@@ -61,7 +61,7 @@ export default function Closet() {
                       aria-disabled={!open}
                       aria-label={open ? name : t('outfits.lockedLabel', { name, n: formatNumber(o.stickers) })}
                       onClick={() => (open ? wear(o.id) : play.nope())}
-                      className={`selectable flex h-[72px] w-[72px] flex-col items-center justify-center rounded-2xl p-1 ring-4 ${
+                      className={`flex h-[72px] w-[72px] flex-col items-center justify-center rounded-2xl p-1 ring-4 ${
                         open ? `bg-white shadow-pop-sm ${worn === o.id ? 'ring-wood' : 'ring-transparent'}` : 'border-4 border-dashed border-bark/25 ring-transparent'
                       }`}
                     >

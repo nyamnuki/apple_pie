@@ -9,6 +9,7 @@ import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { REGIONS } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
 import BackupSection from './BackupSection';
+import InstallSection from './InstallSection';
 import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
 
@@ -113,6 +114,8 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
         </section>
 
         <BackupSection className={card} />
+
+        <InstallSection className={card} />
 
         <section aria-labelledby="reset-h" className="rounded-[2rem] border-4 border-dashed border-bark/30 p-5">
           <h2 id="reset-h" className={heading}>

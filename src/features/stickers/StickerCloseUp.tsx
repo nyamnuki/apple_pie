@@ -45,7 +45,7 @@ export default function StickerCloseUp({ list, index, onIndex, onClose }: Props)
       }}
     >
       <div role="dialog" aria-modal="true" aria-labelledby="sticker-name" className="storybook-card relative flex max-h-full w-full max-w-sm flex-col items-center gap-3 overflow-y-auto rounded-[2rem] p-6 text-center [@media(max-height:500px)]:max-w-xl [@media(max-height:500px)]:flex-row [@media(max-height:500px)]:p-4">
-        <button ref={closeRef} type="button" onClick={onClose} aria-label={t('stickers.close')} className="selectable absolute right-3 top-3 flex h-12 w-12 items-center justify-center rounded-full bg-cream shadow-pop-sm">
+        <button ref={closeRef} type="button" onClick={onClose} aria-label={t('stickers.close')} className="absolute right-3 top-3 flex h-12 w-12 items-center justify-center rounded-full bg-cream shadow-pop-sm">
           <X size={26} aria-hidden />
         </button>
         {/* 흰 테두리를 두른 큰 스티커 (도감처럼 살짝 기울임) */}

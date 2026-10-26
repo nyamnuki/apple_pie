@@ -128,3 +128,24 @@ test('어른 설정: 파일로 저장하고, 파일에서 되살린다 (이상�
   await page.waitForTimeout(500);
   expect((await readSave(page)).game).toMatchObject({ resources: { apple: 5 }, stickers: ['apple', 'acorn'] });
 });
+
+test('홈 화면에 추가하기: 기기에 맞는 안내가 먼저, 다른 기기도 골라 볼 수 있다', async ({ browser }) => {
+  const context = await browser.newContext({
+    userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+  });
+  const page = await context.newPage();
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('button', { name: 'For grown-ups' }).click();
+  await answer(page, true, 'Check answer');
+  await answer(page, true, 'Check answer');
+
+  const section = page.getByRole('region', { name: 'Add to the home screen' });
+  await expect(section.getByRole('radio', { name: 'iPhone · iPad' })).toBeChecked();
+  await expect(section.getByRole('listitem').nth(1)).toHaveText('Tap the Share button (a square with an arrow pointing up).');
+  await section.getByRole('radio', { name: 'Android' }).click();
+  await expect(section.getByRole('listitem')).toHaveCount(3);
+  await expect(section.getByRole('listitem').nth(0)).toHaveText('Open this page in Chrome.');
+  await context.close();
+});

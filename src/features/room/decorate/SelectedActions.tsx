@@ -39,7 +39,7 @@ export default function SelectedActions({ def, onMove, onTurn, onPutAway, onDone
               aria-checked={tint === n}
               aria-label={t('decorate.paintOption', { n: n + 1 })}
               onClick={() => onTint(n)}
-              className={`selectable flex h-[64px] w-[64px] items-center justify-center rounded-2xl bg-cream shadow-pop-sm ring-4 ${tint === n ? 'ring-wood' : 'ring-transparent'}`}
+              className={`flex h-[64px] w-[64px] items-center justify-center rounded-2xl bg-cream shadow-pop-sm ring-4 ${tint === n ? 'ring-wood' : 'ring-transparent'}`}
             >
               <span style={{ filter: tintCss(n) }} className="flex">
                 <AssetThumb def={def} size={52} />
