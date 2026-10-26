@@ -20,6 +20,8 @@ export function sizeOk(scene: MathScene): boolean {
     case 'groups':
       // 수정 동굴: 묶어 세기는 50까지. 낱개는 묶음 하나보다 적어야 묶어 세기가 된다.
       return scene.size >= 2 && scene.groups >= 2 && scene.ones >= 0 && scene.ones < scene.size && scene.groups * scene.size + scene.ones <= 50;
+    case 'measure':
+      return scene.length >= 2 && scene.length <= 10;
   }
 }
 

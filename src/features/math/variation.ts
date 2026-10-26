@@ -85,6 +85,9 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
       const list = [...Array.from({ length: int(rng, 4, 7) }, () => spec(scene.target)), ...Array.from({ length: int(rng, 5, 8) }, () => spec(others[int(rng, 0, 1)]))];
       return { ...scene, shapes: shuffle(rng, list) };
     }
+    case 'measure':
+      // 블록 4~9 개 (좁은 휴대폰에서도 한 줄에 보이게)
+      return { ...scene, length: int(rng, 4, 9) };
     case 'pattern':
       return scene;
   }

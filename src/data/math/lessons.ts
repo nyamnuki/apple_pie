@@ -147,6 +147,21 @@ export const LESSONS: MathLesson[] = [
     applyChoices: [4, 5, 6, 7],
   },
 
+  {
+    id: 'measure1',
+    rewards: { glowBranch: 2 },
+    firstTimeBonus: { moonDew: 1 },
+    area: 'measuring',
+    region: 'moonlightForest',
+    icon: 'leaf',
+    // 블록을 빈틈없이 이어 놓아 길이 재기
+    explore: { kind: 'measure', thing: 'twig', length: 5 },
+    predict: { kind: 'measure', thing: 'ribbon', length: 7 },
+    predictChoices: [5, 6, 7, 8],
+    apply: { kind: 'measure', thing: 'caterpillar', length: 6 },
+    applyChoices: [4, 5, 6, 7],
+  },
+
   // ===== 수정 동굴 =====
   {
     id: 'skipCount1',

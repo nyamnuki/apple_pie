@@ -18,6 +18,7 @@ const AREA_KEY: Record<MathArea, TranslationKey> = {
   shapes: 'math.areas.shapes',
   skipCounting: 'math.areas.skipCounting',
   placeValue: 'math.areas.placeValue',
+  measuring: 'math.areas.measuring',
 };
 
 interface Props {

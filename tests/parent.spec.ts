@@ -24,11 +24,11 @@ test('어른 확인과 진행 상황 지우기 (언어는 유지)', async ({ pag
   await answer(page, true, 'Check answer');
   await answer(page, true, 'Check answer');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Grown-up settings');
-  await expect(page.getByText('Math games finished: 2 of 8')).toBeVisible();
+  await expect(page.getByText('Math games finished: 2 of 9')).toBeVisible();
 
   await page.getByRole('button', { name: 'Erase all progress' }).click();
   await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(page.getByText('Math games finished: 2 of 8')).toBeVisible();
+  await expect(page.getByText('Math games finished: 2 of 9')).toBeVisible();
 
   // 한국어로 바꾼 뒤 지우기
   await page.getByRole('button', { name: 'Go back' }).click();

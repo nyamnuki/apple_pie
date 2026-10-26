@@ -19,7 +19,7 @@ test('도토리 마을 놀이 2개를 끝내면 달빛 숲이 열린다', async 
   await page.getByRole('button', { name: 'More games' }).click();
   await page.getByRole('button', { name: 'Go back' }).click(); // 놀이 고르기 → 지도
   await expect(forest).toBeEnabled();
-  await expect(forest).toContainText('0 of 2 games finished');
+  await expect(forest).toContainText('0 of 3 games finished');
 });
 
 test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) => {
@@ -130,4 +130,45 @@ test('한국어: 지도와 규칙 찾기 놀이', async ({ page, context }) => {
   await page.getByRole('button', { name: /다음에 올 것은\?/ }).click();
   await expect(guide(page)).toHaveText('밤하늘을 봐요. 달, 별, 별, 달, 별, 별… 다음엔 무엇이 올까요?');
   expect(await englishWords(page)).toBeNull();
+});
+
+test('놀이: 얼마나 길까? (블록을 빈틈없이 놓아 길이 재기)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ completedLessons: ['counting1', 'comparing1'] }) });
+  const problems = collectProblems(page);
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Moonlight Forest/);
+  await page.getByRole('button', { name: /How Long Is It\?/ }).click();
+  await expect(guide(page)).toHaveText('Look at the twig. How many blocks long do you think it is?');
+  await page.getByRole('button', { name: 'Next' }).click();
+
+  // 만져 보기: 블록 놓기 버튼 5번 → 나뭇가지 끝까지 (버튼은 끝에 닿으면 사라진다)
+  const add = page.getByRole('button', { name: 'Put a block' });
+  let taps = 0;
+  while (await add.count()) {
+    await add.click();
+    taps++;
+  }
+  expect(taps).toBe(5);
+  await expect(guide(page)).toHaveText('The twig is 5 blocks long! The blocks touch end to end, with no gaps.');
+  await page.getByRole('button', { name: 'Next' }).click();
+
+  const choices = page.getByRole('group', { name: 'Answer choices' });
+  await choices.getByRole('button', { name: '6', exact: true }).click();
+  await waitLastButtonEnabled(page);
+  await expect(guide(page)).toHaveText(/The ribbon is 7 blocks long!/);
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+
+  // 해 보기: 틀리면 힌트, 두 번 틀리면 직접 블록 놓기
+  await choices.getByRole('button', { name: '4', exact: true }).click();
+  await expect(guide(page)).toHaveText(/Look where the caterpillar starts and ends/);
+  await choices.getByRole('button', { name: '5', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Put a block' })).toBeVisible();
+  await choices.getByRole('button', { name: '6', exact: true }).click();
+  await expect(guide(page)).toHaveText('Yes! The caterpillar is 6 blocks long!');
+  await page.getByRole('button', { name: 'Finish' }).click();
+  await expect(page.getByRole('img', { name: 'Glow Branch +2' })).toBeVisible();
+  expect(problems).toEqual([]);
 });
