@@ -343,6 +343,13 @@ export const ko: Messages = {
     intro: '놀이를 끝내면 그 마을의 스티커를 받아요. 지금 {total}장 중 {n}장 모았어요.',
     missing: '아직 못 찾은 스티커',
     got: '새 스티커: {name}!',
+    petGoal: '스티커를 {n}장 더 모으면 새 친구가 방에 놀러 와요!',
+  },
+  pets: {
+    duckling: '아기 오리 두두',
+    foxKit: '아기 여우 보리',
+    owlet: '아기 부엉이 후',
+    sayHi: '{name}: 눌러서 인사하기',
   },
   reward: {
     title: '새로운 것을 발견했어요!',
@@ -350,6 +357,7 @@ export const ko: Messages = {
     firstTimeBonus: '처음 해낸 보너스!',
     goWorkshop: '공방에서 만들어 보기',
     newRegion: '새로운 곳이 열렸어요: {region}!',
+    newPet: '새 친구가 방에 왔어요: {name}!',
   },
   workshop: {
     title: '공방',

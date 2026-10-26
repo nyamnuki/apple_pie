@@ -8,6 +8,8 @@ import RegionIcon from '../../components/RegionIcon';
 import { useI18n } from '../../i18n';
 import { ItemArt } from '../../components/art/itemArt';
 import { getSticker } from '../../data/stickers/stickers';
+import PetArt from '../pets/PetArt';
+import { PETS, type PetId } from '../pets/pets';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 
 interface Props {
@@ -16,16 +18,18 @@ interface Props {
   discovery: string; // 이번 놀이에서 발견한 원리
   newRegion?: RegionId | null; // 이번에 새로 열린 마을
   sticker?: string | null; // 이번에 받은 스티커
+  newPet?: PetId | null; // 이번에 방에 찾아온 친구
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
 }
 
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, onWorkshop, onAgain, onMoreGames }: Props) {
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, onWorkshop, onAgain, onMoreGames }: Props) {
   const { t, tKey } = useI18n();
   const bonusEntries = bundleEntries(bonus);
   const stickerDef = sticker ? getSticker(sticker) : undefined;
+  const petDef = newPet ? PETS.find((p) => p.id === newPet) : undefined;
 
   return (
     // 세로 화면: 위에서 아래로 / 높이가 낮은 가로 화면: 왼쪽 받은 재료, 오른쪽 발견한 것과 버튼
@@ -66,6 +70,15 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
               <ItemArt path={stickerDef.art} size={60} />
             </span>
             <span className="text-left text-xl font-bold">{t('stickers.got', { name: tKey(stickerDef.nameKey) })}</span>
+          </div>
+        )}
+
+        {petDef && (
+          <div role="status" className="flex w-full max-w-md animate-rise items-center gap-3 rounded-3xl bg-moss p-3" style={{ animationDelay: '550ms' }}>
+            <svg viewBox="0 0 64 64" width="72" height="72" aria-hidden="true" className="shrink-0 overflow-visible">
+              <PetArt id={petDef.id} />
+            </svg>
+            <span className="text-left text-xl font-bold">{t('reward.newPet', { name: tKey(petDef.nameKey) })}</span>
           </div>
         )}
 

@@ -7,6 +7,7 @@ import { useRoom } from './RoomProvider';
 import GuideBubble from '../../components/GuideBubble';
 import { useGame } from '../../app/GameProvider';
 import { roomTip } from './roomTip';
+import { petsFor } from '../pets/pets';
 import { useI18n } from '../../i18n';
 
 interface Props {
@@ -45,7 +46,7 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 [@media(max-height:500px)]:flex-row">
         <section className="min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0 [@media(max-height:700px)]:min-h-[190px]">
-          <RoomView layout={layout} />
+          <RoomView layout={layout} pets={petsFor(game.stickers.length)} />
         </section>
 
         {/* 아래 메뉴: 수학 놀이(초록)와 꾸미기·만들기(나무색)를 색과 아이콘으로 구분.

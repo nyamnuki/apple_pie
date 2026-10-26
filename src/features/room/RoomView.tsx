@@ -5,6 +5,8 @@ import WallItemSprite, { WallGhost } from './WallItemSprite';
 import { GRID, VIEW_W, VIEW_H, TILE_H, WALL_BANDS, footprintCorners, toPoints, wallPoint } from './iso';
 import { footprintSize, sortForDrawing } from './placement';
 import { getFurniture } from '../../data/furniture/furniture';
+import PetLayer from '../pets/PetLayer';
+import type { PetDef } from '../pets/pets';
 import { useI18n } from '../../i18n';
 import type { FurnitureDef, RoomLayout, WallSide } from '../../types/furniture';
 
@@ -27,6 +29,7 @@ interface Props {
   wallGhost?: WallGhostSpot | null;
   shake?: { uid: string; n: number } | null; // 이 가구를 살짝 흔든다 (n 이 바뀔 때마다)
   celebrate?: { uid: string; n: number } | null; // 방금 놓은 가구 (n 이 바뀔 때마다 빛이 퍼진다)
+  pets?: PetDef[]; // 방에서 돌아다니는 친구 (내 방 화면에서만)
 }
 
 export const spotKey = (gx: number, gy: number) => `${gx},${gy}`;
@@ -34,7 +37,7 @@ export const wallKey = (wall: WallSide, slot: number) => `${wall}:${slot}`;
 const WALLS: WallSide[] = ['left', 'right'];
 
 // 아이소메트릭 방 전체 그림: 배경 → 바닥 칸(누르기용) → 가구 → '+' 표시 순서로 겹쳐 그린다.
-export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate }: Props) {
+export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets }: Props) {
   const { t, tKey } = useI18n();
   const picking = Boolean(validSpots) || Boolean(validWallSpots);
   const items = sortForDrawing(layout.placed);
@@ -166,6 +169,9 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
             />
           );
         })}
+
+        {/* 반려 친구 (가구 위에 그린다) */}
+        {pets && pets.length > 0 && <PetLayer pets={pets} layout={layout} />}
 
         {/* 미리 보기 (반투명 가구) */}
         {ghost && <FurnitureGhost def={ghost.def} spot={ghost} suggested={ghost.suggested} />}

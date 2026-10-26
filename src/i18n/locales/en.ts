@@ -341,6 +341,13 @@ export const en = {
     intro: 'Finish a game to get a sticker from that place. You have {n} of {total}.',
     missing: 'Sticker not found yet',
     got: 'New sticker: {name}!',
+    petGoal: 'Collect {n} more and a new friend will visit your room!',
+  },
+  pets: {
+    duckling: 'Dudu the duckling',
+    foxKit: 'Bori the fox kit',
+    owlet: 'Hoo the owlet',
+    sayHi: '{name}: tap to say hi',
   },
   reward: {
     title: 'You discovered something new!',
@@ -348,6 +355,7 @@ export const en = {
     firstTimeBonus: 'First-time bonus!',
     goWorkshop: 'Make something in the Workshop',
     newRegion: 'A new place opened: {region}!',
+    newPet: 'A new friend came to your room: {name}!',
   },
   workshop: {
     title: 'Workshop',

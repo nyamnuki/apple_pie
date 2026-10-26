@@ -16,6 +16,7 @@ import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { lessonForPlay } from './variation';
+import { newPet, type PetId } from '../pets/pets';
 import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
@@ -65,7 +66,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo), [lessonId, playNo]);
   const { play } = useSound();
   // 이번에 받은 보상 (보상 화면에 보여준다)
-  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null } | null>(null);
+  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null } | null>(null);
 
   // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
   const rewarded = useRef(false);
@@ -76,7 +77,9 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     rewarded.current = true;
     const after = game.completedLessons.includes(lesson.id) ? game.completedLessons : [...game.completedLessons, lesson.id];
     const newRegion = REGIONS.find((r) => !isRegionOpen(r.id, game.completedLessons) && isRegionOpen(r.id, after))?.id ?? null;
-    setEarned({ ...rewardFor(lesson, game), newRegion });
+    const reward = rewardFor(lesson, game);
+    const pet = newPet(game.stickers.length, game.stickers.length + (reward.sticker ? 1 : 0));
+    setEarned({ ...reward, newRegion, newPet: pet?.id ?? null });
     play.reward();
     if (newRegion) play.unlock();
     gameDispatch({ type: 'completeLesson', lesson, wrongTries: state.wrong.length, at: new Date().toISOString() });
@@ -164,6 +167,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           discovery={t(k('discover'))}
           newRegion={earned.newRegion}
           sticker={earned.sticker}
+          newPet={earned.newPet}
           onWorkshop={onWorkshop}
           onAgain={() => {
             rewarded.current = false; // 다시 하면 새 판 (새 수)
