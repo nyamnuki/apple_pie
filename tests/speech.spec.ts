@@ -92,3 +92,15 @@ test('스티커 크게 보기: 이름을 읽어 주고, 화살표로 넘기고, 
   await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Look closely: Apple' })).toBeFocused();
 });
+
+test('세기 놀이: 물건을 누를 때마다 센 수를 읽어 준다 (한국어는 하나·둘·셋)', async ({ page, context }) => {
+  await mockSpeech(context);
+  await seed(context, { save: makeSave(), locale: 'ko' });
+  await openLesson(page);
+  await page.getByRole('button', { name: '다음' }).click();
+  const items = page.getByRole('button', { name: '이것 세기' });
+  await items.first().click();
+  await expect.poll(async () => (await spoken(page)).at(-1)).toEqual({ text: '하나', lang: 'ko-KR' });
+  await items.nth(1).click();
+  await expect.poll(async () => (await spoken(page)).at(-1)?.text).toBe('둘');
+});

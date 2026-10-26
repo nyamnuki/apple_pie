@@ -22,11 +22,36 @@ function voiceFor(locale: Locale): SpeechSynthesisVoice | undefined {
   return voices.find((v) => v.lang.replace('_', '-').toLowerCase() === lang) ?? voices.find((v) => v.lang.toLowerCase().startsWith(lang.slice(0, 2)));
 }
 
+// 지금 읽는 것이 안내 문장인지 세는 수인지 (수는 안내 문장을 끊지 않는다)
+let reading: 'line' | 'number' | null = null;
+
 // 읽기 (앞에 읽던 것은 멈춘다). 아이가 따라오기 쉽게 조금 천천히, 조금 높게.
 export function speak(text: string, locale: Locale) {
   const s = synth();
   if (!s || !text.trim()) return;
   s.cancel();
+  say(s, text, locale, 'line');
+}
+
+// 물건을 셀 때 쓰는 말: 한국어는 '하나, 둘, 셋…' (1~99), 그 밖에는 숫자 그대로
+const KO_ONES = ['', '하나', '둘', '셋', '넷', '다섯', '여섯', '일곱', '여덟', '아홉'];
+const KO_TENS = ['', '열', '스물', '서른', '마흔', '쉰', '예순', '일흔', '여든', '아흔'];
+export function countWord(n: number, locale: Locale): string {
+  if (locale === 'ko' && Number.isInteger(n) && n >= 1 && n <= 99) return KO_TENS[Math.floor(n / 10)] + KO_ONES[n % 10];
+  return String(n);
+}
+
+// 세는 수 읽기 ('하나, 둘, 셋'): 앞의 수는 끊고 바로 다음 수를 읽지만,
+// 안내 문장을 읽는 중이면 끊지 않고 그 뒤에 읽는다.
+export function speakNumber(n: number, locale: Locale) {
+  const s = synth();
+  if (!s) return;
+  if (!(reading === 'line' && s.speaking)) s.cancel();
+  say(s, countWord(n, locale), locale, 'number');
+}
+
+function say(s: SpeechSynthesis, text: string, locale: Locale, kind: 'line' | 'number') {
+  reading = kind;
   const u = new SpeechSynthesisUtterance(text);
   u.lang = LANG[locale];
   try {
@@ -35,8 +60,11 @@ export function speak(text: string, locale: Locale) {
   } catch {
     // 목소리를 고를 수 없으면 기기 기본 목소리로 읽는다
   }
-  u.rate = 0.9;
+  u.rate = kind === 'number' ? 1 : 0.9;
   u.pitch = 1.1;
+  u.onend = () => {
+    if (reading === kind) reading = null;
+  };
   s.speak(u);
 }
 
