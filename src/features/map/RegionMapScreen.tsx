@@ -13,6 +13,7 @@ const CARD_STYLE: Record<RegionId, string> = {
   acornVillage: 'bg-moss',
   moonlightForest: 'bg-lavender',
   crystalCave: 'bg-mist',
+  sunnyMeadow: 'bg-apricot',
 };
 
 // 마을 사이 오솔길: 세로 화면은 위아래로, 높이가 낮은 가로 화면은 옆으로 구불구불
@@ -59,11 +60,11 @@ export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: Regio
                 disabled={!open}
                 onClick={() => onPick(region.id)}
                 // 잠긴 마을: 투명하게 하지 않고 점선 테두리로 구분 (글자가 흐려지지 않게)
-                className={`flex min-h-[112px] w-full items-center gap-4 rounded-[2rem] border-4 p-4 text-left transition-transform [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-3 ${CARD_STYLE[region.id]} ${
+                className={`flex min-h-[112px] w-full items-center gap-3 rounded-[2rem] border-4 p-3 text-left min-[360px]:gap-4 min-[360px]:p-4 transition-transform [@media(max-height:500px)]:flex-col [@media(max-height:500px)]:items-start [@media(max-height:500px)]:gap-1 [@media(max-height:500px)]:p-3 ${CARD_STYLE[region.id]} ${
                   open ? 'border-transparent shadow-pop active:translate-y-1 active:shadow-pop-sm' : 'border-dashed border-bark/30'
                 }`}
               >
-                <span className="relative h-[4.4rem] w-24 shrink-0 overflow-visible rounded-[22px] min-[400px]:h-[5.5rem] min-[400px]:w-32 [@media(max-height:500px)]:!h-16 [@media(max-height:500px)]:!w-24 shadow-[inset_0_0_0_2px_rgb(89_72_60/0.12)]" aria-hidden="true">
+                <span className="relative h-[3.6rem] w-20 shrink-0 overflow-visible rounded-[22px] min-[360px]:h-[4.4rem] min-[360px]:w-24 min-[400px]:h-[5.5rem] min-[400px]:w-32 [@media(max-height:500px)]:!h-16 [@media(max-height:500px)]:!w-24 shadow-[inset_0_0_0_2px_rgb(89_72_60/0.12)]" aria-hidden="true">
                   <RegionLandmark id={region.id} locked={!open} />
                   {!open && (
                     <span className="absolute -bottom-1 -right-1 rounded-full bg-bark p-1.5 text-cream">
@@ -72,7 +73,7 @@ export default function RegionMapScreen({ onPick, onBack }: { onPick: (id: Regio
                   )}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-2xl font-bold leading-tight">{tKey(region.nameKey)}</span>
+                  <span className="block text-xl font-bold leading-tight min-[360px]:text-2xl">{tKey(region.nameKey)}</span>
                   <span className="block text-base">{tKey(region.topicsKey)}</span>
                   {open ? (
                     <span className="mt-1 block text-base font-bold">{t('map.gamesDone', { n: formatNumber(done), total: formatNumber(total) })}</span>

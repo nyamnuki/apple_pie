@@ -22,6 +22,10 @@ export function sizeOk(scene: MathScene): boolean {
       return scene.size >= 2 && scene.groups >= 2 && scene.ones >= 0 && scene.ones < scene.size && scene.groups * scene.size + scene.ones <= 50;
     case 'measure':
       return scene.length >= 2 && scene.length <= 10;
+    case 'hops':
+      return scene.hop !== 0 && Math.abs(scene.hop) <= 9 && scene.start >= 0 && scene.start <= MAX && scene.start + scene.hop >= 0 && scene.start + scene.hop <= MAX;
+    case 'pairs':
+      return scene.total >= 4 && scene.total <= 16;
   }
 }
 

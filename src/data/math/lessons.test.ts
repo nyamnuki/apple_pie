@@ -11,10 +11,11 @@ import { sizeOk } from './sceneRules';
 // 레슨 데이터 점검: 선택지에 정답이 있는지, 수의 범위, 보상과 레시피가 서로 맞는지
 
 describe('레슨 목록', () => {
-  it('도토리 마을 4개, 달빛 숲 3개, 수정 동굴 2개 (README 와 같다)', () => {
+  it('도토리 마을 4개, 달빛 숲 3개, 수정 동굴 2개, 햇살 들판 2개 (README 와 같다)', () => {
     expect(LESSONS.filter((l) => l.region === 'acornVillage')).toHaveLength(4);
     expect(LESSONS.filter((l) => l.region === 'moonlightForest').map((l) => l.id)).toEqual(['patterns1', 'shapes1', 'measure1']);
     expect(LESSONS.filter((l) => l.region === 'crystalCave').map((l) => l.id)).toEqual(['skipCount1', 'tens1']);
+    expect(LESSONS.filter((l) => l.region === 'sunnyMeadow').map((l) => l.id)).toEqual(['numberLine1', 'evenOdd1']);
   });
 
   it('id 가 겹치지 않는다', () => {
@@ -36,7 +37,9 @@ describe('레슨 목록', () => {
         ] as const) {
           expect(choices).toContain(answerOf(scene));
           expect(new Set(choices).size).toBe(choices.length);
-          expect(choices.length).toBeGreaterThanOrEqual(3);
+          // 짝수·홀수는 답이 둘뿐 (그 밖에는 3개 이상)
+          if (scene.kind === 'pairs') expect(choices).toEqual(['even', 'odd']);
+          else expect(choices.length).toBeGreaterThanOrEqual(3);
         }
       });
 

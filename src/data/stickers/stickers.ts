@@ -32,6 +32,12 @@ export const STICKERS: StickerDef[] = [
   s('candle', 'crystalCave', 'items/candle.png', 'mathItems.candle'),
   s('pebble', 'crystalCave', 'items/pebble.png', 'mathItems.pebble'),
   s('mithril', 'crystalCave', 'items/res-mithril.png', 'resources.mithril'),
+  s('bee', 'sunnyMeadow', 'items/bee.png', 'mathItems.bee'),
+  s('sunflower', 'sunnyMeadow', 'items/sunflower.png', 'mathItems.sunflower'),
+  s('snail', 'sunnyMeadow', 'items/snail.png', 'mathItems.snail'),
+  s('cloud', 'sunnyMeadow', 'items/cloud.png', 'mathItems.cloud'),
+  s('sunflowerSeed', 'sunnyMeadow', 'items/res-sunflower-seed.png', 'resources.sunflowerSeed'),
+  s('honey', 'sunnyMeadow', 'items/res-honey.png', 'resources.honey'),
 ];
 
 export const getSticker = (id: string) => STICKERS.find((x) => x.id === id);

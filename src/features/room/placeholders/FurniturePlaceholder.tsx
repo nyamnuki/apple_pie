@@ -325,6 +325,44 @@ const PAINTERS: Partial<Record<PlaceholderShape, Painter>> = {
       </g>
     );
   },
+  // 해바라기 화분: 테라코타 화분 + 키 큰 줄기 + 해바라기 두 송이
+  sunflowerPot: (a) => {
+    const e = flatEllipse(inset(a, 0.5), 30);
+    const heads = [
+      { dx: -10, h: 100, r: 15 },
+      { dx: 12, h: 78, r: 12 },
+    ];
+    return (
+      <g>
+        <Box area={inset(a, 0.5)} h={30} color="#D9A66B" />
+        {heads.map(({ dx, h, r }) => (
+          <g key={dx}>
+            <path d={`M${e.cx + dx * 0.4} ${e.cy} C${e.cx + dx * 0.6} ${e.cy - h * 0.5} ${e.cx + dx} ${e.cy - h * 0.7} ${e.cx + dx} ${e.cy - h}`} stroke="#7FA077" strokeWidth="4" fill="none" strokeLinecap="round" />
+            <path d={`M${e.cx + dx * 0.5} ${e.cy - h * 0.5} c-12 -6 -16 0 -16 2 c6 4 12 2 16 -2 z`} fill="#A8C3A0" {...LINE} strokeWidth={1.4} />
+            {Array.from({ length: 10 }, (_, i) => i * 36).map((ang) => (
+              <ellipse key={ang} cx={e.cx + dx} cy={e.cy - h - r * 0.9} rx={r * 0.32} ry={r * 0.62} fill="#F2CF5B" {...LINE} strokeWidth={1.2} transform={`rotate(${ang} ${e.cx + dx} ${e.cy - h})`} />
+            ))}
+            <circle cx={e.cx + dx} cy={e.cy - h} r={r * 0.55} fill="#8C6B52" {...LINE} strokeWidth={1.2} />
+          </g>
+        ))}
+      </g>
+    );
+  },
+  // 꿀 등불: 나무 받침 + 기둥 + 꿀빛 육각형 등
+  honeyLamp: (a) => {
+    const e = flatEllipse(inset(a, 0.42), 96);
+    const hex = (rx: number, ry: number) =>
+      Array.from({ length: 6 }, (_, i) => `${e.cx + Math.cos((Math.PI / 3) * i) * rx},${e.cy + Math.sin((Math.PI / 3) * i) * ry}`).join(' ');
+    return (
+      <g>
+        <Box area={inset(a, 0.45)} h={8} color="#B9855A" />
+        <Box area={inset(a, 0.1)} z={8} h={66} color="#B9855A" />
+        <circle cx={e.cx} cy={e.cy} r="30" fill="#FFE9B0" opacity="0.5" />
+        <polygon points={hex(20, 22)} fill="#F2B84B" {...LINE} />
+        <polygon points={hex(11, 12)} fill="#FFF0B8" opacity="0.55" />
+      </g>
+    );
+  },
   // 기본 상자 (모양을 아직 정하지 않은 가구)
   box: (a) => <Box area={a} h={40} color="#D5E4C8" />,
 };

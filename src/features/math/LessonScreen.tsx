@@ -24,8 +24,8 @@ import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 import type { CharacterId, Expression } from '../../data/characters/characters';
 
-// 안내하는 친구: 도토리 마을은 루루, 달빛 숲은 모모, 수정 동굴은 도토
-const GUIDE_OF: Record<RegionId, CharacterId> = { acornVillage: 'lulu', moonlightForest: 'momo', crystalCave: 'doto' };
+// 안내하는 친구: 도토리 마을·햇살 들판은 루루, 달빛 숲은 모모, 수정 동굴은 도토
+const GUIDE_OF: Record<RegionId, CharacterId> = { acornVillage: 'lulu', moonlightForest: 'momo', crystalCave: 'doto', sunnyMeadow: 'lulu' };
 
 // 단계마다 어떤 장면을 어떤 방식으로 보여줄지
 function fieldFor(lesson: MathLesson, s: LessonState): { scene: MathScene; mode: FieldMode } {

@@ -35,7 +35,8 @@ describe('다시 할 때 바뀌는 문제', () => {
             expect(sizeOk(scene), JSON.stringify(scene)).toBe(true);
             expect(choices.filter((c) => c === answerOf(scene))).toHaveLength(1);
             expect(new Set(choices).size).toBe(choices.length);
-            expect(choices.length).toBeGreaterThanOrEqual(3);
+            if (scene.kind === 'pairs') expect(choices).toEqual(['even', 'odd']);
+            else expect(choices.length).toBeGreaterThanOrEqual(3);
           }
         }
       });

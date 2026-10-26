@@ -19,6 +19,8 @@ const AREA_KEY: Record<MathArea, TranslationKey> = {
   skipCounting: 'math.areas.skipCounting',
   placeValue: 'math.areas.placeValue',
   measuring: 'math.areas.measuring',
+  numberLine: 'math.areas.numberLine',
+  evenOdd: 'math.areas.evenOdd',
 };
 
 interface Props {

@@ -1,7 +1,7 @@
 import type { TranslationKey } from '../i18n';
 
 // 마을(지역) id
-export type RegionId = 'acornVillage' | 'moonlightForest' | 'crystalCave';
+export type RegionId = 'acornVillage' | 'moonlightForest' | 'crystalCave' | 'sunnyMeadow';
 
 // 마을이 열리는 조건
 export type RegionUnlock =
@@ -18,7 +18,7 @@ export interface RegionDef {
 }
 
 // 재료 id — 마을마다 그 마을에서 나는 재료가 있다
-export type ResourceId = 'acorn' | 'apple' | 'goldenAcorn' | 'glowBranch' | 'moonDew' | 'crystal' | 'mithril';
+export type ResourceId = 'acorn' | 'apple' | 'goldenAcorn' | 'glowBranch' | 'moonDew' | 'crystal' | 'mithril' | 'sunflowerSeed' | 'honey';
 
 export interface ResourceDef {
   id: ResourceId;

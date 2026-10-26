@@ -24,12 +24,14 @@ export default function ChoiceButtons({ choices, labels, tried = [], chosen = nu
         ? t(itemNameKey(c))
         : c === 'same'
           ? t('math.same')
+          : c === 'even' || c === 'odd'
+            ? t(c === 'even' ? 'math.even' : 'math.odd')
           : t(c === 'a' ? labels!.a : labels!.b);
   const numeric = typeof choices[0] === 'number';
   const items = isItem(choices[0]);
 
   return (
-    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric || (items && choices.length > 3) ? 'grid-cols-4' : 'grid-cols-3'}`}>
+    <div role="group" aria-label={t('math.a11y.choicesLabel')} className={`grid gap-3 ${numeric || (items && choices.length > 3) ? 'grid-cols-4' : choices.length === 2 ? 'grid-cols-2' : 'grid-cols-3'}`}>
       {choices.map((c) => {
         const isTried = tried.includes(c);
         const isChosen = chosen === c;

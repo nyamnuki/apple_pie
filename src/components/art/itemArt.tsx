@@ -279,7 +279,88 @@ const Mithril = () => (
   </g>
 );
 
+const Bee = () => (
+  <g>
+    <Shadow rx={14} />
+    <ellipse cx="22" cy="22" rx="9" ry="12" fill="#E4F1F6" {...L} transform="rotate(-25 22 22)" opacity="0.9" />
+    <ellipse cx="40" cy="20" rx="9" ry="12" fill="#E4F1F6" {...L} transform="rotate(25 40 20)" opacity="0.9" />
+    <ellipse cx="32" cy="38" rx="17" ry="13" fill="#F2CF5B" {...L} />
+    <path d="M26 26 C24 32 24 44 26 50 M35 25 C33 32 33 44 35 51" stroke="#6B5444" strokeWidth="4" strokeLinecap="round" opacity="0.8" />
+    <circle cx="44" cy="35" r="2.2" fill="#59483C" />
+    <path d="M49 38 l5 1" stroke="#6B5444" strokeWidth="1.6" strokeLinecap="round" />
+    <Shine cx={22} cy={33} rx={4} ry={2.5} />
+  </g>
+);
+
+const Sunflower = () => (
+  <g>
+    <Shadow rx={12} />
+    <path d="M32 36 C31 44 33 50 32 56" fill="none" stroke="#7FA077" strokeWidth="3" strokeLinecap="round" />
+    <path d="M32 48 C26 44 22 46 21 48 C25 51 29 51 32 48 Z" fill="#A8C3A0" {...L} strokeWidth={1.2} />
+    {Array.from({ length: 12 }, (_, i) => i * 30).map((a) => (
+      <ellipse key={a} cx="32" cy="12" rx="4.5" ry="9" fill="#F2CF5B" {...L} strokeWidth={1.1} transform={`rotate(${a} 32 25)`} />
+    ))}
+    <circle cx="32" cy="25" r="8.5" fill="#8C6B52" {...L} />
+    <circle cx="30" cy="23" r="1.2" fill="#B9855A" />
+    <circle cx="34" cy="27" r="1.2" fill="#B9855A" />
+  </g>
+);
+
+const Snail = () => (
+  <g>
+    <Shadow rx={20} />
+    <path d="M8 52 C8 46 14 44 22 44 L50 44 C56 44 58 48 56 52 Z" fill="#E8D9BF" {...L} />
+    <path d="M50 44 C50 38 52 32 54 30 M54 44 C55 39 57 35 59 34" fill="none" {...L} />
+    <circle cx="54" cy="29" r="2" fill="#6B5444" />
+    <circle cx="59" cy="33" r="2" fill="#6B5444" />
+    <circle cx="30" cy="34" r="15" fill="#F5D0AD" {...L} />
+    <path d="M30 34 m-9 0 a9 9 0 1 1 9 9 a6 6 0 1 1 -6 -6 a3 3 0 1 1 3 3" fill="none" stroke="#B9855A" strokeWidth="2" />
+    <Shine cx={22} cy={26} rx={4} ry={2.5} />
+  </g>
+);
+
+const Cloud = () => (
+  <g>
+    <path d="M14 46 C6 46 6 34 14 33 C14 24 26 20 31 27 C35 18 50 20 50 31 C58 31 59 46 50 46 Z" fill="#FFFFFF" {...L} />
+    <path d="M18 36 C20 31 25 29 29 31" fill="none" stroke="#E4F1F6" strokeWidth="3" strokeLinecap="round" />
+    <circle cx="26" cy="40" r="1.6" fill="#59483C" />
+    <circle cx="38" cy="40" r="1.6" fill="#59483C" />
+    <path d="M30 43 q2 2 4 0" fill="none" stroke="#6B5444" strokeWidth="1.3" strokeLinecap="round" />
+    <ellipse cx="22" cy="43" rx="2.4" ry="1.4" fill="#F3C6D2" />
+    <ellipse cx="42" cy="43" rx="2.4" ry="1.4" fill="#F3C6D2" />
+  </g>
+);
+
+const SunflowerSeed = () => (
+  <g>
+    <Shadow rx={16} />
+    {[[-10, 0, -20], [10, 2, 20], [0, -6, 0]].map(([dx, dy, rot]) => (
+      <g key={`${dx}`} transform={`translate(${32 + dx} ${34 + dy}) rotate(${rot})`}>
+        <path d="M0 -15 C8 -10 8 10 0 15 C-8 10 -8 -10 0 -15 Z" fill="#6B5444" {...L} />
+        <path d="M0 -12 L0 12 M-3 -8 L-3 8 M3 -8 L3 8" stroke="#E8D9BF" strokeWidth="1.2" opacity="0.8" />
+      </g>
+    ))}
+  </g>
+);
+
+const Honey = () => (
+  <g>
+    <Shadow rx={16} />
+    <path d="M18 24 C18 20 46 20 46 24 L48 48 C48 54 16 54 16 48 Z" fill="#F2B84B" {...L} />
+    <path d="M16 22 C16 16 48 16 48 22 C48 26 16 26 16 22 Z" fill="#E8D9BF" {...L} />
+    <path d="M24 26 C24 34 22 36 22 40 M24 26 C26 32 28 33 28 36" fill="none" stroke="#F7D58A" strokeWidth="3" strokeLinecap="round" />
+    <Shine cx={22} cy={38} rx={3} ry={6} rot={0} />
+    <path d="M30 34 l3 -5 l6 0 l3 5 l-3 5 l-6 0 z" fill="none" stroke="#B98A3A" strokeWidth="1.4" />
+  </g>
+);
+
 export const ITEM_ART: Record<string, () => ReactElement> = {
+  'items/bee.png': Bee,
+  'items/sunflower.png': Sunflower,
+  'items/snail.png': Snail,
+  'items/cloud.png': Cloud,
+  'items/res-sunflower-seed.png': SunflowerSeed,
+  'items/res-honey.png': Honey,
   'items/apple.png': Apple,
   'items/pear.png': Pear,
   'items/mushroom.png': Mushroom,

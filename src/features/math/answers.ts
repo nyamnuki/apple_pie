@@ -19,6 +19,10 @@ export function answerOf(scene: MathScene): MathAnswer {
       return scene.groups * scene.size + scene.ones;
     case 'measure':
       return scene.length;
+    case 'hops':
+      return scene.start + scene.hop;
+    case 'pairs':
+      return scene.total % 2 === 0 ? 'even' : 'odd';
   }
 }
 
@@ -43,5 +47,9 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return { ...vars, size: formatNumber(scene.size), groups: formatNumber(scene.groups), ones: formatNumber(scene.ones), tens: formatNumber(scene.groups * scene.size) };
     case 'measure':
       return vars;
+    case 'hops':
+      return { ...vars, start: formatNumber(scene.start), hop: formatNumber(Math.abs(scene.hop)) };
+    case 'pairs':
+      return { ...vars, total: formatNumber(scene.total), pairs: formatNumber(Math.floor(scene.total / 2)), left: formatNumber(scene.total % 2) };
   }
 }

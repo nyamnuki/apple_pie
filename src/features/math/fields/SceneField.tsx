@@ -6,6 +6,8 @@ import PatternField from './PatternField';
 import ShapesField from './ShapesField';
 import GroupsField from './GroupsField';
 import MeasureField from './MeasureField';
+import HopsField from './HopsField';
+import PairsField from './PairsField';
 import type { FieldMode } from './useSequence';
 import type { MathScene } from '../../../types/math';
 
@@ -28,5 +30,9 @@ export default function SceneField({ scene, mode, onDone }: { scene: MathScene; 
       return <GroupsField scene={scene} mode={mode} onDone={onDone} />;
     case 'measure':
       return <MeasureField scene={scene} mode={mode} onDone={onDone} />;
+    case 'hops':
+      return <HopsField scene={scene} mode={mode} onDone={onDone} />;
+    case 'pairs':
+      return <PairsField scene={scene} mode={mode} onDone={onDone} />;
   }
 }

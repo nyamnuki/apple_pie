@@ -21,6 +21,15 @@ export const REGIONS: RegionDef[] = [
     art: 'items/gem.png',
     unlock: { type: 'lessons', region: 'moonlightForest', count: 2 },
   },
+  // 수정 동굴 놀이를 2개 끝내면 열린다
+  {
+    id: 'sunnyMeadow',
+    nameKey: 'regions.sunnyMeadow',
+    topicsKey: 'regions.topics.sunnyMeadow',
+    emoji: '🌻',
+    art: 'items/sunflower.png',
+    unlock: { type: 'lessons', region: 'crystalCave', count: 2 },
+  },
 ];
 
 export const getRegion = (id: RegionId) => REGIONS.find((r) => r.id === id)!;

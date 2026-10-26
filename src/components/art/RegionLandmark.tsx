@@ -74,7 +74,38 @@ function CrystalCave() {
   );
 }
 
-const SCENES: Record<RegionId, () => JSX.Element> = { acornVillage: AcornVillage, moonlightForest: MoonlightForest, crystalCave: CrystalCave };
+function SunnyMeadow() {
+  return (
+    <g>
+      <path d="M0 0 H160 V110 H0 Z" fill="#FBEFD0" />
+      <circle cx="128" cy="24" r="14" fill="#F7DA7A" {...L} />
+      {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+        <path key={a} d="M128 4 L128 0" stroke="#F2CF5B" strokeWidth="3" strokeLinecap="round" transform={`rotate(${a} 128 24)`} />
+      ))}
+      <path d="M0 80 C40 66 110 70 160 78 L160 110 L0 110 Z" fill="#C3D8B6" />
+      <path d="M0 94 C50 86 110 88 160 96 L160 110 L0 110 Z" fill="#A8C3A0" />
+      {/* 해바라기 */}
+      {[[26, 92, 1], [52, 88, 1.2], [80, 94, 0.9]].map(([x, y, s]) => (
+        <g key={`${x}`} transform={`translate(${x} ${y}) scale(${s})`}>
+          <path d="M0 0 L0 -26" stroke="#7FA077" strokeWidth="2.4" />
+          {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
+            <ellipse key={a} cx="0" cy="-36" rx="3" ry="6" fill="#F2CF5B" {...L} strokeWidth={1} transform={`rotate(${a} 0 -30)`} />
+          ))}
+          <circle cx="0" cy="-30" r="5" fill="#8C6B52" {...L} strokeWidth={1} />
+        </g>
+      ))}
+      {/* 벌통 */}
+      <g transform="translate(122 98)">
+        <path d="M-14 0 C-16 -10 -12 -26 0 -28 C12 -26 16 -10 14 0 Z" fill="#F2B84B" {...L} />
+        <path d="M-13 -8 H13 M-12 -16 H12 M-8 -23 H8" stroke="#B98A3A" strokeWidth="1.4" />
+        <circle cx="0" cy="-6" r="2.6" fill="#6B5444" />
+      </g>
+      <path d="M100 60 q4 -4 8 0 q4 -4 8 0" fill="none" stroke="#6B5444" strokeWidth="1.2" strokeOpacity="0.6" />
+    </g>
+  );
+}
+
+const SCENES: Record<RegionId, () => JSX.Element> = { acornVillage: AcornVillage, moonlightForest: MoonlightForest, crystalCave: CrystalCave, sunnyMeadow: SunnyMeadow };
 
 export default function RegionLandmark({ id, locked }: { id: RegionId; locked: boolean }) {
   const Scene = SCENES[id];

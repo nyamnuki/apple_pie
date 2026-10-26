@@ -88,6 +88,13 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
     case 'measure':
       // 블록 4~9 개 (좁은 휴대폰에서도 한 줄에 보이게)
       return { ...scene, length: int(rng, 4, 9) };
+    case 'hops': {
+      // 앞으로 뛰기는 3~7 칸, 끝이 20 을 넘지 않게. 뒤로 뛰기는 3~7 칸, 0 아래로 가지 않게
+      const n = int(rng, 3, 7);
+      return scene.hop > 0 ? { ...scene, start: int(rng, 2, 20 - n), hop: n } : { ...scene, start: int(rng, n + 1, 18), hop: -n };
+    }
+    case 'pairs':
+      return { ...scene, total: int(rng, 6, 15) };
     case 'pattern':
       return scene;
   }
@@ -102,12 +109,13 @@ export function numberChoices(scene: MathScene, rng: Rng): number[] {
   else if (scene.kind === 'groups') likely = [scene.groups * 2, scene.groups]; // 혼자인 것 빼먹기, 짝을 1 로 세기
   else if (scene.kind === 'add') likely = [answer - 10 > 0 ? answer - 10 : answer + 3];
   else if (scene.kind === 'shapes') likely = [scene.shapes.length];
+  else if (scene.kind === 'hops') likely = [scene.start - scene.hop]; // 반대쪽으로 뛰기
   const pool = [...new Set([...shuffle(rng, likely), ...shuffle(rng, near)])].filter((n) => n > 0 && n !== answer);
   return [answer, ...pool.slice(0, 3)].sort((x, y) => x - y);
 }
 
 function choicesFor(scene: MathScene, original: MathAnswer[], rng: Rng): MathAnswer[] {
-  if (scene.kind === 'compare' || scene.kind === 'pattern') return original; // 'a/b/같다', 그림 선택지는 그대로
+  if (scene.kind === 'compare' || scene.kind === 'pattern' || scene.kind === 'pairs') return original; // 'a/b/같다', '짝수/홀수', 그림 선택지는 그대로
   return numberChoices(scene, rng);
 }
 
@@ -124,7 +132,8 @@ function makeVariant(lesson: MathLesson, rng: Rng): MathLesson {
 }
 
 // '같은 문제'인지 비교하는 값: 보통은 정답, 비교 문제는 정답('많은 쪽')이 일부러 같으므로 두 수
-export const sameKey = (scene: MathScene) => (scene.kind === 'compare' ? `${scene.a}:${scene.b}` : String(answerOf(scene)));
+// (짝수·홀수는 답이 둘뿐이라 개수로 비교)
+export const sameKey = (scene: MathScene) => (scene.kind === 'compare' ? `${scene.a}:${scene.b}` : scene.kind === 'pairs' ? `${scene.total}` : String(answerOf(scene)));
 
 // 판마다 만든 문제를 기억해 둔다 (놀이 id → [0판, 1판, …])
 const cache = new Map<LessonId, MathLesson[]>();

@@ -191,6 +191,36 @@ export const LESSONS: MathLesson[] = [
     apply: { kind: 'groups', item: 'mushroom', size: 10, groups: 4, ones: 2 }, // 42
     applyChoices: [6, 24, 40, 42],
   },
+
+  // ===== 햇살 들판 =====
+  {
+    id: 'numberLine1',
+    rewards: { sunflowerSeed: 2 },
+    firstTimeBonus: { honey: 1 },
+    area: 'numberLine',
+    region: 'sunnyMeadow',
+    icon: 'frog',
+    // 수직선 위에서 개구리가 한 칸씩 뛰기: 오른쪽은 더하기, 왼쪽은 빼기
+    explore: { kind: 'hops', start: 7, hop: 5 }, // 12
+    predict: { kind: 'hops', start: 13, hop: -4 }, // 9 (17 은 반대로 뛴 실수)
+    predictChoices: [8, 9, 10, 17],
+    apply: { kind: 'hops', start: 9, hop: 6 }, // 15
+    applyChoices: [3, 14, 15, 16],
+  },
+  {
+    id: 'evenOdd1',
+    rewards: { sunflowerSeed: 1, honey: 1 },
+    firstTimeBonus: { honey: 1 },
+    area: 'evenOdd',
+    region: 'sunnyMeadow',
+    icon: 'bee',
+    // 둘씩 짝지어 하나가 남으면 홀수, 딱 맞으면 짝수
+    explore: { kind: 'pairs', item: 'bee', total: 8 },
+    predict: { kind: 'pairs', item: 'snail', total: 9 },
+    predictChoices: ['even', 'odd'],
+    apply: { kind: 'pairs', item: 'sunflower', total: 14 },
+    applyChoices: ['even', 'odd'],
+  },
 ];
 
 export const getLesson = (id: LessonId) => LESSONS.find((l) => l.id === id)!;
