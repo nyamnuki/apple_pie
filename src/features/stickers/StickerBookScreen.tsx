@@ -9,6 +9,7 @@ import { useGame } from '../../app/GameProvider';
 import { useI18n } from '../../i18n';
 import { nextPetGoal } from '../pets/pets';
 import Closet from '../outfits/Closet';
+import Rosette from '../../components/art/Rosette';
 import StickerCloseUp from './StickerCloseUp';
 
 // 스티커 도감: 마을마다 6칸. 모은 스티커는 그림과 이름, 아직 없는 칸은 점선 테두리와 '?' (색만으로 구분하지 않음)
@@ -36,8 +37,14 @@ export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
       <div className="flex flex-col gap-4 pb-4">
         {REGIONS.map((region) => {
           const list = STICKERS.filter((s) => s.region === region.id);
+          const complete = list.every((s) => owned.has(s.id)); // 그 마을 스티커를 다 모았으면 금테두리와 리본
           return (
-            <section key={region.id} aria-labelledby={`stickers-${region.id}`} className="storybook-card rounded-[2rem] p-4">
+            <section
+              key={region.id}
+              aria-labelledby={`stickers-${region.id}`}
+              data-complete={complete || undefined}
+              className={`storybook-card rounded-[2rem] p-4 ${complete ? 'ring-4 ring-[#E7B24C]' : ''}`}
+            >
               <h2 id={`stickers-${region.id}`} className="mb-3 flex items-center gap-2 text-xl font-bold">
                 <RegionIcon id={region.id} size={30} />
                 {tKey(region.nameKey)}
@@ -45,6 +52,12 @@ export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
                   {formatNumber(list.filter((s) => owned.has(s.id)).length)}/{formatNumber(list.length)}
                 </span>
               </h2>
+              {complete && (
+                <p className="-mt-1 mb-3 flex items-center gap-1 text-base font-bold">
+                  <Rosette size={24} />
+                  {t('stickers.complete')}
+                </p>
+              )}
               <ul className="grid grid-cols-3 gap-3">
                 {list.map((s) => {
                   const has = owned.has(s.id);

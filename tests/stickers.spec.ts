@@ -54,3 +54,13 @@ test('보상 화면에서 새 스티커를 누르면 크게 보인다', async ({
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Look closely: Apple' })).toBeFocused();
 });
+
+test('마을 스티커 6장을 다 모으면 금테두리와 "다 모았어요"', async ({ page, context }) => {
+  await seed(context, { save: { ...makeSave(), game: { ...makeSave().game, stickers: ['apple', 'acorn', 'flower', 'ladybug', 'butterfly', 'frog', 'moon'] } } });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Sticker Book' }).click();
+  await expect(page.locator('[data-complete]')).toHaveCount(1);
+  await expect(page.getByRole('region', { name: /Acorn Village/ })).toContainText('All found!');
+  await expect(page.getByRole('region', { name: /Moonlight Forest/ })).not.toContainText('All found!');
+});
