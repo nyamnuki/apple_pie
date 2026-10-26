@@ -33,6 +33,8 @@ export function answerOf(scene: MathScene): MathAnswer {
       return 10 - scene.have;
     case 'difference':
       return scene.a - scene.b;
+    case 'ordinal':
+      return scene.items[scene.position - 1];
   }
 }
 
@@ -71,5 +73,7 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return { ...vars, have: formatNumber(scene.have), more: formatNumber(10 - scene.have) };
     case 'difference':
       return { ...vars, a: formatNumber(scene.a), b: formatNumber(scene.b), diff: formatNumber(scene.a - scene.b) };
+    case 'ordinal':
+      return { ...vars, nth: formatNumber(scene.position), total: formatNumber(scene.items.length) };
   }
 }

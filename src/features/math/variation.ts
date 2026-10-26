@@ -105,6 +105,8 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
       return { ...scene, n: int(rng, 2, 9) };
     case 'makeTen':
       return { ...scene, have: int(rng, 2, 8) };
+    case 'ordinal':
+      return { ...scene, position: int(rng, 2, scene.items.length) };
     case 'difference': {
       const b = int(rng, 3, 8);
       return { ...scene, b, a: b + int(rng, 1, 5) };
@@ -142,9 +144,19 @@ export function clockChoices(scene: Extract<MathScene, { kind: 'clock' }>, rng: 
   return [right, ...wrong].sort((a, b) => parseFloat(String(a).replace(':', '.')) - parseFloat(String(b).replace(':', '.')));
 }
 
+// 몇 번째 선택지: 정답 + 바로 앞·뒤 (하나 덜·더 센 실수) + 뒤에서 센 것. 줄에 선 순서대로
+export function ordinalChoices(scene: Extract<MathScene, { kind: 'ordinal' }>): MathAnswer[] {
+  const p = scene.position - 1;
+  const n = scene.items.length;
+  const picks = new Set([p, p - 1, p + 1, n - 1 - p].filter((i) => i >= 0 && i < n));
+  for (let i = 0; picks.size < Math.min(4, n); i++) picks.add(i);
+  return [...picks].sort((a, b) => a - b).map((i) => scene.items[i]);
+}
+
 function choicesFor(scene: MathScene, original: MathAnswer[], rng: Rng): MathAnswer[] {
   if (scene.kind === 'compare' || scene.kind === 'pattern' || scene.kind === 'pairs') return original; // 'a/b/같다', '짝수/홀수', 그림 선택지는 그대로
   if (scene.kind === 'clock') return clockChoices(scene, rng);
+  if (scene.kind === 'ordinal') return ordinalChoices(scene);
   return numberChoices(scene, rng);
 }
 
@@ -162,7 +174,7 @@ function makeVariant(lesson: MathLesson, rng: Rng): MathLesson {
 
 // '같은 문제'인지 비교하는 값: 보통은 정답, 비교 문제는 정답('많은 쪽')이 일부러 같으므로 두 수
 // (짝수·홀수는 답이 둘뿐이라 개수로 비교)
-export const sameKey = (scene: MathScene) => (scene.kind === 'compare' ? `${scene.a}:${scene.b}` : scene.kind === 'pairs' ? `${scene.total}` : String(answerOf(scene)));
+export const sameKey = (scene: MathScene) => (scene.kind === 'compare' ? `${scene.a}:${scene.b}` : scene.kind === 'pairs' ? `${scene.total}` : scene.kind === 'ordinal' ? `${scene.position}` : String(answerOf(scene)));
 
 
 // 판마다 만든 문제를 기억해 둔다 (놀이 id → [0판, 1판, …])

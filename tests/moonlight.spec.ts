@@ -19,7 +19,7 @@ test('도토리 마을 놀이 2개를 끝내면 달빛 숲이 열린다', async 
   await page.getByRole('button', { name: 'More games' }).click();
   await page.getByRole('button', { name: 'Go back' }).click(); // 놀이 고르기 → 지도
   await expect(forest).toBeEnabled();
-  await expect(forest).toContainText('0 of 3 games finished');
+  await expect(forest).toContainText('0 of 4 games finished');
 });
 
 test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) => {
@@ -171,4 +171,28 @@ test('놀이: 얼마나 길까? (블록을 빈틈없이 놓아 길이 재기)', 
   await page.getByRole('button', { name: 'Finish' }).click();
   await expect(page.getByRole('img', { name: 'Glow Branch +2' })).toBeVisible();
   expect(problems).toEqual([]);
+});
+
+test('놀이: 줄을 선 친구들 (맨 앞부터 차례로 세기, 몇 번째)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ completedLessons: ['counting1', 'comparing1'] }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Moonlight Forest/);
+  await page.getByRole('button', { name: /Who Is in Line\?/ }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  const next = page.getByRole('button', { name: 'Count the next one from the front' });
+  await expect(next).toHaveCount(1); // 다음 차례 하나만
+  for (let i = 0; i < 5; i++) await next.click();
+  await expect(guide(page)).toHaveText('You counted everyone in line! Now you can find any number in line.');
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(guide(page)).toHaveText('Look at this line. Who is number 4 from the front?');
+  const choices = page.getByRole('group', { name: 'Answer choices' });
+  await choices.getByRole('button', { name: 'Bird' }).click(); // 뒤에서 센 실수
+  await waitLastButtonEnabled(page);
+  await expect(page.locator('[data-target]')).toHaveAttribute('data-line', '3'); // 4번째 친구에 테두리
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await choices.getByRole('button', { name: 'Butterfly' }).click();
+  await expect(guide(page)).toHaveText('Yes! You found number 2 in line.');
 });

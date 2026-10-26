@@ -95,6 +95,20 @@ export const LESSONS: MathLesson[] = [
     applyChoices: ['leaf', 'mushroom', 'acorn', 'owl'],
   },
   {
+    id: 'ordinal1',
+    rewards: { glowBranch: 1, moonDew: 1 },
+    firstTimeBonus: { glowBranch: 1 },
+    area: 'ordinal',
+    region: 'moonlightForest',
+    icon: 'owl',
+    // 몇 번째: 맨 앞(왼쪽)부터 1, 2, 3… 세다가 그 수에서 멈춘다
+    explore: { kind: 'ordinal', items: ['owl', 'frog', 'ladybug', 'butterfly', 'snail'], position: 3 }, // 무당벌레
+    predict: { kind: 'ordinal', items: ['bat', 'bird', 'bee', 'frog', 'owl'], position: 4 }, // 개구리 (뒤에서 센 실수: 새)
+    predictChoices: ['bird', 'bee', 'frog', 'owl'],
+    apply: { kind: 'ordinal', items: ['snail', 'butterfly', 'owl', 'ladybug', 'bird'], position: 2 }, // 나비
+    applyChoices: ['snail', 'butterfly', 'owl', 'ladybug'],
+  },
+  {
     id: 'shapes1',
     rewards: { glowBranch: 1, moonDew: 1 },
     firstTimeBonus: { moonDew: 1 },

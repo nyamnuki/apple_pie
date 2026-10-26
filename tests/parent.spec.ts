@@ -24,11 +24,11 @@ test('어른 확인과 진행 상황 지우기 (언어는 유지)', async ({ pag
   await answer(page, true, 'Check answer');
   await answer(page, true, 'Check answer');
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Grown-up settings');
-  await expect(page.getByText('Math games finished: 2 of 18')).toBeVisible();
+  await expect(page.getByText('Math games finished: 2 of 19')).toBeVisible();
 
   await page.getByRole('button', { name: 'Erase all progress' }).click();
   await page.getByRole('button', { name: 'Cancel' }).click();
-  await expect(page.getByText('Math games finished: 2 of 18')).toBeVisible();
+  await expect(page.getByText('Math games finished: 2 of 19')).toBeVisible();
 
   // 한국어로 바꾼 뒤 지우기
   await page.getByRole('button', { name: 'Go back' }).click();
@@ -121,10 +121,10 @@ test('어른 설정: 파일로 저장하고, 파일에서 되살린다 (이상�
   // 다른 진행 상황이 든 백업 → 확인 → 되살리기
   const other = { ...saved, game: { ...saved.game, resources: { apple: 5 }, completedLessons: ['counting1', 'comparing1', 'addition1'], stickers: ['apple', 'acorn'] } };
   await page.getByTestId('restore-file').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(other)) });
-  await expect(page.getByText('This file has 3 of 18 math games finished and 2 stickers. Replace the current progress with it?')).toBeVisible();
+  await expect(page.getByText('This file has 3 of 19 math games finished and 2 stickers. Replace the current progress with it?')).toBeVisible();
   await page.getByRole('button', { name: 'Yes, restore' }).click();
   await expect(page.getByText('Progress was restored from the file.')).toBeVisible();
-  await expect(page.getByText('Math games finished: 3 of 18')).toBeVisible();
+  await expect(page.getByText('Math games finished: 3 of 19')).toBeVisible();
   await page.waitForTimeout(500);
   expect((await readSave(page)).game).toMatchObject({ resources: { apple: 5 }, stickers: ['apple', 'acorn'] });
 });

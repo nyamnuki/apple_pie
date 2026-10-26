@@ -36,6 +36,9 @@ export function sizeOk(scene: MathScene): boolean {
       return Number.isInteger(scene.have) && scene.have >= 1 && scene.have <= 9;
     case 'difference':
       return scene.b >= 1 && scene.a > scene.b && scene.a <= 15;
+    case 'ordinal':
+      // 좁은 화면에서도 한 줄에 서도록 5개까지, 서로 다른 것만
+      return scene.items.length >= 3 && scene.items.length <= 5 && new Set(scene.items).size === scene.items.length && scene.position >= 1 && scene.position <= scene.items.length;
   }
 }
 

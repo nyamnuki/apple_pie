@@ -13,6 +13,7 @@ import ShareField from './ShareField';
 import DoubleField from './DoubleField';
 import MakeTenField from './MakeTenField';
 import DifferenceField from './DifferenceField';
+import OrdinalField from './OrdinalField';
 import type { FieldMode } from './useSequence';
 import type { MathScene } from '../../../types/math';
 
@@ -49,5 +50,7 @@ export default function SceneField({ scene, mode, onDone }: { scene: MathScene; 
       return <MakeTenField scene={scene} mode={mode} onDone={onDone} />;
     case 'difference':
       return <DifferenceField scene={scene} mode={mode} onDone={onDone} />;
+    case 'ordinal':
+      return <OrdinalField scene={scene} mode={mode} onDone={onDone} />;
   }
 }
