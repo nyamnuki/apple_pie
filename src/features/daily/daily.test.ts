@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dailyLesson, dateKey } from './daily';
+import { dailyLesson, dateKey, streak } from './daily';
 import { answerOf } from '../math/answers';
 import { sizeOk } from '../../data/math/sceneRules';
 import { createInitialGameState, gameReducer } from '../../app/gameState';
@@ -31,5 +31,16 @@ describe('오늘의 문제', () => {
     s = gameReducer(s, { type: 'dailyDone', date: '2026-10-26' });
     s = gameReducer(s, { type: 'dailyDone', date: '2026-10-27' });
     expect(s.dailyDone).toEqual(['2026-10-26', '2026-10-27']);
+  });
+});
+
+describe('연속 기록', () => {
+  const today = new Date(2026, 10, 2, 9);
+  it('오늘부터 거꾸로, 오늘 아직 안 풀었으면 어제부터 (달이 바뀌어도)', () => {
+    expect(streak([], today)).toBe(0);
+    expect(streak(['2026-10-31', '2026-11-01', '2026-11-02'], today)).toBe(3);
+    expect(streak(['2026-10-31', '2026-11-01'], today)).toBe(2); // 오늘은 아직
+    expect(streak(['2026-10-30', '2026-11-01', '2026-11-02'], today)).toBe(2); // 31일에 끊김
+    expect(streak(['2026-10-30', '2026-10-31'], today)).toBe(0); // 어제도 안 풀었으면 끊김
   });
 });

@@ -10,7 +10,7 @@ import SceneField from '../math/fields/SceneField';
 import { GUIDE_OF } from '../math/LessonScreen';
 import { answerOf, sceneVars } from '../math/answers';
 import { lessonKey } from '../../data/math/lessons';
-import { dailyLesson, dateKey } from './daily';
+import { streak, dailyLesson, dateKey } from './daily';
 import { useGame } from '../../app/GameProvider';
 import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
@@ -35,6 +35,8 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
   const level = Math.min(wrong.length, 3);
   const k = (part: Parameters<typeof lessonKey>[1]) => t(lessonKey(lesson.id, part), vars);
   const text = solved ? `${k('correct')} ${t('daily.stamp')}` : level === 0 ? k('apply') : `${t('math.tryAgain')} ${k(`hint${level}` as 'hint1')}`;
+
+  const days = streak(game.dailyDone, today); // 연속으로 푼 날
 
   const choose = (c: MathAnswer) => {
     if (solved) return;
@@ -65,7 +67,10 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
               <span className="flex h-14 w-14 rotate-[-8deg] items-center justify-center rounded-full border-4 border-wood text-wood">
                 <Check size={30} strokeWidth={3} aria-hidden />
               </span>
-              <span className="text-xl font-bold">{t('daily.stamps', { n: formatNumber(game.dailyDone.length) })}</span>
+              <span className="text-xl font-bold">
+                {t('daily.stamps', { n: formatNumber(game.dailyDone.length) })}
+                {days >= 2 && <span className="block text-lg">{t('daily.streak', { n: formatNumber(days) })}</span>}
+              </span>
             </div>
             {justSolved && goldenForStamp(game.dailyDone.length) ? (
               <div role="status" className="flex animate-rise items-center gap-3 text-xl font-bold" style={{ animationDelay: '300ms' }}>

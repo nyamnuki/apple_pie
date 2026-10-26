@@ -538,6 +538,7 @@ export const en = {
     stamps: 'Puzzle stamps: {n}',
     golden: 'A gift for 3 stamps:',
     nextGolden: '{n} more stamps for a golden acorn!',
+    streak: '{n} days in a row!',
     back: 'Back to the map',
   },
   pets: {

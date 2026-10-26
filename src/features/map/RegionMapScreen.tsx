@@ -7,7 +7,7 @@ import { isRegionOpen, regionProgress } from '../../utils/regions';
 import Rosette from '../../components/art/Rosette';
 import { useI18n } from '../../i18n';
 import RegionLandmark from '../../components/art/RegionLandmark';
-import { dateKey } from '../daily/daily';
+import { dateKey, streak } from '../daily/daily';
 import type { RegionId } from '../../types/resources';
 
 // 마을마다 카드 색 (도토리 마을: 낮의 숲, 달빛 숲: 밤의 숲, 수정 동굴: 푸른 동굴)
@@ -44,6 +44,7 @@ export default function RegionMapScreen({ onPick, onBack, onDaily }: { onPick: (
   // 지도는 아래(처음 마을)에서 위(다음 마을)로 올라간다
   const regions = [...REGIONS].reverse();
   const doneToday = game.dailyDone.includes(dateKey(new Date()));
+  const days = streak(game.dailyDone, new Date()); // 연속으로 푼 날 (2일부터 보여 준다)
 
   return (
     <AppShell background="bg-gradient-to-b from-lavender/70 via-mist/60 to-moss">
@@ -63,6 +64,7 @@ export default function RegionMapScreen({ onPick, onBack, onDaily }: { onPick: (
           <span className="min-w-0 flex-1">
             <span className="block text-xl font-bold">{t('daily.title')}</span>
             <span className="block text-base">{t(doneToday ? 'daily.doneToday' : 'daily.waiting')}</span>
+            {days >= 2 && <span className="mt-0.5 block text-base font-bold text-wood">{t('daily.streak', { n: formatNumber(days) })}</span>}
           </span>
           <ChevronRight size={28} aria-hidden className="shrink-0" />
         </button>

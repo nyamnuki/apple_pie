@@ -53,3 +53,18 @@ test('도장 3개째에 황금 도토리 선물', async ({ page, context }) => {
   await page.waitForTimeout(400);
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mathTown.save')!).game.resources.goldenAcorn)).toBe(1);
 });
+
+test('연속 기록: 이틀 이상 이어서 풀면 지도와 도장에 며칠째인지', async ({ page, context }) => {
+  const day = new Date(2026, 9, 26, 10, 0);
+  await page.clock.setFixedTime(day);
+  const save = makeSave({ completedLessons: ['counting1'] });
+  await seed(context, { save: { ...save, game: { ...save.game, dailyDone: ['2026-10-24', '2026-10-25'] } } });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await expect(page.getByRole('button', { name: /^Today's puzzle/ })).toContainText('2 days in a row!');
+  await page.getByRole('button', { name: /^Today's puzzle/ }).click();
+  const lesson = dailyLesson(day, ['counting1'])!;
+  await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: String(answerOf(lesson.apply)), exact: true }).click();
+  await expect(page.getByText('3 days in a row!')).toBeVisible();
+});

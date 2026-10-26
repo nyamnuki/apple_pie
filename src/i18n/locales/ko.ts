@@ -540,6 +540,7 @@ export const ko: Messages = {
     stamps: '오늘의 문제 도장: {n}개',
     golden: '도장 3개 선물:',
     nextGolden: '도장을 {n}개 더 모으면 황금 도토리를 받아요!',
+    streak: '{n}일 연속으로 풀었어요!',
     back: '지도로 돌아가기',
   },
   pets: {
