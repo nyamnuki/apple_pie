@@ -10,12 +10,13 @@ interface Props {
   text: string;
   expression?: Expression;
   speaker?: CharacterId; // 말하는 캐릭터 (기본: 루루)
+  compact?: boolean; // 작은 말풍선 (방 화면처럼 자리가 좁을 때)
 }
 
 // 캐릭터의 말풍선. 상황에 맞는 표정을 함께 보여준다.
 // 화면 읽기 프로그램이 바뀐 말을 읽어 주도록 aria-live 를 쓴다.
 // 스피커 버튼을 누르면 소리 내어 읽어 주고, 설정의 '읽어 주기'가 켜져 있으면 말이 바뀔 때마다 자동으로 읽는다.
-export default function GuideBubble({ text, expression = 'default', speaker = 'lulu' }: Props) {
+export default function GuideBubble({ text, expression = 'default', speaker = 'lulu', compact = false }: Props) {
   const { t, tKey, locale } = useI18n();
   const { voiceOn, interacted } = useSound();
   const [speakable] = useState(() => canSpeak(locale));
@@ -31,10 +32,10 @@ export default function GuideBubble({ text, expression = 'default', speaker = 'l
     <div className="flex items-start gap-2">
       {/* 기쁘거나 놀랄 때 한 번 폴짝 (표정이 바뀔 때마다 다시) */}
       <span key={expression} className={expression === 'happy' || expression === 'surprised' ? 'animate-hop' : undefined}>
-        <Character id={speaker} expression={expression} size={72} bob />
+        <Character id={speaker} expression={expression} size={compact ? 58 : 72} bob />
       </span>
       <div className="storybook-card relative min-h-[3.5rem] flex-1 rounded-3xl rounded-tl-none">
-        <p aria-live="polite" aria-label={`${t('math.a11y.guide', { name: tKey(CHARACTERS[speaker].nameKey) })}: ${text}`} className={`px-4 py-3 text-xl font-semibold ${speakable ? 'pr-16' : 'pr-12'}`}>
+        <p aria-live="polite" aria-label={`${t('math.a11y.guide', { name: tKey(CHARACTERS[speaker].nameKey) })}: ${text}`} className={`px-4 font-semibold ${compact ? 'py-2 text-lg' : 'py-3 text-xl'} ${speakable ? 'pr-16' : 'pr-12'}`}>
           {text}
         </p>
         {speakable && (

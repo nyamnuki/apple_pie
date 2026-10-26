@@ -19,6 +19,15 @@ export const ko: Messages = {
     back: '뒤로',
   },
   room: {
+    tips: {
+      firstGame: '수학 놀이를 하고 재료를 모아 볼까요?',
+      newRegion: '{region}, 이제 갈 수 있어요! 가 볼까요?',
+      place: '{name}, 아직 가방에 있어요. 방에 놓아 볼까요?',
+      canCraft: '재료가 모였어요! 공방에서 {name}, 만들 수 있어요.',
+      cozy1: '우리 방이 참 아늑해요!',
+      cozy2: '오늘은 무엇을 세어 볼까요?',
+      cozy3: '놀이를 끝낼 때마다 새 스티커를 받아요!',
+    },
     title: '나만의 숲속 방',
     viewLabel: '내 방',
   },

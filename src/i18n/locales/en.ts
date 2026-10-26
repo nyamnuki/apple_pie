@@ -18,6 +18,15 @@ export const en = {
     back: 'Back',
   },
   room: {
+    tips: {
+      firstGame: "Let's play a math game and collect materials!",
+      newRegion: '{region} is open now! Shall we explore?',
+      place: 'Your {name} is waiting in your bag. Let’s put it in the room!',
+      canCraft: 'You have enough materials to make a {name}! Let’s visit the Workshop.',
+      cozy1: 'I love our cozy room!',
+      cozy2: 'What shall we count today?',
+      cozy3: 'Every game you finish gives you a new sticker!',
+    },
     title: 'My Woodland Room',
     viewLabel: 'Your room',
   },
