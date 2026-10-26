@@ -1,4 +1,4 @@
-import type { KeyboardEvent } from 'react';
+import { useState, type KeyboardEvent } from 'react';
 import RoomBackground from './RoomBackground';
 import FurnitureSprite, { FurnitureGhost } from './FurnitureSprite';
 import WallItemSprite, { WallGhost } from './WallItemSprite';
@@ -6,7 +6,7 @@ import { GRID, VIEW_W, VIEW_H, TILE_H, WALL_H, WALL_BANDS, footprintCorners, lif
 import { footprintSize, sortForDrawing } from './placement';
 import { getFurniture } from '../../data/furniture/furniture';
 import PetLayer from '../pets/PetLayer';
-import { useTimeOfDay, type TimeOfDay } from './timeOfDay';
+import { seasonOf, useTimeOfDay, type TimeOfDay } from './timeOfDay';
 import type { PetDef } from '../pets/pets';
 import { useI18n } from '../../i18n';
 import type { FurnitureDef, RoomLayout, WallSide } from '../../types/furniture';
@@ -58,6 +58,7 @@ const ROOM_OUTLINE = [
 export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets, marks }: Props) {
   const { t, tKey } = useI18n();
   const time = useTimeOfDay();
+  const [season] = useState(() => seasonOf(new Date()));
   const shade = SHADE_OF[time];
   const picking = Boolean(validSpots) || Boolean(validWallSpots);
   const items = sortForDrawing(layout.placed);
@@ -86,7 +87,7 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
     // 배경까지 다시 그리지 않게 한다. 두 그림은 같은 좌표·같은 크기로 정확히 겹친다.
     <div className="relative h-full w-full">
       <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" aria-hidden="true">
-        <RoomBackground wallpaperId={layout.wallpaperId} time={time} />
+        <RoomBackground wallpaperId={layout.wallpaperId} time={time} season={season} />
       </svg>
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}

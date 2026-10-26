@@ -140,3 +140,15 @@ test('밤에는 창밖에 달과 별, 방이 어두워지고 조명 둘레가 �
   await expect(page.locator('[data-sky="day"]')).toHaveCount(1);
   await expect(page.locator('[data-time]')).toHaveCount(0);
 });
+
+test('계절 장식: 가을에는 낙엽, 겨울에는 눈', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.clock.setFixedTime(new Date(2026, 9, 26, 10, 0)); // 10월
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.locator('[data-season="autumn"]')).toHaveCount(1);
+  await page.clock.setFixedTime(new Date(2026, 11, 24, 10, 0)); // 12월
+  await page.reload();
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.locator('[data-season="winter"]')).toHaveCount(1);
+});

@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import type { TimeOfDay } from './timeOfDay';
+import type { Season, TimeOfDay } from './timeOfDay';
 import { GRID, WALL_H, VIEW_W, VIEW_H, toScreen, toPoints, lift } from './iso';
 import { assetUrl, BACKGROUNDS } from '../../data/assets/assetRegistry';
 import { getFurniture } from '../../data/furniture/furniture';
@@ -24,7 +24,42 @@ const SKY: Record<TimeOfDay, [string, string, string]> = {
   night: ['#3F4A78', '#5E5D92', '#3E5A55'],
 };
 
-export default memo(function RoomBackground({ wallpaperId, time = 'day' }: { wallpaperId: string | null; time?: TimeOfDay }) {
+// 창밖 숲 세 겹의 색 (먼 → 가까운)과 날리는 것
+const WOODS: Record<Season, [string, string, string]> = {
+  spring: ['#9CC48F', '#BFD9A8', '#F3D3DC'],
+  summer: ['#6E9F68', '#8FBD80', '#C5DDAF'],
+  autumn: ['#C98A4E', '#E0A86A', '#EFCB8E'],
+  winter: ['#C9D6E0', '#E4ECF2', '#FFFFFF'],
+};
+// 창 안의 위치 (a: 벽 위 가로 칸, z: 높이)
+const FLAKES = [[2.35, 150], [2.7, 128], [3.05, 158], [3.3, 112], [3.6, 140], [2.55, 100]];
+
+function SeasonBits({ season }: { season: Season }) {
+  return (
+    <g data-season={season}>
+      {FLAKES.map(([a, z], i) => {
+        const p = lift(toScreen(a, 0), z);
+        switch (season) {
+          case 'spring': // 벚꽃잎
+            return <ellipse key={i} cx={p.x} cy={p.y} rx="3.4" ry="2.2" fill="#F3C6D2" transform={`rotate(${i * 40} ${p.x} ${p.y})`} />;
+          case 'summer': // 작은 나비 (두 개만)
+            return i % 3 === 0 ? (
+              <g key={i}>
+                <ellipse cx={p.x - 3} cy={p.y} rx="3" ry="2.2" fill="#F5D0AD" />
+                <ellipse cx={p.x + 3} cy={p.y} rx="3" ry="2.2" fill="#F5D0AD" />
+              </g>
+            ) : null;
+          case 'autumn': // 낙엽
+            return <path key={i} d={`M${p.x} ${p.y - 4} q4 4 0 8 q-4 -4 0 -8 z`} fill={i % 2 ? '#D9784E' : '#E9A85A'} transform={`rotate(${i * 50} ${p.x} ${p.y})`} />;
+          case 'winter': // 눈송이
+            return <circle key={i} cx={p.x} cy={p.y} r="2.4" fill="#FFFFFF" />;
+        }
+      })}
+    </g>
+  );
+}
+
+export default memo(function RoomBackground({ wallpaperId, time = 'day', season = 'spring' }: { wallpaperId: string | null; time?: TimeOfDay; season?: Season }) {
   const baseUrl = assetUrl(BACKGROUNDS.roomBase);
   const baseStatus = useAssetStatus(baseUrl);
   const wallpaper = wallpaperId ? getFurniture(wallpaperId) : undefined;
@@ -172,22 +207,23 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day' }: { wal
                     q 17 -28 34 -4 q 17 -28 37 -5 q 20 -26 42 -1 q 18 -18 37 2
                     L ${toScreen(3.95, 0).x} ${toScreen(3.95, 0).y - 70}
                     L ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 70} Z`}
-                fill="#7FA779"
+                fill={WOODS[season][0]}
               />
               <path
                 d={`M ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 91}
                     q 20 -25 39 -3 q 17 -25 37 -2 q 22 -23 43 0
                     L ${toScreen(3.95, 0).x} ${toScreen(3.95, 0).y - 61}
                     L ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 61} Z`}
-                fill="#A7C69A"
+                fill={WOODS[season][1]}
               />
               <path
                 d={`M ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 77}
                     q 20 -17 38 0 q 19 -18 38 -1 q 19 -17 40 0
                     L ${toScreen(3.95, 0).x} ${toScreen(3.95, 0).y - 54}
                     L ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 54} Z`}
-                fill="#D0DFB9"
+                fill={WOODS[season][2]}
               />
+              <SeasonBits season={season} />
             </g>
             <polygon points={toPoints(WINDOW)} fill="none" stroke="#B9855A" strokeWidth="10" strokeLinejoin="round" />
             <path

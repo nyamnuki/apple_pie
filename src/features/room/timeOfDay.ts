@@ -19,3 +19,14 @@ export function useTimeOfDay(): TimeOfDay {
   }, []);
   return time;
 }
+
+// 계절 (기기 날짜, 북반구 기준): 3~5월 봄, 6~8월 여름, 9~11월 가을, 12~2월 겨울
+export type Season = 'spring' | 'summer' | 'autumn' | 'winter';
+
+export function seasonOf(date: Date): Season {
+  const m = date.getMonth() + 1;
+  if (m >= 3 && m <= 5) return 'spring';
+  if (m >= 6 && m <= 8) return 'summer';
+  if (m >= 9 && m <= 11) return 'autumn';
+  return 'winter';
+}
