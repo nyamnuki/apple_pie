@@ -105,3 +105,23 @@ test('마우스로 칸 위에 올리면 놓일 모습을 미리 보여준다, �
   await page.waitForTimeout(300);
   expect((await readSave(page)).room.placed.find((p: { uid: string }) => p.uid === 'shelf')).toMatchObject({ rotation: 0 });
 });
+
+test('루루의 질문: 방의 물건을 세고, 답하면 번호를 붙여 같이 센다', async ({ page, context }) => {
+  // 기본 방: 침대·버섯 조명·러그·화분 → 바닥에 서 있는 물건(러그 빼고) 3개
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: "Lulu's question" }).click();
+  await expect(guide(page)).toHaveText('How many things are standing on the floor? (Rugs don’t count.)');
+  const choices = page.getByRole('group', { name: 'Answer choices' });
+  await choices.getByRole('button', { name: '4', exact: true }).click();
+  await expect(guide(page)).toHaveText(/Let's count them together!/);
+  await expect(page.locator('svg text').filter({ hasText: /^[123]$/ })).toHaveCount(3); // 번호 1, 2, 3
+  await choices.getByRole('button', { name: '3', exact: true }).click();
+  await expect(guide(page)).toHaveText('Yes! There are 3. You counted our room!');
+  await page.getByRole('button', { name: 'Done' }).click();
+  await expect(page.getByRole('button', { name: 'Play' })).toBeVisible();
+  // 다음 질문은 다른 종류 (불빛)
+  await page.getByRole('button', { name: "Lulu's question" }).click();
+  await expect(guide(page)).toHaveText('How many lights are in our room?');
+});

@@ -18,6 +18,17 @@ export const en = {
     back: 'Back',
   },
   room: {
+    quiz: {
+      button: "Lulu's question",
+      floor: 'How many things are standing on the floor? (Rugs don’t count.)',
+      lights: 'How many lights are in our room?',
+      wall: 'How many decorations are hanging on the walls?',
+      seats: 'How many places can we sit or sleep?',
+      all: 'How many things are in our room altogether?',
+      countTogether: "Let's count them together!",
+      right: 'Yes! There are {n}. You counted our room!',
+      done: 'Done',
+    },
     tips: {
       firstGame: "Let's play a math game and collect materials!",
       newRegion: '{region} is open now! Shall we explore?',

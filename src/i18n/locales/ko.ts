@@ -19,6 +19,17 @@ export const ko: Messages = {
     back: '뒤로',
   },
   room: {
+    quiz: {
+      button: '루루의 질문',
+      floor: '바닥에 서 있는 물건은 몇 개일까요? (러그는 빼고요)',
+      lights: '우리 방에 불빛은 몇 개 있을까요?',
+      wall: '벽에 걸린 장식은 몇 개일까요?',
+      seats: '앉거나 누울 수 있는 곳은 몇 군데일까요?',
+      all: '우리 방에 있는 물건은 모두 몇 개일까요?',
+      countTogether: '같이 세어 볼까요?',
+      right: '맞아요! {n}개예요. 우리 방을 세어 봤어요!',
+      done: '다 했어요',
+    },
     tips: {
       firstGame: '수학 놀이를 하고 재료를 모아 볼까요?',
       newRegion: '{region}, 이제 갈 수 있어요! 가 볼까요?',

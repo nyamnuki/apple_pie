@@ -30,6 +30,7 @@ interface Props {
   shake?: { uid: string; n: number } | null; // 이 가구를 살짝 흔든다 (n 이 바뀔 때마다)
   celebrate?: { uid: string; n: number } | null; // 방금 놓은 가구 (n 이 바뀔 때마다 빛이 퍼진다)
   pets?: PetDef[]; // 방에서 돌아다니는 친구 (내 방 화면에서만)
+  marks?: string[]; // 루루의 질문: 센 물건 uid 순서대로 1, 2, 3… 번호를 붙인다
 }
 
 export const spotKey = (gx: number, gy: number) => `${gx},${gy}`;
@@ -37,7 +38,7 @@ export const wallKey = (wall: WallSide, slot: number) => `${wall}:${slot}`;
 const WALLS: WallSide[] = ['left', 'right'];
 
 // 아이소메트릭 방 전체 그림: 배경 → 바닥 칸(누르기용) → 가구 → '+' 표시 순서로 겹쳐 그린다.
-export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets }: Props) {
+export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets, marks }: Props) {
   const { t, tKey } = useI18n();
   const picking = Boolean(validSpots) || Boolean(validWallSpots);
   const items = sortForDrawing(layout.placed);
@@ -169,6 +170,35 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
             />
           );
         })}
+
+        {/* 루루의 질문: 센 물건 위에 번호 (하나씩 차례로 나타난다) */}
+        {marks && marks.length > 0 && (
+          <g aria-hidden="true">
+            {marks.map((uid, i) => {
+              const item = layout.placed.find((p) => p.uid === uid);
+              const wall = layout.wallItems.find((w) => w.uid === uid);
+              const def = getFurniture((item ?? wall)?.furnitureId ?? '');
+              if (!def) return null;
+              let at;
+              if (item) {
+                const [w, d] = footprintSize(def, item.rotation);
+                const c = footprintCorners(item.gx, item.gy, w, d);
+                at = { x: (c.left.x + c.right.x) / 2, y: c.top.y - def.placeholder.height - 12 };
+              } else {
+                const [z0, z1] = WALL_BANDS[def.wallBand ?? 'middle'];
+                at = wallPoint(wall!.wall, wall!.slot + def.gridWidth / 2, (z0 + z1) / 2 + 20);
+              }
+              return (
+                <g key={uid} className="animate-pop" style={{ animationDelay: `${i * 450}ms`, transformBox: 'fill-box', transformOrigin: 'center' }}>
+                  <circle cx={at.x} cy={at.y} r="32" fill="#946539" stroke="#FFF5DF" strokeWidth="5" />
+                  <text x={at.x} y={at.y + 12} textAnchor="middle" fontSize="36" fontWeight="700" fill="#FFF5DF">
+                    {i + 1}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        )}
 
         {/* 반려 친구 (가구 위에 그린다) */}
         {pets && pets.length > 0 && <PetLayer pets={pets} layout={layout} />}
