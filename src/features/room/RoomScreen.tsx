@@ -58,6 +58,17 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
     play.place();
     await saveRoomPhoto(el, `my-room-${new Date().toISOString().slice(0, 10)}.png`);
   };
+  // 저녁·밤 조명 켜고 끄기 (이 화면에 있는 동안만 기억한다)
+  const [lightsOff, setLightsOff] = useState<ReadonlySet<string>>(() => new Set());
+  const [lightMsg, setLightMsg] = useState<'room.lightOn' | 'room.lightOff' | null>(null);
+  const toggleLight = (uid: string) => {
+    const next = new Set(lightsOff);
+    const off = !next.delete(uid);
+    if (off) next.add(uid);
+    setLightsOff(next);
+    setLightMsg(off ? 'room.lightOff' : 'room.lightOn');
+    play.place();
+  };
   const counting = Boolean(quiz && (quiz.solved || quiz.tried.length > 0)); // 한 번 답하면 같이 세어 본다
   const tipText = t(tip.key, { name: tip.nameKey ? tKey(tip.nameKey) : '', region: tip.regionKey ? tKey(tip.regionKey) : '' });
   return (
@@ -81,14 +92,20 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
             expression={quiz.solved ? 'happy' : quiz.tried.length > 0 ? 'cheer' : 'thinking'}
           />
         ) : (
-          <GuideBubble compact text={tipText} expression={tip.key === 'room.tips.firstGame' || tip.key.startsWith('room.tips.cozy') ? 'happy' : 'cheer'} />
+          <GuideBubble compact text={lightMsg ? t(lightMsg) : tipText} expression={lightMsg ? 'happy' : tip.key === 'room.tips.firstGame' || tip.key.startsWith('room.tips.cozy') ? 'happy' : 'cheer'} />
         )}
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 [@media(max-height:500px)]:flex-row">
         <section className="relative min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0 [@media(max-height:700px)]:min-h-[190px]">
           <div ref={roomRef} className="h-full w-full">
-            <RoomView layout={layout} pets={petsFor(game.stickers.length)} marks={counting ? quiz!.q.counted : undefined} />
+            <RoomView
+              layout={layout}
+              pets={petsFor(game.stickers.length)}
+              marks={counting ? quiz!.q.counted : undefined}
+              lightsOff={lightsOff}
+              onLightClick={quiz ? undefined : toggleLight}
+            />
           </div>
           {flash > 0 && <div key={flash} aria-hidden="true" className="pointer-events-none absolute inset-0 animate-flash rounded-3xl bg-white" />}
           {/* 방 사진 찍기 (그림 파일로 기기에 저장) */}

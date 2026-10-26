@@ -17,6 +17,9 @@ export const en = {
     back: 'Back',
   },
   room: {
+    light: '{name} light',
+    lightOn: 'The light is on.',
+    lightOff: 'The light is off. Good night!',
     photo: 'Take a photo of my room',
     quiz: {
       button: "Lulu's question",

@@ -174,3 +174,29 @@ test('방 사진 찍기: 꾸민 방을 그림 파일(PNG)로 내려받는다', a
   expect(bytes.readUInt32BE(20)).toBe(1440); // 높이 (640 + 80) × 2
   expect(bytes.length).toBeGreaterThan(50_000); // 빈 그림이 아니다
 });
+
+test('저녁·밤에는 조명을 눌러 끄고 켤 수 있다 (낮에는 누를 수 없다)', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.clock.setFixedTime(new Date(2026, 9, 26, 21, 0));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  const lamp = page.getByRole('button', { name: 'Mushroom Lamp light' });
+  await expect(lamp).toHaveAttribute('aria-pressed', 'true');
+  await lamp.click();
+  await expect(lamp).toHaveAttribute('aria-pressed', 'false');
+  await expect(page.locator('[data-glow="mushroomLamp-1"]')).toHaveCount(0);
+  await expect(guide(page)).toHaveText('The light is off. Good night!');
+  if (process.env.SHOT_DIR) await page.screenshot({ path: `${process.env.SHOT_DIR}/light-off.png` });
+  await lamp.press('Enter');
+  await expect(page.locator('[data-glow="mushroomLamp-1"]')).toHaveCount(1);
+  await expect(guide(page)).toHaveText('The light is on.');
+});
+
+test('낮에는 조명이 버튼이 아니다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.clock.setFixedTime(new Date(2026, 9, 26, 11, 0));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.getByRole('button', { name: 'Play' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Mushroom Lamp light' })).toHaveCount(0);
+});

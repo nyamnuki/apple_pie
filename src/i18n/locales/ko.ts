@@ -18,6 +18,9 @@ export const ko: Messages = {
     back: '뒤로',
   },
   room: {
+    light: '{name} 불빛',
+    lightOn: '불을 켰어요.',
+    lightOff: '불을 껐어요. 잘 자요!',
     photo: '내 방 사진 찍기',
     quiz: {
       button: '루루의 질문',

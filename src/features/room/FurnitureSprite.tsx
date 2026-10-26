@@ -35,13 +35,14 @@ interface Props {
   def: FurnitureDef;
   label: string; // 화면 읽기용 이름
   selected?: boolean;
+  pressed?: boolean; // 켜고 끄는 버튼일 때 (조명): 켜져 있는지
   shake?: number; // 값이 바뀔 때마다 살짝 흔든다 (돌릴 자리가 없을 때)
   celebrate?: number; // 값이 바뀔 때마다 바닥에서 둥근 빛이 퍼진다 (방금 놓았을 때)
   onClick?: () => void; // 없으면 누를 수 없는 가구 (보기 전용, 또는 바닥을 고르는 중)
 }
 
 // 방에 놓인 가구 하나
-export default function FurnitureSprite({ item, def, label, selected, shake = 0, celebrate = 0, onClick }: Props) {
+export default function FurnitureSprite({ item, def, label, selected, pressed, shake = 0, celebrate = 0, onClick }: Props) {
   const [w, d] = footprintSize(def, item.rotation);
   const c = footprintCorners(item.gx, item.gy, w, d);
 
@@ -59,7 +60,7 @@ export default function FurnitureSprite({ item, def, label, selected, shake = 0,
       role={interactive ? 'button' : undefined}
       tabIndex={interactive ? 0 : undefined}
       aria-label={interactive ? label : undefined}
-      aria-pressed={interactive ? Boolean(selected) : undefined}
+      aria-pressed={interactive ? (pressed ?? Boolean(selected)) : undefined}
       onClick={onClick}
       onKeyDown={interactive ? onKeyDown : undefined}
       style={{ cursor: interactive ? 'pointer' : undefined, pointerEvents: interactive ? 'auto' : 'none' }}

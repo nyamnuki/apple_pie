@@ -31,6 +31,8 @@ interface Props {
   shake?: { uid: string; n: number } | null; // 이 가구를 살짝 흔든다 (n 이 바뀔 때마다)
   celebrate?: { uid: string; n: number } | null; // 방금 놓은 가구 (n 이 바뀔 때마다 빛이 퍼진다)
   pets?: PetDef[]; // 방에서 돌아다니는 친구 (내 방 화면에서만)
+  lightsOff?: ReadonlySet<string>; // 저녁·밤에 끈 조명 (uid)
+  onLightClick?: (uid: string) => void; // 저녁·밤에 조명을 누르면 켜고 끄기 (내 방 화면에서만)
   marks?: string[]; // 루루의 질문: 센 물건 uid 순서대로 1, 2, 3… 번호를 붙인다
 }
 
@@ -55,13 +57,17 @@ const ROOM_OUTLINE = [
   lift(toScreen(GRID, 0), WALL_H),
 ];
 
-export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets, marks }: Props) {
+export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets, marks, lightsOff, onLightClick }: Props) {
   const { t, tKey } = useI18n();
   const time = useTimeOfDay();
   const [season] = useState(() => seasonOf(new Date()));
   const shade = SHADE_OF[time];
   const picking = Boolean(validSpots) || Boolean(validWallSpots);
   const items = sortForDrawing(layout.placed);
+  // 저녁·밤에만 조명을 켜고 끌 수 있다 (낮에는 불빛이 없다)
+  const lightToggle = shade && onLightClick ? onLightClick : undefined;
+  const isLight = (furnitureId: string) => getFurniture(furnitureId)?.category === 'light';
+  const hasToggle = Boolean(lightToggle) && layout.placed.some((p) => isLight(p.furnitureId));
   const names = [...layout.wallItems, ...items].map((i) => getFurniture(i.furnitureId)).filter(Boolean).map((d) => tKey(d!.nameKey));
 
   const tiles = onTileClick
@@ -94,7 +100,7 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
         preserveAspectRatio="xMidYMid meet"
         className="absolute inset-0 h-full w-full"
         // 안에 누를 수 있는 것(칸·친구)이 있으면 group, 보기만 하는 방이면 그림 하나(img)
-        role={onTileClick || (pets && pets.length > 0) ? 'group' : 'img'}
+        role={onTileClick || hasToggle || (pets && pets.length > 0) ? 'group' : 'img'}
         onPointerLeave={() => onTileHover?.(null)}
         aria-label={`${t('room.viewLabel')}: ${names.join(', ')}`}
       >
@@ -177,6 +183,10 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
         {items.map((item) => {
           const def = getFurniture(item.furnitureId);
           if (!def) return null;
+          if (lightToggle && def.category === 'light')
+            return (
+              <FurnitureSprite key={item.uid} item={item} def={def} label={t('room.light', { name: tKey(def.nameKey) })} pressed={!lightsOff?.has(item.uid)} onClick={() => lightToggle(item.uid)} />
+            );
           return (
             <FurnitureSprite
               key={item.uid}
@@ -204,7 +214,7 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
             <polygon points={toPoints(ROOM_OUTLINE)} fill={shade.color} opacity={shade.opacity} style={{ mixBlendMode: 'multiply' }} />
             {layout.placed.map((p) => {
               const def = getFurniture(p.furnitureId);
-              if (def?.category !== 'light') return null;
+              if (def?.category !== 'light' || lightsOff?.has(p.uid)) return null;
               const [w, d] = footprintSize(def, p.rotation);
               const c = footprintCorners(p.gx, p.gy, w, d);
               return <circle key={p.uid} data-glow={p.uid} cx={c.top.x} cy={c.top.y + TILE_H / 2 - def.placeholder.height * 0.8} r={time === 'night' ? 120 : 80} fill="url(#lamp-glow)" style={{ mixBlendMode: 'screen' }} />;
