@@ -18,6 +18,7 @@ export const en = {
     back: 'Back',
   },
   room: {
+    photo: 'Take a photo of my room',
     quiz: {
       button: "Lulu's question",
       floor: 'How many things are standing on the floor? (Rugs don’t count.)',

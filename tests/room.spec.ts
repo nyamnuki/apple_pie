@@ -152,3 +152,16 @@ test('계절 장식: 가을에는 낙엽, 겨울에는 눈', async ({ page, cont
   await page.getByRole('button', { name: 'Start' }).click();
   await expect(page.locator('[data-season="winter"]')).toHaveCount(1);
 });
+
+test('방 사진 찍기: 꾸민 방을 그림 파일(PNG)로 내려받는다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Take a photo of my room' }).click()]);
+  expect(download.suggestedFilename()).toMatch(/^my-room-\d{4}-\d{2}-\d{2}\.png$/);
+  const bytes = Buffer.concat(await (await download.createReadStream()).toArray());
+  expect(bytes.subarray(1, 4).toString()).toBe('PNG');
+  expect(bytes.readUInt32BE(16)).toBe(1680); // 너비 (760 + 여백 80) × 2
+  expect(bytes.readUInt32BE(20)).toBe(1440); // 높이 (640 + 80) × 2
+  expect(bytes.length).toBeGreaterThan(50_000); // 빈 그림이 아니다
+});

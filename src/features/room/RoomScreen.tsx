@@ -1,4 +1,4 @@
-import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart, Check, Question } from '../../components/icons';
+import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart, Check, Question, Camera } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -8,8 +8,9 @@ import GuideBubble from '../../components/GuideBubble';
 import { useGame } from '../../app/GameProvider';
 import { roomTip } from './roomTip';
 import { roomQuiz, type RoomQuiz } from './roomQuiz';
+import { saveRoomPhoto } from '../photo/roomPhoto';
 import ChoiceButtons from '../math/components/ChoiceButtons';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useSound } from '../../services/audio/SoundProvider';
 import { petsFor } from '../pets/pets';
 import { useI18n } from '../../i18n';
@@ -47,6 +48,16 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
     else play.tryAgain();
     setQuiz({ ...quiz, solved: right || quiz.solved, tried: right || quiz.tried.includes(n) ? quiz.tried : [...quiz.tried, n] });
   };
+  // 방 사진: 화면의 방 그림을 그림 파일로 저장. 찰칵 소리와 함께 잠깐 하얗게 번쩍
+  const roomRef = useRef<HTMLDivElement>(null);
+  const [flash, setFlash] = useState(0);
+  const takePhoto = async () => {
+    const el = roomRef.current?.firstElementChild as HTMLElement | null;
+    if (!el) return;
+    setFlash((n) => n + 1);
+    play.place();
+    await saveRoomPhoto(el, `my-room-${new Date().toISOString().slice(0, 10)}.png`);
+  };
   const counting = Boolean(quiz && (quiz.solved || quiz.tried.length > 0)); // 한 번 답하면 같이 세어 본다
   const tipText = t(tip.key, { name: tip.nameKey ? tKey(tip.nameKey) : '', region: tip.regionKey ? tKey(tip.regionKey) : '' });
   return (
@@ -76,7 +87,16 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
 
       <div className="flex min-h-0 flex-1 flex-col gap-4 [@media(max-height:500px)]:flex-row">
         <section className="relative min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0 [@media(max-height:700px)]:min-h-[190px]">
-          <RoomView layout={layout} pets={petsFor(game.stickers.length)} marks={counting ? quiz!.q.counted : undefined} />
+          <div ref={roomRef} className="h-full w-full">
+            <RoomView layout={layout} pets={petsFor(game.stickers.length)} marks={counting ? quiz!.q.counted : undefined} />
+          </div>
+          {flash > 0 && <div key={flash} aria-hidden="true" className="pointer-events-none absolute inset-0 animate-flash rounded-3xl bg-white" />}
+          {/* 방 사진 찍기 (그림 파일로 기기에 저장) */}
+          {!quiz && (
+            <BigButton variant="soft" size="icon" className="absolute right-0 top-0" aria-label={t('room.photo')} onClick={takePhoto}>
+              <Camera size={28} aria-hidden />
+            </BigButton>
+          )}
           {/* 루루의 질문 열기 (방에 셀 물건이 있을 때) */}
           {!quiz && roomQuiz(layout, asked) && (
             <BigButton variant="soft" size="icon" className="absolute left-0 top-0" aria-label={t('room.quiz.button')} onClick={openQuiz}>

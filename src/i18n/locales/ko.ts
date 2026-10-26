@@ -19,6 +19,7 @@ export const ko: Messages = {
     back: '뒤로',
   },
   room: {
+    photo: '내 방 사진 찍기',
     quiz: {
       button: '루루의 질문',
       floor: '바닥에 서 있는 물건은 몇 개일까요? (러그는 빼고요)',

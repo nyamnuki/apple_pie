@@ -37,6 +37,8 @@ export default {
         ring: { '0%': { transform: 'scale(0.7)', opacity: '0.9' }, '100%': { transform: 'scale(1.35)', opacity: '0' } },
         // 캐릭터가 기쁘거나 놀랄 때 한 번 폴짝
         hop: { '0%, 100%': { transform: 'translateY(0)' }, '40%': { transform: 'translateY(-10px)' } },
+        // 사진 찍을 때 잠깐 하얗게 번쩍
+        flash: { '0%': { opacity: '0.85' }, '100%': { opacity: '0' } },
       },
       animation: {
         pop: 'pop 0.25s ease-out both',
@@ -46,6 +48,7 @@ export default {
         shake: 'shake 0.4s ease-in-out',
         ring: 'ring 0.6s ease-out both',
         hop: 'hop 0.45s ease-out',
+        flash: 'flash 0.5s ease-out both',
       },
       boxShadow: {
         // 눌리는 느낌의 입체 버튼 그림자
