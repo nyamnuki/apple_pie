@@ -2,11 +2,12 @@ import { FURNITURE, getFurniture } from '../../data/furniture/furniture';
 import { RESOURCES } from '../../data/resources/resources';
 import { LESSONS } from '../../data/math/lessons';
 import { getSticker } from '../../data/stickers/stickers';
-import { createInitialGameState, type GameState } from '../../app/gameState';
+import { PLAY_DAYS_KEPT, createInitialGameState, type GameState } from '../../app/gameState';
 import { DEFAULT_LAYOUT } from '../../features/room/roomState';
 import { canPlace, canPlaceWall } from '../../features/room/placement';
 import { isTint } from '../../features/room/tints';
 import { canWear } from '../../features/outfits/outfits';
+import { DATE_KEY } from '../../utils/dates';
 import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';
 import type { LessonId } from '../../types/math';
@@ -66,7 +67,15 @@ export function sanitizeGame(raw: unknown): GameState {
     scarf: canWear('scarf', rawOutfit.scarf, stickers.length) ? rawOutfit.scarf : null,
   };
 
-  return { resources, furniture, completedLessons, lessonStats, stickers, dailyDone, outfit };
+  // 날짜별 끝낸 놀이 수 (예전 저장본에는 없다): 날짜 글자와 1 이상 수만, 최근 60일
+  const rawDays = isObject(raw.playDays) ? raw.playDays : {};
+  const playDays: Record<string, number> = {};
+  for (const day of Object.keys(rawDays).filter((d) => DATE_KEY.test(d)).sort().slice(-PLAY_DAYS_KEPT)) {
+    const n = toCount(rawDays[day]);
+    if (n > 0) playDays[day] = n;
+  }
+
+  return { resources, furniture, completedLessons, lessonStats, stickers, dailyDone, outfit, playDays };
 }
 
 export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {

@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
-import { seed, makeSave, readSave } from './helpers';
+import { seed, makeSave, readSave, playCountingApples, goToRegion } from './helpers';
 
 // 어른 확인(곱셈 2문제) → 어른 설정 → 진행 상황 지우기
 async function answer(page: Page, correct: boolean, submit: string) {
@@ -148,4 +148,25 @@ test('홈 화면에 추가하기: 기기에 맞는 안내가 먼저, 다른 기�
   await expect(section.getByRole('listitem')).toHaveCount(3);
   await expect(section.getByRole('listitem').nth(0)).toHaveText('Open this page in Chrome.');
   await context.close();
+});
+
+test('이번 주 놀이: 놀이를 끝내면 오늘 막대가 1 늘어난다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await playCountingApples(page);
+  await page.getByRole('button', { name: 'More games' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('button', { name: 'For grown-ups' }).click();
+  await answer(page, true, 'Check answer');
+  await answer(page, true, 'Check answer');
+  const week = page.getByRole('region', { name: 'This week' });
+  await expect(week).toContainText('Games finished in the last 7 days: 1');
+  await expect(week.getByRole('listitem')).toHaveCount(7);
+  await expect(week.getByRole('listitem').last()).toHaveAccessibleName('Today: 1');
 });

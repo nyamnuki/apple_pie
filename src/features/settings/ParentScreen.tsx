@@ -10,6 +10,7 @@ import { REGIONS } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
 import BackupSection from './BackupSection';
 import InstallSection from './InstallSection';
+import WeekChart from './WeekChart';
 import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
 
@@ -54,6 +55,8 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
             <li>{t('parent.furnitureOwned', { n: formatNumber(furnitureCount) })}</li>
           </ul>
         </section>
+
+        <WeekChart className={card} />
 
         {/* 놀이별 기록: 몇 번 했는지, 한 번에 맞혔는지, 힌트를 얼마나 봤는지 */}
         <section aria-labelledby="lessons-h" className={card}>

@@ -2,6 +2,7 @@ import { FURNITURE, getFurniture } from '../data/furniture/furniture';
 import { canAfford, lockedRegionOf, bundleEntries } from '../utils/bundles';
 import { nextSticker } from '../data/stickers/stickers';
 import { NO_OUTFIT, canWear, type Outfit, type OutfitSlot } from '../features/outfits/outfits';
+import { dateKey } from '../utils/dates';
 import type { LessonId, MathLesson } from '../types/math';
 import type { ResourceBundle } from '../types/resources';
 
@@ -23,6 +24,7 @@ export interface GameState {
   stickers: string[]; // 모은 스티커 id (받은 순서)
   dailyDone: string[]; // 오늘의 문제를 푼 날짜 ('2026-10-26', 기기 날짜)
   outfit: Outfit; // 루루가 입은 모자·스카프 (스티커로 열림)
+  playDays: Record<string, number>; // 날짜('2026-10-26', 기기 날짜)별 끝낸 놀이 수 (최근 60일, 어른 설정 '이번 주 놀이')
 }
 
 // 처음 상태: 재료 없음, '처음부터 가진' 가구 1개씩
@@ -35,6 +37,7 @@ export function createInitialGameState(): GameState {
     stickers: [],
     dailyDone: [],
     outfit: NO_OUTFIT,
+    playDays: {},
   };
 }
 
@@ -54,6 +57,15 @@ function addBundle(have: ResourceBundle, add: ResourceBundle, sign = 1): Resourc
 function addPlay(prev: LessonStats | undefined, wrongTries: number, at: string): LessonStats {
   const s = prev ?? { plays: 0, firstTry: 0, hints: 0, lastPlayed: at };
   return { plays: s.plays + 1, firstTry: s.firstTry + (wrongTries === 0 ? 1 : 0), hints: s.hints + Math.min(Math.max(wrongTries, 0), 3), lastPlayed: at };
+}
+
+// 그날 끝낸 놀이 수 +1 (오래된 날은 지워 최근 60일만 남긴다)
+export const PLAY_DAYS_KEPT = 60;
+function addDay(days: Record<string, number>, day: string): Record<string, number> {
+  const next = { ...days, [day]: (days[day] ?? 0) + 1 };
+  const keys = Object.keys(next).sort();
+  for (const k of keys.slice(0, Math.max(0, keys.length - PLAY_DAYS_KEPT))) delete next[k];
+  return next;
 }
 
 export type GameAction =
@@ -86,6 +98,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         completedLessons: state.completedLessons.includes(action.lesson.id) ? state.completedLessons : [...state.completedLessons, action.lesson.id],
         lessonStats: { ...state.lessonStats, [action.lesson.id]: addPlay(state.lessonStats[action.lesson.id], action.wrongTries, action.at) },
         stickers: sticker ? [...state.stickers, sticker] : state.stickers,
+        playDays: addDay(state.playDays, dateKey(new Date(action.at))),
       };
     }
     case 'craft': {

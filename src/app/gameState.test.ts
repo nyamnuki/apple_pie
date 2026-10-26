@@ -83,6 +83,16 @@ describe('놀이 기록 (부모 화면)', () => {
     expect(s.lessonStats.addition1).toBeUndefined();
   });
 
+  it('날짜별 끝낸 놀이 수 (기기 날짜), 최근 60일만', () => {
+    let s = gameReducer(createInitialGameState(), finish(counting, 0, new Date(2026, 9, 26, 9).toISOString()));
+    s = gameReducer(s, finish(counting, 0, new Date(2026, 9, 26, 20).toISOString()));
+    s = gameReducer(s, finish(counting, 0, new Date(2026, 9, 27, 8).toISOString()));
+    expect(s.playDays).toEqual({ '2026-10-26': 2, '2026-10-27': 1 });
+    for (let d = 1; d <= 70; d++) s = gameReducer(s, finish(counting, 0, new Date(2027, 0, d, 12).toISOString()));
+    expect(Object.keys(s.playDays)).toHaveLength(60);
+    expect(s.playDays['2026-10-26']).toBeUndefined();
+  });
+
   it('지우기 하면 기록도 사라진다', () => {
     const s = gameReducer(gameReducer(createInitialGameState(), finish(counting)), { type: 'reset' });
     expect(s.lessonStats).toEqual({});
