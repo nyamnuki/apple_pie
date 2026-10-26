@@ -4,6 +4,7 @@ import { startSpots, step, type PetDef, type Spot } from './pets';
 import { footprintCorners, TILE_H } from '../room/iso';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
+import { canSpeak, speak } from '../../services/speech/speech';
 import type { RoomLayout } from '../../types/furniture';
 
 const SIZE = 64; // 방 좌표에서 친구 그림 크기
@@ -12,8 +13,9 @@ const WALK_MS = 3200; // 몇 초마다 한 친구가 한 칸 걷는지
 // 방의 반려 친구들: 빈 칸을 천천히 돌아다니고, 누르면 폴짝 뛰며 하트를 보여준다.
 // 움직임 줄이기 설정이면 돌아다니지 않는다. 앱이 보이지 않을 때도 멈춘다.
 export default function PetLayer({ pets, layout }: { pets: PetDef[]; layout: RoomLayout }) {
-  const { t, tKey } = useI18n();
-  const { play } = useSound();
+  const { t, tKey, locale } = useI18n();
+  const { play, voiceOn } = useSound();
+  const [speakable] = useState(() => canSpeak(locale));
   const [spots, setSpots] = useState<Spot[]>(() => startSpots(layout, pets.length));
   const [hop, setHop] = useState<{ i: number; n: number } | null>(null);
   const layoutRef = useRef(layout);
@@ -40,9 +42,11 @@ export default function PetLayer({ pets, layout }: { pets: PetDef[]; layout: Roo
     return () => window.clearInterval(timer);
   }, [still, pets.length]);
 
+  // 누르면 폴짝 + 소리, 자동 읽기를 켰으면 '안녕, ○○!' 하고 이름을 불러 준다
   const sayHi = (i: number) => {
     setHop((h) => ({ i, n: (h?.n ?? 0) + 1 }));
     play.correct();
+    if (voiceOn && speakable) speak(t('pets.hello', { name: tKey(pets[i].nameKey) }), locale);
   };
 
   return (

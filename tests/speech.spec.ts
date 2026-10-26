@@ -120,3 +120,13 @@ test('이름 듣기: 놀이 고르기 카드와 공방 가구 이름을 소리�
   await page.getByRole('listitem').filter({ hasText: 'Forest Bookshelf' }).getByRole('button', { name: 'Hear the name' }).click();
   await expect.poll(async () => (await spoken(page)).at(-1)?.text).toBe('Forest Bookshelf');
 });
+
+test('방 친구를 누르면 이름을 불러 준다', async ({ page, context }) => {
+  await mockSpeech(context);
+  const save = makeSave();
+  await seed(context, { save: { ...save, game: { ...save.game, stickers: ['apple', 'acorn', 'flower'] } }, locale: 'ko' });
+  await page.goto('/');
+  await page.getByRole('button', { name: '시작하기' }).click();
+  await page.getByRole('button', { name: /아기 오리 두두/ }).click();
+  await expect.poll(async () => (await spoken(page)).at(-1)).toEqual({ text: '아기 오리 두두, 안녕!', lang: 'ko-KR' });
+});

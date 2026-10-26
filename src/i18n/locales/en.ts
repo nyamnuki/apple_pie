@@ -561,6 +561,7 @@ export const en = {
     owlet: 'Hoo the owlet',
     turtle: 'Pebble the baby turtle',
     sayHi: '{name}: tap to say hi',
+    hello: 'Hi, {name}!',
   },
   reward: {
     nextGame: 'Next: {title}',

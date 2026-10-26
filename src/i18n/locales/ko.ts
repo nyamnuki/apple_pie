@@ -563,6 +563,7 @@ export const ko: Messages = {
     owlet: '아기 부엉이 후',
     turtle: '아기 거북 콩콩',
     sayHi: '{name}: 눌러서 인사하기',
+    hello: '{name}, 안녕!',
   },
   reward: {
     nextGame: '다음 놀이: {title}',
