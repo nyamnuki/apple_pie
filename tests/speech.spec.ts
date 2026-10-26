@@ -63,3 +63,32 @@ test('음성이 없는 기기에서는 스피커 버튼이 보이지 않는다',
   await expect(page.getByText('Look at the apples', { exact: false })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Read it aloud' })).toHaveCount(0);
 });
+
+test('스티커 크게 보기: 이름을 읽어 주고, 화살표로 넘기고, Esc 로 닫으면 그 스티커로 돌아간다', async ({ page, context }) => {
+  await mockSpeech(context);
+  const save = makeSave();
+  await seed(context, { save: { ...save, game: { ...save.game, stickers: ['apple', 'acorn', 'moon'] } } });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Sticker Book' }).click();
+  await page.getByRole('button', { name: 'Look closely: Acorn' }).click();
+
+  const dialog = page.getByRole('dialog', { name: 'Acorn' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText('From Acorn Village')).toBeVisible();
+  await expect(dialog.getByRole('button', { name: 'Close' })).toBeFocused();
+  await expect.poll(async () => (await spoken(page)).at(-1)).toEqual({ text: 'Acorn', lang: 'en-US' });
+
+  await dialog.getByRole('button', { name: 'Next sticker' }).click();
+  await expect(page.getByRole('dialog', { name: 'Moon' })).toBeVisible();
+  await expect.poll(async () => (await spoken(page)).at(-1)?.text).toBe('Moon');
+  await page.keyboard.press('ArrowRight'); // 끝에서 처음으로
+  await expect(page.getByRole('dialog', { name: 'Apple' })).toBeVisible();
+  const before = (await spoken(page)).length;
+  await page.getByRole('button', { name: 'Hear the name' }).click();
+  await expect.poll(async () => (await spoken(page)).length).toBe(before + 1);
+
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Look closely: Apple' })).toBeFocused();
+});

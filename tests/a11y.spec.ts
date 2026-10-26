@@ -16,15 +16,14 @@ async function check(page: Page, where: string) {
 for (const locale of ['en', 'ko'] as const) {
   test(`접근성 검사 (${locale})`, async ({ page, context }) => {
     test.setTimeout(120_000);
-    await seed(context, {
-      save: makeSave({
-        resources: { acorn: 9, apple: 9 },
-        furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 },
-        completedLessons: OPEN,
-        lessonStats: { counting1: { plays: 2, firstTry: 1, hints: 1, lastPlayed: '2026-10-26T09:00:00Z' } },
-      }),
-      locale,
+    const save = makeSave({
+      resources: { acorn: 9, apple: 9 },
+      furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1 },
+      completedLessons: OPEN,
+      lessonStats: { counting1: { plays: 2, firstTry: 1, hints: 1, lastPlayed: '2026-10-26T09:00:00Z' } },
     });
+    // 스티커 4장: 옷장에 열린 옷과 잠긴 옷이 같이 있다
+    await seed(context, { save: { ...save, game: { ...save.game, stickers: ['apple', 'acorn', 'flower', 'ladybug'] } }, locale });
     const nav = (i: number) => page.locator('nav button').nth(i);
     const back = () => page.locator('header button').first().click();
     await page.goto('/');
@@ -47,6 +46,9 @@ for (const locale of ['en', 'ko'] as const) {
     await back();
     await nav(4).click();
     await check(page, 'stickers');
+    await page.locator('[data-sticker="apple"] button').click();
+    await check(page, 'sticker-closeup');
+    await page.keyboard.press('Escape');
     await back();
     await page.locator('header button').nth(1).click();
     await check(page, 'settings');

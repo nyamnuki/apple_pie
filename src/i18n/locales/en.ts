@@ -459,6 +459,12 @@ export const en = {
     got: 'New sticker: {name}!',
     petGoal: 'Collect {n} more and a new friend will visit your room!',
     stamps: 'Puzzle stamps: {n}',
+    look: 'Look closely: {name}',
+    from: 'From {region}',
+    hear: 'Hear the name',
+    prev: 'Previous sticker',
+    next: 'Next sticker',
+    close: 'Close',
   },
   breaks: {
     title: 'Time for a little rest!',

@@ -461,6 +461,12 @@ export const ko: Messages = {
     got: '새 스티커: {name}!',
     petGoal: '스티커를 {n}장 더 모으면 새 친구가 방에 놀러 와요!',
     stamps: '오늘의 문제 도장: {n}개',
+    look: '크게 보기: {name}',
+    from: '{region}에서 받았어요',
+    hear: '이름 듣기',
+    prev: '앞 스티커',
+    next: '다음 스티커',
+    close: '닫기',
   },
   breaks: {
     title: '잠깐 쉬어 가요!',

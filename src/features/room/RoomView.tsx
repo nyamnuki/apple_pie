@@ -93,7 +93,8 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         preserveAspectRatio="xMidYMid meet"
         className="absolute inset-0 h-full w-full"
-        role={onTileClick ? 'group' : 'img'}
+        // 안에 누를 수 있는 것(칸·친구)이 있으면 group, 보기만 하는 방이면 그림 하나(img)
+        role={onTileClick || (pets && pets.length > 0) ? 'group' : 'img'}
         onPointerLeave={() => onTileHover?.(null)}
         aria-label={`${t('room.viewLabel')}: ${names.join(', ')}`}
       >
