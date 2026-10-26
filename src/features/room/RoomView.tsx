@@ -2,10 +2,11 @@ import type { KeyboardEvent } from 'react';
 import RoomBackground from './RoomBackground';
 import FurnitureSprite, { FurnitureGhost } from './FurnitureSprite';
 import WallItemSprite, { WallGhost } from './WallItemSprite';
-import { GRID, VIEW_W, VIEW_H, TILE_H, WALL_BANDS, footprintCorners, toPoints, wallPoint } from './iso';
+import { GRID, VIEW_W, VIEW_H, TILE_H, WALL_H, WALL_BANDS, footprintCorners, lift, toPoints, toScreen, wallPoint } from './iso';
 import { footprintSize, sortForDrawing } from './placement';
 import { getFurniture } from '../../data/furniture/furniture';
 import PetLayer from '../pets/PetLayer';
+import { useTimeOfDay, type TimeOfDay } from './timeOfDay';
 import type { PetDef } from '../pets/pets';
 import { useI18n } from '../../i18n';
 import type { FurnitureDef, RoomLayout, WallSide } from '../../types/furniture';
@@ -38,8 +39,26 @@ export const wallKey = (wall: WallSide, slot: number) => `${wall}:${slot}`;
 const WALLS: WallSide[] = ['left', 'right'];
 
 // 아이소메트릭 방 전체 그림: 배경 → 바닥 칸(누르기용) → 가구 → '+' 표시 순서로 겹쳐 그린다.
+// 저녁·밤의 방 전체 빛깔 (가구 위에 옅게 덮는다)
+const SHADE_OF: Record<TimeOfDay, { color: string; opacity: number } | null> = {
+  day: null,
+  evening: { color: '#F5A97A', opacity: 0.1 },
+  night: { color: '#2E3558', opacity: 0.24 },
+};
+// 방 전체 윤곽: 뒤 모서리 위 → 왼쪽 벽 위 → 왼쪽 바닥 끝(두께 포함) → 앞 → 오른쪽 바닥 끝 → 오른쪽 벽 위
+const ROOM_OUTLINE = [
+  lift(toScreen(0, 0), WALL_H),
+  lift(toScreen(0, GRID), WALL_H),
+  lift(toScreen(0, GRID), -16),
+  lift(toScreen(GRID, GRID), -16),
+  lift(toScreen(GRID, 0), -16),
+  lift(toScreen(GRID, 0), WALL_H),
+];
+
 export default function RoomView({ layout, selectedUid, validSpots, onTileClick, onFurnitureClick, validWallSpots, wallBand = 'middle', onWallClick, onTileHover, ghost, wallGhost, shake, celebrate, pets, marks }: Props) {
   const { t, tKey } = useI18n();
+  const time = useTimeOfDay();
+  const shade = SHADE_OF[time];
   const picking = Boolean(validSpots) || Boolean(validWallSpots);
   const items = sortForDrawing(layout.placed);
   const names = [...layout.wallItems, ...items].map((i) => getFurniture(i.furnitureId)).filter(Boolean).map((d) => tKey(d!.nameKey));
@@ -67,7 +86,7 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
     // 배경까지 다시 그리지 않게 한다. 두 그림은 같은 좌표·같은 크기로 정확히 겹친다.
     <div className="relative h-full w-full">
       <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" aria-hidden="true">
-        <RoomBackground wallpaperId={layout.wallpaperId} />
+        <RoomBackground wallpaperId={layout.wallpaperId} time={time} />
       </svg>
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
@@ -170,6 +189,26 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
             />
           );
         })}
+
+        {/* 저녁·밤: 방을 옅게 물들이고, 조명 가구 둘레에 따뜻한 빛 (누르기에는 영향 없음) */}
+        {shade && (
+          <g pointerEvents="none" aria-hidden="true" data-time={time}>
+            <defs>
+              <radialGradient id="lamp-glow">
+                <stop offset="0" stopColor="#FFE9B0" stopOpacity="0.75" />
+                <stop offset="1" stopColor="#FFE9B0" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+            <polygon points={toPoints(ROOM_OUTLINE)} fill={shade.color} opacity={shade.opacity} style={{ mixBlendMode: 'multiply' }} />
+            {layout.placed.map((p) => {
+              const def = getFurniture(p.furnitureId);
+              if (def?.category !== 'light') return null;
+              const [w, d] = footprintSize(def, p.rotation);
+              const c = footprintCorners(p.gx, p.gy, w, d);
+              return <circle key={p.uid} data-glow={p.uid} cx={c.top.x} cy={c.top.y + TILE_H / 2 - def.placeholder.height * 0.8} r={time === 'night' ? 120 : 80} fill="url(#lamp-glow)" style={{ mixBlendMode: 'screen' }} />;
+            })}
+          </g>
+        )}
 
         {/* 루루의 질문: 센 물건 위에 번호 (하나씩 차례로 나타난다) */}
         {marks && marks.length > 0 && (

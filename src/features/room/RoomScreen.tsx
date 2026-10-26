@@ -1,4 +1,4 @@
-import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart, Check, Info } from '../../components/icons';
+import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart, Check, Question } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -80,7 +80,7 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
           {/* 루루의 질문 열기 (방에 셀 물건이 있을 때) */}
           {!quiz && roomQuiz(layout, asked) && (
             <BigButton variant="soft" size="icon" className="absolute left-0 top-0" aria-label={t('room.quiz.button')} onClick={openQuiz}>
-              <Info size={28} aria-hidden />
+              <Question size={28} aria-hidden />
             </BigButton>
           )}
         </section>

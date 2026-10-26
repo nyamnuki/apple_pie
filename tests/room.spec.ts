@@ -125,3 +125,18 @@ test('루루의 질문: 방의 물건을 세고, 답하면 번호를 붙여 같�
   await page.getByRole('button', { name: "Lulu's question" }).click();
   await expect(guide(page)).toHaveText('How many lights are in our room?');
 });
+
+test('밤에는 창밖에 달과 별, 방이 어두워지고 조명 둘레가 밝다 / 낮에는 해', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.clock.setFixedTime(new Date(2026, 9, 26, 21, 0));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.locator('[data-sky="night"]')).toHaveCount(1);
+  await expect(page.locator('[data-time="night"]')).toHaveCount(1);
+  await expect(page.locator('[data-glow="mushroomLamp-1"]')).toHaveCount(1); // 버섯 조명
+  await page.clock.setFixedTime(new Date(2026, 9, 26, 10, 0));
+  await page.reload();
+  await page.getByRole('button', { name: 'Start' }).click();
+  await expect(page.locator('[data-sky="day"]')).toHaveCount(1);
+  await expect(page.locator('[data-time]')).toHaveCount(0);
+});

@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import type { TimeOfDay } from './timeOfDay';
 import { GRID, WALL_H, VIEW_W, VIEW_H, toScreen, toPoints, lift } from './iso';
 import { assetUrl, BACKGROUNDS } from '../../data/assets/assetRegistry';
 import { getFurniture } from '../../data/furniture/furniture';
@@ -16,7 +17,14 @@ const SLAB = 16;
 // 방의 바닥과 벽 (수채화 동화책 스타일). 배경 그림(room-base.png)이 있으면 그 그림을, 없으면 아래 그림을 그린다.
 // 그리는 순서: 바닥·벽 → 벽지 → 창문·덩굴·가랜드·걸레받이 (벽지를 붙여도 창문이 또렷하게 보이도록)
 
-export default memo(function RoomBackground({ wallpaperId }: { wallpaperId: string | null }) {
+// 창밖 하늘 색 (위 → 아래)
+const SKY: Record<TimeOfDay, [string, string, string]> = {
+  day: ['#B7DCE7', '#E1EBCF', '#9BBE8B'],
+  evening: ['#F2B48F', '#F3C6D2', '#B9A6C9'],
+  night: ['#3F4A78', '#5E5D92', '#3E5A55'],
+};
+
+export default memo(function RoomBackground({ wallpaperId, time = 'day' }: { wallpaperId: string | null; time?: TimeOfDay }) {
   const baseUrl = assetUrl(BACKGROUNDS.roomBase);
   const baseStatus = useAssetStatus(baseUrl);
   const wallpaper = wallpaperId ? getFurniture(wallpaperId) : undefined;
@@ -49,9 +57,9 @@ export default memo(function RoomBackground({ wallpaperId }: { wallpaperId: stri
           <stop offset="100%" stopColor="#D9B184" />
         </linearGradient>
         <linearGradient id="storybook-window-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#B7DCE7" />
-          <stop offset="65%" stopColor="#E1EBCF" />
-          <stop offset="100%" stopColor="#9BBE8B" />
+          <stop offset="0%" stopColor={SKY[time][0]} />
+          <stop offset="65%" stopColor={SKY[time][1]} />
+          <stop offset="100%" stopColor={SKY[time][2]} />
         </linearGradient>
         {wallpaperUrl && (
           <pattern id="wallpaper-image" patternUnits="userSpaceOnUse" width="120" height="120">
@@ -129,8 +137,8 @@ export default memo(function RoomBackground({ wallpaperId }: { wallpaperId: stri
               <polygon points={toPoints(RIGHT_WALL)} fill="url(#storybook-sprigs)" />
             </g>
           )}
-          {/* 창문에서 바닥으로 비치는 햇빛 */}
-          <polygon points={toPoints([toScreen(2.2, 0), toScreen(3.8, 0), toScreen(3.2, 2.6), toScreen(1.6, 2.6)])} fill="url(#storybook-sun)" />
+          {/* 창문에서 바닥으로 비치는 햇빛 (밤에는 없음) */}
+          <polygon opacity={time === 'night' ? 0 : time === 'evening' ? 0.6 : 1} points={toPoints([toScreen(2.2, 0), toScreen(3.8, 0), toScreen(3.2, 2.6), toScreen(1.6, 2.6)])} fill="url(#storybook-sun)" />
         </g>
       )}
 
@@ -147,7 +155,18 @@ export default memo(function RoomBackground({ wallpaperId }: { wallpaperId: stri
           {/* Window looking into a layered, leafy forest */}
             <g clipPath="url(#storybook-window-clip)">
               <polygon points={toPoints(WINDOW)} fill="url(#storybook-window-sky)" />
-              <circle cx={lift(toScreen(3.43, 0), 140).x} cy={lift(toScreen(3.43, 0), 140).y} r="13" fill="#FFF0B8" />
+              {/* 낮·저녁: 해, 밤: 초승달과 별 */}
+              {time === 'night' ? (
+                <g data-sky="night">
+                  <circle cx={lift(toScreen(3.43, 0), 140).x} cy={lift(toScreen(3.43, 0), 140).y} r="11" fill="#F4D98C" />
+                  <circle cx={lift(toScreen(3.43, 0), 140).x + 5} cy={lift(toScreen(3.43, 0), 140).y - 4} r="10" fill={SKY.night[0]} />
+                  {[[2.45, 160], [2.8, 150], [3.15, 165], [3.65, 158]].map(([a, z]) => (
+                    <circle key={a} cx={lift(toScreen(a, 0), z).x} cy={lift(toScreen(a, 0), z).y} r="1.8" fill="#FFF5DF" />
+                  ))}
+                </g>
+              ) : (
+                <circle data-sky={time} cx={lift(toScreen(3.43, 0), time === 'evening' ? 118 : 140).x} cy={lift(toScreen(3.43, 0), time === 'evening' ? 118 : 140).y} r={time === 'evening' ? 15 : 13} fill={time === 'evening' ? '#F5A97A' : '#FFF0B8'} />
+              )}
               <path
                 d={`M ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 106}
                     q 17 -28 34 -4 q 17 -28 37 -5 q 20 -26 42 -1 q 18 -18 37 2
