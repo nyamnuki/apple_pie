@@ -21,6 +21,7 @@ export default function GroupsField({ scene, mode, onDone }: { scene: Scene; mod
   const counted = picked.reduce((sum, i) => sum + valueOf(i), 0);
   const { emoji, assetPath } = MATH_ITEMS[scene.item];
   const ten = scene.size >= 10;
+  const five = scene.size === 5;
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -29,12 +30,20 @@ export default function GroupsField({ scene, mode, onDone }: { scene: Scene; mod
           const n = picked.indexOf(g);
           const body = (
             <>
-              {/* 10묶음은 5개씩 두 줄 (10칸 틀), 2묶음은 나란히 */}
-              <span className={`grid gap-0.5 ${ten ? 'grid-cols-5' : 'grid-cols-2'}`}>
-                {range(scene.size).map((k) => (
-                  <AssetIcon key={k} path={assetPath} emoji={emoji} size={ten ? 22 : 34} />
-                ))}
-              </span>
+              {/* 10묶음은 5개씩 두 줄 (10칸 틀), 5묶음은 주사위 눈 모양 (3×3 의 네 귀퉁이와 가운데), 2묶음은 나란히 */}
+              {five ? (
+                <span className="grid grid-cols-3 gap-0.5">
+                  {range(9).map((k) =>
+                    k % 2 === 0 ? <AssetIcon key={k} path={assetPath} emoji={emoji} size={24} /> : <span key={k} className="h-6 w-6" />,
+                  )}
+                </span>
+              ) : (
+                <span className={`grid gap-0.5 ${ten ? 'grid-cols-5' : 'grid-cols-2'}`}>
+                  {range(scene.size).map((k) => (
+                    <AssetIcon key={k} path={assetPath} emoji={emoji} size={ten ? 22 : 34} />
+                  ))}
+                </span>
+              )}
               {n >= 0 && (
                 <span className="absolute -right-2 -top-2 flex h-7 min-w-7 animate-pop items-center justify-center rounded-full bg-wood px-1 text-base font-bold text-cream">
                   {formatNumber(runningTotal(n))}

@@ -71,6 +71,8 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
         if (ones === groups) ones = ones === 9 ? 8 : ones + 1;
         return { ...scene, groups, ones };
       }
+      // 5묶음 3~7 개 (15~35), 따로 있는 것은 원래대로 (문장이 그것을 말한다)
+      if (scene.size === 5) return { ...scene, groups: int(rng, 3, 7) };
       // 짝 5~10 쌍 (20 을 넘지 않게), 혼자 있는 것은 원래대로 (문장이 그것을 말한다)
       return { ...scene, groups: int(rng, 5, Math.floor((20 - scene.ones) / 2)) };
     case 'shapes': {
@@ -112,6 +114,7 @@ export function numberChoices(scene: MathScene, rng: Rng): number[] {
   const near = [answer - 1, answer + 1, answer - 2, answer + 2];
   let likely: number[] = [];
   if (scene.kind === 'groups' && scene.size === 10) likely = [scene.ones * 10 + scene.groups, answer - 10, scene.groups * 10]; // 자리 바꾸기, 묶음 하나 덜 세기, 낱개 빼먹기
+  else if (scene.kind === 'groups' && scene.size === 5) likely = [scene.groups + scene.ones, answer - 5, scene.groups * 5]; // 묶음을 1 로 세기, 묶음 하나 덜 세기, 따로 있는 것 빼먹기
   else if (scene.kind === 'groups') likely = [scene.groups * 2, scene.groups]; // 혼자인 것 빼먹기, 짝을 1 로 세기
   else if (scene.kind === 'add') likely = [answer - 10 > 0 ? answer - 10 : answer + 3];
   else if (scene.kind === 'shapes') likely = [scene.shapes.length];

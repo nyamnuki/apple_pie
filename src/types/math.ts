@@ -78,7 +78,7 @@ export interface MathLesson {
 }
 
 // 놀이 id 목록 (언어 파일의 lessons.<id> 와 같아야 한다)
-export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2' | 'share1' | 'double1';
+export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2' | 'share1' | 'double1' | 'skipCount5';
 
 // 놀이마다 언어 파일에 있어야 하는 문장들
 export type LessonTextPart =

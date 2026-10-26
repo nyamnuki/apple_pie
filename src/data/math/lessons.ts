@@ -178,6 +178,20 @@ export const LESSONS: MathLesson[] = [
     applyChoices: [9, 18, 19, 20],
   },
   {
+    id: 'skipCount5',
+    rewards: { crystal: 1, mithril: 1 },
+    firstTimeBonus: { crystal: 1 },
+    area: 'skipCounting',
+    region: 'crystalCave',
+    icon: 'pebble',
+    // 5씩 뛰어 세기: 주사위 눈처럼 다섯 개씩 모여 있으면 5, 10, 15… 로 센다
+    explore: { kind: 'groups', item: 'pebble', size: 5, groups: 4, ones: 0 }, // 20
+    predict: { kind: 'groups', item: 'gem', size: 5, groups: 6, ones: 0 }, // 30 (6 은 묶음 수만 센 실수)
+    predictChoices: [6, 25, 30, 35],
+    apply: { kind: 'groups', item: 'candle', size: 5, groups: 5, ones: 2 }, // 27
+    applyChoices: [7, 25, 27, 30],
+  },
+  {
     id: 'tens1',
     rewards: { crystal: 1, mithril: 1 },
     firstTimeBonus: { mithril: 1 },

@@ -229,7 +229,7 @@ export const en = {
     intro: {
       acornVillage: 'Welcome to Acorn Village! Here we count, compare, add and take away.',
       moonlightForest: "This is Moonlight Forest. Let's find patterns and shapes, and measure how long things are.",
-      crystalCave: 'Welcome to Crystal Cave! We count by twos and make groups of ten.',
+      crystalCave: 'Welcome to Crystal Cave! We count by twos and fives, and make groups of ten.',
       sunnyMeadow: 'Sunny Meadow! Frogs hop on the number line and bees look for partners.',
       windyHill: 'Windy Hill is where we learn to tell the time.',
       rainbowLake: 'Rainbow Lake! We share things fairly and find doubles in the water.',
@@ -237,7 +237,7 @@ export const en = {
     topics: {
       acornVillage: 'Counting · Comparing · Adding · Taking away',
       moonlightForest: 'Patterns · Shapes · Measuring',
-      crystalCave: 'Counting by twos · Tens and ones',
+      crystalCave: 'Counting by twos and fives · Tens and ones',
       sunnyMeadow: 'Number line · Even and odd',
       windyHill: 'Telling time',
       rainbowLake: 'Sharing · Doubles',
@@ -404,6 +404,20 @@ export const en = {
       hint2: 'Tap each pair and count by twos. Then tap the lonely candle.',
       hint3: "Let's count together: 2, 4, 6…",
       correct: 'Yes! {tens} in pairs and one more make {answer}!',
+    },
+    skipCount5: {
+      title: 'Counting by Fives',
+      observe: 'Look! The pebbles are in groups of five, like the dots on a dice.',
+      manipulate: 'Tap each group and count by fives: 5, 10, 15…',
+      manipulateDone: '5, 10, 15, {answer}! Counting by fives is super fast.',
+      predict: 'The gems are in groups of five. How many gems do you think there are?',
+      verify: "Let's count by fives… 5, 10, 15… There are {answer} gems!",
+      discover: 'When things come in fives, you can count by fives: 5, 10, 15, 20, 25, 30…',
+      apply: 'The candles are in groups of five, and a few are by themselves. How many candles are there?',
+      hint1: 'Count the groups by fives first. Then count on the ones that are by themselves.',
+      hint2: 'Tap each group and count by fives. Then tap the single candles.',
+      hint3: "Let's count together: 5, 10, 15…",
+      correct: 'Yes! {tens} in groups of five and {ones} more make {answer}!',
     },
     tens1: {
       title: 'Bundles of Ten',

@@ -230,7 +230,7 @@ export const ko: Messages = {
     intro: {
       acornVillage: '도토리 마을에 온 걸 환영해요! 여기서는 세고, 비교하고, 더하고, 빼요.',
       moonlightForest: '여기는 달빛 숲이에요. 규칙과 도형을 찾고, 길이를 재어 봐요.',
-      crystalCave: '수정 동굴에 온 걸 환영해요! 2씩 뛰어 세고, 10개씩 묶어 봐요.',
+      crystalCave: '수정 동굴에 온 걸 환영해요! 2씩·5씩 뛰어 세고, 10개씩 묶어 봐요.',
       sunnyMeadow: '햇살 들판이에요! 개구리는 수직선을 뛰고, 벌은 짝을 찾아요.',
       windyHill: '바람 언덕에서는 시계 보는 법을 배워요.',
       rainbowLake: '무지개 호수예요! 똑같이 나누고, 물에 비친 두 배를 찾아요.',
@@ -238,7 +238,7 @@ export const ko: Messages = {
     topics: {
       acornVillage: '수 세기 · 비교하기 · 더하기 · 빼기',
       moonlightForest: '규칙 찾기 · 도형 · 길이 재기',
-      crystalCave: '2씩 뛰어 세기 · 10씩 묶어 세기',
+      crystalCave: '2씩·5씩 뛰어 세기 · 10씩 묶어 세기',
       sunnyMeadow: '수직선 · 짝수와 홀수',
       windyHill: '시계 보기',
       rainbowLake: '똑같이 나누기 · 두 배',
@@ -406,6 +406,20 @@ export const ko: Messages = {
       hint2: '짝마다 누르면서 2씩 세어 봐요. 마지막에 혼자 있는 촛불을 눌러요.',
       hint3: '같이 세어 볼게요. 2, 4, 6…',
       correct: '맞아요! 짝으로 {tens}개, 하나 더하면 모두 {answer}개예요!',
+    },
+    skipCount5: {
+      title: '5씩 뛰어 세기',
+      observe: '봐요! 조약돌이 주사위 눈처럼 다섯 개씩 모여 있어요.',
+      manipulate: '묶음마다 누르면서 5씩 세어 봐요. 5, 10, 15…',
+      manipulateDone: '5, 10, 15, {answer}! 5씩 세면 정말 빨라요.',
+      predict: '보석이 다섯 개씩 모여 있어요. 보석은 모두 몇 개일까요?',
+      verify: '5씩 세어 볼게요… 5, 10, 15… 보석은 {answer}개예요!',
+      discover: '다섯 개씩 모여 있으면 5, 10, 15, 20, 25, 30… 하고 5씩 셀 수 있어요.',
+      apply: '촛불이 다섯 개씩 모여 있고, 몇 개는 따로 있어요. 촛불은 모두 몇 개일까요?',
+      hint1: '먼저 묶음을 5씩 세요. 그다음 따로 있는 것을 하나씩 이어 세요.',
+      hint2: '묶음마다 누르면서 5씩 세어 봐요. 마지막에 따로 있는 촛불을 눌러요.',
+      hint3: '같이 세어 볼게요. 5, 10, 15…',
+      correct: '맞아요! 다섯 개씩 {tens}개, 따로 {ones}개, 모두 {answer}개예요!',
     },
     tens1: {
       title: '10씩 묶어 세기',

@@ -33,7 +33,7 @@ test('달빛 숲 놀이 2개를 끝내면 수정 동굴이 열린다', async ({ 
   await page.getByRole('button', { name: 'More games' }).click();
   await page.getByRole('button', { name: 'Go back' }).click();
   await expect(cave).toBeEnabled();
-  await expect(cave).toContainText('0 of 2 games finished');
+  await expect(cave).toContainText('0 of 3 games finished');
 });
 
 test('놀이: 2씩 뛰어 세기 (묶음을 누르면 2, 4, 6…)', async ({ page, context }) => {
@@ -139,7 +139,7 @@ test('수정 동굴 재료로 가구를 만들고, 동굴 마을은 한국어로
   await page.goto('/');
   await page.getByRole('button', { name: '시작하기' }).click();
   await page.getByRole('button', { name: '놀이하기' }).click();
-  await expect(page.getByRole('button', { name: /^수정 동굴/ })).toContainText('2씩 뛰어 세기 · 10씩 묶어 세기');
+  await expect(page.getByRole('button', { name: /^수정 동굴/ })).toContainText('2씩·5씩 뛰어 세기 · 10씩 묶어 세기');
   await goToRegion(page, /^수정 동굴/);
   await expect(page.getByRole('button', { name: /2씩 뛰어 세기/ })).toBeVisible();
   await page.getByRole('button', { name: /10씩 묶어 세기/ }).click();
@@ -147,4 +147,30 @@ test('수정 동굴 재료로 가구를 만들고, 동굴 마을은 한국어로
   await page.getByRole('button', { name: '다음' }).click();
   await expect(page.getByRole('button', { name: '10개 묶음 세기' })).toHaveCount(2);
   expect(await englishWords(page)).toBeNull();
+});
+
+test('놀이: 5씩 뛰어 세기 (주사위 눈 모양 묶음, 5, 10, 15, 20)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ completedLessons: [...ACORN_TWO, 'patterns1', 'shapes1'] }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Crystal Cave/);
+  await page.getByRole('button', { name: /Counting by Fives/ }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  const five = page.getByRole('button', { name: 'Count this group of 5' });
+  await expect(five).toHaveCount(4);
+  await five.first().click();
+  await five.first().click();
+  await expect(page.getByRole('status', { name: 'Count: 10' })).toBeVisible();
+  while (await five.count()) await five.first().click();
+  await expect(guide(page)).toHaveText('5, 10, 15, 20! Counting by fives is super fast.');
+  await page.getByRole('button', { name: 'Next' }).click();
+  const choices = page.getByRole('group', { name: 'Answer choices' });
+  await choices.getByRole('button', { name: '6', exact: true }).click(); // 묶음 수만 센 실수
+  await waitLastButtonEnabled(page);
+  await expect(guide(page)).toHaveText(/There are 30 gems!/);
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await choices.getByRole('button', { name: '27', exact: true }).click();
+  await expect(guide(page)).toHaveText('Yes! 25 in groups of five and 2 more make 27!');
 });
