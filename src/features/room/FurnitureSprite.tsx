@@ -4,6 +4,7 @@ import FurniturePlaceholder from './placeholders/FurniturePlaceholder';
 import { footprintSize } from './placement';
 import { assetUrl } from '../../data/assets/assetRegistry';
 import { useAssetStatus } from '../../services/assets/useAssetStatus';
+import { tintFilter } from './tints';
 import type { FurnitureDef, PlacedFurniture } from '../../types/furniture';
 
 type Spot = Pick<PlacedFurniture, 'gx' | 'gy' | 'rotation'>;
@@ -70,7 +71,10 @@ export default function FurnitureSprite({ item, def, label, selected, shake = 0,
 
       {/* 놓을 때·돌릴 때마다 새로 그려져 톡 내려앉는다. 돌릴 자리가 없으면 좌우로 흔든다 */}
       <g key={`${item.rotation}-${shake}`} className={shake ? 'animate-shake animate-settle' : 'animate-settle'}>
-        <FurnitureArt def={def} spot={item} />
+        {/* 고른 색 (src/features/room/tints.ts) */}
+        <g filter={tintFilter(item.tint)} data-tint={item.tint ?? 0}>
+          <FurnitureArt def={def} spot={item} />
+        </g>
       </g>
 
       {/* 선택된 가구: 위에 화살표 (색만으로 알리지 않도록 모양으로도 표시) */}

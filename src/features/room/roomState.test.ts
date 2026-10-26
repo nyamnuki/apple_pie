@@ -109,6 +109,19 @@ describe('벽 장식', () => {
   });
 });
 
+describe('가구 색', () => {
+  it('바닥 가구의 색을 바꾸고, 원래 색으로 돌리면 기록을 지운다', () => {
+    const uid = room.placed[0].uid;
+    const blue = apply(room, { type: 'tint', uid, tint: 2 });
+    expect(blue.placed[0].tint).toBe(2);
+    expect(blue.placed.slice(1)).toEqual(room.placed.slice(1));
+    expect(apply(blue, { type: 'tint', uid, tint: 2 })).toBe(blue); // 같은 색이면 그대로
+    expect(apply(blue, { type: 'tint', uid, tint: 0 }).placed[0]).not.toHaveProperty('tint');
+    expect(apply(room, { type: 'tint', uid: 'nobody', tint: 1 })).toBe(room);
+    expect(apply(room, { type: 'tint', uid, tint: 5 as 1 })).toBe(room);
+  });
+});
+
 describe('벽지와 초기화', () => {
   it('가진 벽지만 붙일 수 있고, 떼는 것은 언제나 된다', () => {
     const on = apply(room, { type: 'setWallpaper', wallpaperId: 'woodlandWallpaper' });

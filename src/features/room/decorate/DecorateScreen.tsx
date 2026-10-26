@@ -210,6 +210,13 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     setFlash('decorate.turned');
   };
 
+  const paint = (tint: 0 | 1 | 2) => {
+    if (!selectedItem || (selectedItem.tint ?? 0) === tint) return;
+    play.place();
+    dispatch({ type: 'tint', uid: selectedItem.uid, tint });
+    setFlash('decorate.painted');
+  };
+
   const putAway = () => {
     if (!activeUid) return;
     dispatch({ type: 'remove', uid: activeUid });
@@ -267,6 +274,8 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
               // 벽 장식은 돌리지 않는다
               onTurn={selectedWall ? undefined : turn}
               onPutAway={putAway}
+              tint={selectedItem?.tint ?? 0}
+              onTint={selectedItem ? paint : undefined}
               onDone={() => change({ kind: 'idle' })}
             />
           ) : picking && pickingDef ? (

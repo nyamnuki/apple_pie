@@ -24,6 +24,7 @@ export type RoomAction =
   | { type: 'place'; item: PlacedFurniture }
   | { type: 'move'; uid: string; gx: number; gy: number }
   | { type: 'rotate'; uid: string }
+  | { type: 'tint'; uid: string; tint: 0 | 1 | 2 } // 색 바꾸기 (0 = 원래 색)
   | { type: 'remove'; uid: string } // 바닥 가구·벽 장식 모두
   | { type: 'placeWall'; item: WallItem }
   | { type: 'moveWall'; uid: string; wall: WallSide; slot: number }
@@ -59,6 +60,15 @@ export function applyRoomAction(state: RoomLayout, action: RoomAction, owned: Ow
       const rotation = item.rotation === 0 ? 1 : 0;
       if (!canPlace(state.placed, item.furnitureId, rotation, item.gx, item.gy, item.uid)) return state; // 돌리면 방 밖·겹침
       return { ...state, placed: state.placed.map((p) => (p.uid === action.uid ? { ...p, rotation } : p)) };
+    }
+    case 'tint': {
+      const item = state.placed.find((p) => p.uid === action.uid);
+      if (!item || (item.tint ?? 0) === action.tint || ![0, 1, 2].includes(action.tint)) return state;
+      const recolor = (p: PlacedFurniture): PlacedFurniture => {
+        const { tint: _old, ...rest } = p;
+        return action.tint ? { ...rest, tint: action.tint } : rest;
+      };
+      return { ...state, placed: state.placed.map((p) => (p.uid === action.uid ? recolor(p) : p)) };
     }
     case 'remove': {
       if (!uidTaken(state, action.uid)) return state;

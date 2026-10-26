@@ -150,6 +150,23 @@ describe('스티커', () => {
   });
 });
 
+describe('가구 색', () => {
+  it('색 1·2 는 남기고, 이상한 값은 원래 색으로 (예전 저장본은 그대로)', () => {
+    put(v1Save);
+    expect(loadGame().room.placed.every((p) => p.tint === undefined)).toBe(true);
+    const placed = [
+      { uid: 'b', furnitureId: 'leafBed', gx: 0, gy: 0, rotation: 0, tint: 2 },
+      { uid: 'r', furnitureId: 'petalRug', gx: 2, gy: 2, rotation: 0, tint: 7 },
+      { uid: 'l', furnitureId: 'mushroomLamp', gx: 2, gy: 0, rotation: 0, tint: '1' },
+    ];
+    put({ schemaVersion: SCHEMA_VERSION, savedAt: 'x', game: createInitialGameState(), room: { ...DEFAULT_LAYOUT, placed } });
+    const loaded = loadGame().room.placed;
+    expect(loaded.find((p) => p.uid === 'b')?.tint).toBe(2);
+    expect(loaded.find((p) => p.uid === 'r')).not.toHaveProperty('tint');
+    expect(loaded.find((p) => p.uid === 'l')).not.toHaveProperty('tint');
+  });
+});
+
 describe('백업 파일', () => {
   it('백업 글을 다시 읽으면 같은 진행 상황', () => {
     const game = { ...createInitialGameState(), resources: { acorn: 3 }, completedLessons: ['counting1' as const], stickers: ['apple'] };

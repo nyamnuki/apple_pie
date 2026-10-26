@@ -1,3 +1,5 @@
+import { TINT_HUE } from '../../features/room/tints';
+
 // ===== 수채화 효과 (SVG 필터) =====
 // 앱 전체에서 한 번만 그려 두고, 그림마다 filter="url(#wc-…)" 로 불러 쓴다.
 // - 가장자리가 살짝 흔들림 (손으로 칠한 느낌)
@@ -43,6 +45,12 @@ export default function WatercolorDefs() {
         </radialGradient>
         <Watercolor id="wc-small" wobble={2.2} freq={0.06} edge={0.9} grain={0.7} grainAlpha={0.22} />
         <Watercolor id="wc-furniture" wobble={3} freq={0.035} edge={1.4} grain={0.6} grainAlpha={0.3} />
+        {/* 가구 색 바꾸기 (src/features/room/tints.ts 와 같은 각도) */}
+        {([1, 2] as const).map((t) => (
+          <filter key={t} id={`tint-${t}`} colorInterpolationFilters="sRGB">
+            <feColorMatrix type="hueRotate" values={String(TINT_HUE[t])} />
+          </filter>
+        ))}
         <Watercolor id="wc-room" wobble={4} freq={0.02} edge={2} grain={0.45} grainAlpha={0.3} />
       </defs>
     </svg>

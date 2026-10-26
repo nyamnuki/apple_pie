@@ -5,6 +5,7 @@ import { getSticker } from '../../data/stickers/stickers';
 import { createInitialGameState, type GameState } from '../../app/gameState';
 import { DEFAULT_LAYOUT } from '../../features/room/roomState';
 import { canPlace, canPlaceWall } from '../../features/room/placement';
+import { isTint } from '../../features/room/tints';
 import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';
 import type { LessonId } from '../../types/math';
@@ -67,7 +68,7 @@ export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {
 
   for (const item of source.placed as unknown[]) {
     if (!isObject(item)) continue;
-    const { uid, furnitureId, gx, gy, rotation } = item;
+    const { uid, furnitureId, gx, gy, rotation, tint } = item;
     if (typeof uid !== 'string' || usedUids.has(uid) || typeof furnitureId !== 'string') continue;
     if (!Number.isInteger(gx) || !Number.isInteger(gy) || (rotation !== 0 && rotation !== 1)) continue;
     const def = getFurniture(furnitureId);
@@ -76,7 +77,7 @@ export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {
     if (placed.filter((p) => p.furnitureId === furnitureId).length >= (game.furniture[furnitureId] ?? 0)) continue;
     // 방 밖이거나 다른 가구와 겹치면 뺀다
     if (!canPlace(placed, furnitureId, rotation, gx as number, gy as number)) continue;
-    placed.push({ uid, furnitureId, gx: gx as number, gy: gy as number, rotation });
+    placed.push({ uid, furnitureId, gx: gx as number, gy: gy as number, rotation, ...(isTint(tint) ? { tint } : {}) });
     usedUids.add(uid);
   }
 

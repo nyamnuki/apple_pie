@@ -26,6 +26,14 @@ test('방 꾸미기 기본 동작', async ({ page, context }) => {
   await expect(guide(page)).toHaveText('Nice! It fits just right.');
   await page.getByRole('button', { name: 'Done' }).click();
 
+  // 색 바꾸기: 3가지 중 하나를 고르면 방의 가구 색이 바뀌고 저장된다
+  await page.getByRole('button', { name: 'Leaf Bed in your room' }).click();
+  await expect(page.getByRole('radio', { name: 'Color 1' })).toBeChecked();
+  await page.getByRole('radio', { name: 'Color 3' }).click();
+  await expect(guide(page)).toHaveText('New color!');
+  await expect(page.getByRole('radio', { name: 'Color 3' })).toBeChecked();
+  await page.getByRole('button', { name: 'Done' }).click();
+
   await page.getByRole('button', { name: 'Flower Pot in your room' }).click();
   await page.getByRole('button', { name: 'Put away' }).click();
 
@@ -33,6 +41,7 @@ test('방 꾸미기 기본 동작', async ({ page, context }) => {
   const placed = (await readSave(page)).room.placed;
   expect(placed.find((p: { furnitureId: string }) => p.furnitureId === 'forestBookshelf')).toMatchObject({ gx: 5, gy: 4, rotation: 1 });
   expect(placed.some((p: { furnitureId: string }) => p.furnitureId === 'flowerPot')).toBe(false);
+  expect(placed.find((p: { furnitureId: string }) => p.furnitureId === 'leafBed')).toMatchObject({ tint: 2 });
 });
 
 test('놓을 수 없는 칸을 누르면 저절로 놓지 않고, 옆 빈 칸을 미리 보여준 뒤 고르게 한다', async ({ page, context }) => {

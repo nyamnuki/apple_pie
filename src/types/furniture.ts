@@ -58,6 +58,7 @@ export interface PlacedFurniture {
   gx: number; // 바닥 칸 위치 (가로)
   gy: number; // 바닥 칸 위치 (세로)
   rotation: 0 | 1; // 0 = 기본 방향, 1 = 좌우로 돌린 방향
+  tint?: 1 | 2; // 고른 색 (없으면 원래 색)
 }
 
 // 방 전체 상태
