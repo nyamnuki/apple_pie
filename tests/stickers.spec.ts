@@ -38,3 +38,19 @@ test('한국어 도감: 마을별 개수와 이름', async ({ page, context }) =
   await expect(page.getByRole('heading', { name: /수정 동굴/ })).toContainText('1/6');
   await expect(page.locator('[data-sticker="moon"]')).toHaveAccessibleName('달');
 });
+
+test('보상 화면에서 새 스티커를 누르면 크게 보인다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await playCountingApples(page);
+  await page.getByRole('button', { name: 'Look closely: Apple' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Apple' });
+  await expect(dialog).toContainText('From Acorn Village');
+  await expect(dialog.getByRole('button', { name: 'Next sticker' })).toHaveCount(0); // 한 장뿐
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Look closely: Apple' })).toBeFocused();
+});

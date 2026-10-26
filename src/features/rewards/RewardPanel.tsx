@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react';
 import { Hammer, LayoutGrid, RotateCcw, Backpack, Play } from '../../components/icons';
 import BigButton from '../../components/BigButton';
 import ResourceChip from '../../components/ResourceChip';
@@ -10,6 +11,7 @@ import type { CharacterId } from '../../data/characters/characters';
 import { ItemArt } from '../../components/art/itemArt';
 import { getSticker } from '../../data/stickers/stickers';
 import PetArt from '../pets/PetArt';
+import StickerCloseUp from '../stickers/StickerCloseUp';
 import Rosette from '../../components/art/Rosette';
 import { PETS, type PetId } from '../pets/pets';
 import type { RegionId, ResourceBundle } from '../../types/resources';
@@ -38,6 +40,8 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
   const bonusEntries = bundleEntries(bonus);
   const stickerDef = sticker ? getSticker(sticker) : undefined;
   const petDef = newPet ? PETS.find((p) => p.id === newPet) : undefined;
+  const [closeUp, setCloseUp] = useState(false); // 새 스티커 크게 보기
+  const stickerButton = useRef<HTMLButtonElement>(null);
 
   return (
     // 세로 화면: 위에서 아래로 / 높이가 낮은 가로 화면: 왼쪽 받은 재료, 오른쪽 발견한 것과 버튼
@@ -84,11 +88,29 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
         {/* 새 스티커: 살짝 기울어진 흰 테두리 스티커 */}
         {stickerDef && (
           <div role="status" className="flex w-full max-w-md animate-rise items-center gap-3 rounded-3xl bg-apricot/60 p-3" style={{ animationDelay: '500ms' }}>
-            <span className="flex h-20 w-20 shrink-0 rotate-[-4deg] items-center justify-center rounded-3xl bg-white shadow-pop-sm ring-4 ring-white">
+            {/* 누르면 크게 보기 (이름 읽어 주기) */}
+            <button
+              ref={stickerButton}
+              type="button"
+              onClick={() => setCloseUp(true)}
+              aria-label={t('stickers.look', { name: tKey(stickerDef.nameKey) })}
+              className="flex h-20 w-20 shrink-0 rotate-[-4deg] items-center justify-center rounded-3xl bg-white shadow-pop-sm ring-4 ring-white transition-transform active:scale-95"
+            >
               <ItemArt path={stickerDef.art} size={60} />
-            </span>
+            </button>
             <span className="text-left text-xl font-bold">{t('stickers.got', { name: tKey(stickerDef.nameKey) })}</span>
           </div>
+        )}
+        {closeUp && stickerDef && (
+          <StickerCloseUp
+            list={[stickerDef]}
+            index={0}
+            onIndex={() => {}}
+            onClose={() => {
+              setCloseUp(false);
+              requestAnimationFrame(() => stickerButton.current?.focus());
+            }}
+          />
         )}
 
         {petDef && (
