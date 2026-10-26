@@ -17,6 +17,7 @@ import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState, type Stage } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { lessonForPlay } from './variation';
+import { nextLesson } from './nextLesson';
 import { newPet, type PetId } from '../pets/pets';
 import { getLesson, lessonKey } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
@@ -58,9 +59,10 @@ interface Props {
   lessonId: LessonId;
   onExit: () => void;
   onWorkshop: () => void;
+  onNext?: (id: LessonId) => void; // 보상 화면에서 '다음 놀이'로 바로 가기
 }
 
-export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
+export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: Props) {
   const { t, formatNumber } = useI18n();
   const [state, dispatch] = useReducer(lessonReducer, initialLessonState);
   const { game, dispatch: gameDispatch } = useGame();
@@ -143,6 +145,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   })();
 
   const speaker = GUIDE_OF[lesson.region];
+  // 끝낸 뒤 권할 다음 놀이 (끝낸 기록이 반영된 뒤 계산된다)
+  const upNext = state.stage === 'complete' ? nextLesson(game.completedLessons, lesson) : null;
 
   const field = fieldFor(lesson, state);
   // 장면이나 방식이 바뀌면 새로 그린다 (센 숫자 초기화)
@@ -186,6 +190,11 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
             dispatch({ type: 'restart' });
           }}
           onMoreGames={onExit}
+          next={
+            onNext && upNext
+              ? { title: t(lessonKey(upNext.id, 'title')), onClick: () => onNext(upNext.id) }
+              : undefined
+          }
         />
       ) : (
         // 세로 화면: 단계 → 말풍선 → 장면 → 버튼 (위에서 아래로)

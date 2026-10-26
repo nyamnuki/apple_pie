@@ -104,6 +104,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
               setScreen('math');
             }}
             onWorkshop={() => setScreen('workshop')}
+            onNext={(id) => setLessonId(id)}
           />
         );
       case 'workshop':

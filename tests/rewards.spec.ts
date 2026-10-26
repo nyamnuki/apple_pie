@@ -96,3 +96,22 @@ test('가방: 재료마다 더 얻을 수 있는 놀이 (황금 도토리는 오
   await expect(page.locator('[data-from="acorn"]')).toContainText('More from: Counting Apples');
   await expect(page.locator('[data-from="goldenAcorn"]')).toHaveText("More from Today's puzzle stamps (one for every 3)");
 });
+
+test('보상 화면 다음 놀이: 같은 마을의 안 한 놀이로 바로 간다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await playCountingApples(page);
+  if (process.env.SHOT_DIR) {
+    await page.waitForTimeout(1500);
+    for (const [w, h] of [[320, 640], [844, 390]]) {
+      await page.setViewportSize({ width: w, height: h });
+      await page.screenshot({ path: `${process.env.SHOT_DIR}/next-${w}.png`, fullPage: true });
+    }
+  }
+  await page.getByRole('button', { name: 'Next: Which Has More?' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Which Has More?');
+  await expect(page.getByRole('button', { name: 'Next', exact: true })).toBeVisible(); // 새 놀이의 살펴보기
+});

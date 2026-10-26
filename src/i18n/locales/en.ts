@@ -555,6 +555,7 @@ export const en = {
     sayHi: '{name}: tap to say hi',
   },
   reward: {
+    nextGame: 'Next: {title}',
     regionComplete: 'You finished every game in {region}!',
     praise1: 'You thought it through all by yourself!',
     praise2: 'Great counting, step by step!',

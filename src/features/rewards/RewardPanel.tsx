@@ -1,4 +1,4 @@
-import { Hammer, LayoutGrid, RotateCcw, Backpack } from '../../components/icons';
+import { Hammer, LayoutGrid, RotateCcw, Backpack, Play } from '../../components/icons';
 import BigButton from '../../components/BigButton';
 import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';
@@ -27,12 +27,13 @@ interface Props {
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
+  next?: { title: string; onClick: () => void }; // 아직 안 한 다음 놀이
 }
 
 const PRAISE: TranslationKey[] = ['reward.praise1', 'reward.praise2', 'reward.praise3', 'reward.praise4', 'reward.praise5'];
 
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, completedRegion, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames }: Props) {
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, completedRegion, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames, next }: Props) {
   const { t, tKey } = useI18n();
   const bonusEntries = bundleEntries(bonus);
   const stickerDef = sticker ? getSticker(sticker) : undefined;
@@ -126,6 +127,12 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
             <Hammer size={28} aria-hidden />
             {t('reward.goWorkshop')}
           </BigButton>
+          {next && (
+            <BigButton variant="sage" onClick={next.onClick}>
+              <Play size={24} aria-hidden />
+              {t('reward.nextGame', { title: next.title })}
+            </BigButton>
+          )}
           <div className="grid grid-cols-2 gap-3">
             <BigButton variant="soft" onClick={onAgain}>
               <RotateCcw size={24} aria-hidden />

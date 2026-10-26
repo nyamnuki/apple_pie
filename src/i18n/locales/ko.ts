@@ -557,6 +557,7 @@ export const ko: Messages = {
     sayHi: '{name}: 눌러서 인사하기',
   },
   reward: {
+    nextGame: '다음 놀이: {title}',
     regionComplete: '{region}의 놀이를 모두 끝냈어요!',
     praise1: '혼자서 끝까지 생각했어요!',
     praise2: '하나하나 차근차근 잘 셌어요!',
