@@ -170,3 +170,23 @@ test('이번 주 놀이: 놀이를 끝내면 오늘 막대가 1 늘어난다', a
   await expect(week.getByRole('listitem')).toHaveCount(7);
   await expect(week.getByRole('listitem').last()).toHaveAccessibleName('Today: 1');
 });
+
+test('함께 해 보면 좋은 놀이: 힌트를 많이 본 놀이만', async ({ page, context }) => {
+  await seed(context, {
+    save: makeSave({
+      completedLessons: ['counting1', 'addition1'],
+      lessonStats: {
+        counting1: { plays: 3, firstTry: 3, hints: 0, lastPlayed: '2026-10-26T09:00:00Z' },
+        addition1: { plays: 2, firstTry: 0, hints: 5, lastPlayed: '2026-10-26T09:00:00Z' },
+      },
+    }),
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('button', { name: 'For grown-ups' }).click();
+  await answer(page, true, 'Check answer');
+  await answer(page, true, 'Check answer');
+  const box = page.locator('[data-practice]');
+  await expect(box).toContainText('Nice to play together');
+  await expect(box.getByRole('listitem')).toHaveText(['Adding More']);
+});

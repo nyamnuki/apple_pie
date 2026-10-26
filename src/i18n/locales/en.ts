@@ -687,6 +687,8 @@ export const en = {
     weekTotal: 'Games finished in the last 7 days: {n}',
     weekDay: '{day}: {n}',
     today: 'Today',
+    practiceTitle: 'Nice to play together',
+    practiceTip: 'Your child saw a lot of hints in these games. Try playing one together and talk about what you see.',
     lessonsTitle: 'Game by game',
     lessonsIntro: 'Hints are part of learning. They show which ideas your child is still practicing.',
     stats: 'Played {plays} times · right on the first try {firstTry} times · hints seen: {hints}',

@@ -689,6 +689,8 @@ export const ko: Messages = {
     weekTotal: '최근 7일 동안 끝낸 놀이: {n}개',
     weekDay: '{day}: {n}개',
     today: '오늘',
+    practiceTitle: '함께 해 보면 좋은 놀이',
+    practiceTip: '이 놀이들에서 힌트를 많이 봤어요. 하나를 같이 해 보면서 보이는 것을 이야기해 보세요.',
     lessonsTitle: '놀이별 기록',
     lessonsIntro: '힌트도 배우는 과정이에요. 아이가 아직 연습 중인 부분을 알려 줘요.',
     stats: '{plays}번 함 · 한 번에 맞힘 {firstTry}번 · 본 힌트 {hints}개',

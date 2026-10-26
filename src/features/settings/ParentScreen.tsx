@@ -11,6 +11,7 @@ import RegionIcon from '../../components/RegionIcon';
 import BackupSection from './BackupSection';
 import InstallSection from './InstallSection';
 import WeekChart from './WeekChart';
+import { practiceSuggestions } from './practice';
 import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
 
@@ -29,6 +30,7 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
     setStep('done');
   };
 
+  const practice = practiceSuggestions(game.lessonStats);
   const card = 'rounded-[2rem] border-2 border-bark/10 bg-moss/60 p-5 shadow-[inset_0_2px_0_rgb(255_255_255/0.5)]';
   const heading = 'mb-2 flex items-center gap-2 text-2xl font-bold';
 
@@ -65,6 +67,18 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
             {t('parent.lessonsTitle')}
           </h2>
           <p className="mb-3 text-base">{t('parent.lessonsIntro')}</p>
+          {/* 힌트를 많이 본 놀이: 탓하지 않고 '함께 해 보면 좋아요'로 */}
+          {practice.length > 0 && (
+            <div data-practice className="mb-3 rounded-2xl border-2 border-dashed border-oak/60 bg-cream/80 px-4 py-3">
+              <p className="text-lg font-bold">{t('parent.practiceTitle')}</p>
+              <ul className="list-disc pl-6 text-base">
+                {practice.map((l) => (
+                  <li key={l.id}>{t(lessonKey(l.id, 'title'))}</li>
+                ))}
+              </ul>
+              <p className="mt-1 text-base">{t('parent.practiceTip')}</p>
+            </div>
+          )}
           {REGIONS.map((region) => (
             <div key={region.id} className="mb-3 last:mb-0">
               <h3 className="mb-1 text-xl font-bold">
