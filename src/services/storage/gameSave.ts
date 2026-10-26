@@ -56,17 +56,37 @@ export function loadGame(): LoadResult {
   if (text === null) return fresh('new');
 
   try {
-    const parsed: unknown = JSON.parse(text);
-    if (typeof parsed !== 'object' || parsed === null) throw new Error('not an object');
-    const data = migrate(parsed as Record<string, unknown>);
-    if (!data) throw new Error('unknown schemaVersion');
-    const game = sanitizeGame(data.game);
-    return { game, room: sanitizeRoom(data.room, game), status: 'loaded' };
+    const parsed = parseSave(text);
+    if (!parsed) throw new Error('unreadable');
+    return { ...parsed, status: 'loaded' };
   } catch {
     // 읽을 수 없는 저장본: 지우지 않고 보관해 둔 뒤 새로 시작한다
     writeString(BACKUP_KEY, text);
     return fresh('recovered');
   }
+}
+
+// 저장 글(JSON)을 읽어 검사한다: 버전 변환 → 이상한 부분 버리기. 읽을 수 없으면 null.
+// 기기 안 저장본과 백업 파일이 같은 규칙을 쓴다.
+export function parseSave(text: string): { game: GameState; room: RoomLayout } | null {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) return null;
+    const record = parsed as Record<string, unknown>;
+    if (typeof record.game !== 'object' || record.game === null) return null;
+    const data = migrate(record);
+    if (!data) return null;
+    const game = sanitizeGame(data.game);
+    return { game, room: sanitizeRoom(data.room, game) };
+  } catch {
+    return null;
+  }
+}
+
+// 백업 파일 내용 (어른 설정 → 파일로 저장). 서버로 보내지 않고 기기에 파일로만 내려받는다.
+export const BACKUP_APP = 'math-town';
+export function backupText(game: GameState, room: RoomLayout): string {
+  return JSON.stringify({ app: BACKUP_APP, schemaVersion: SCHEMA_VERSION, savedAt: new Date().toISOString(), game, room }, null, 2);
 }
 
 export function saveGame(game: GameState, room: RoomLayout): boolean {

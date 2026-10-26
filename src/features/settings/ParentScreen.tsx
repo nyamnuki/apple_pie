@@ -8,6 +8,7 @@ import { useRoom } from '../room/RoomProvider';
 import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { REGIONS } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
+import BackupSection from './BackupSection';
 import { useI18n } from '../../i18n';
 
 // 부모 설정: 개인정보 안내, 진행 요약, 진행 상황 지우기 (언어 설정은 그대로 둔다)
@@ -85,6 +86,8 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
             </div>
           ))}
         </section>
+
+        <BackupSection className={card} />
 
         <section aria-labelledby="reset-h" className="rounded-[2rem] border-4 border-dashed border-bark/30 p-5">
           <h2 id="reset-h" className={heading}>

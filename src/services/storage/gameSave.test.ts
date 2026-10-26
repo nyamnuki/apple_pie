@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { BACKUP_KEY, SAVE_KEY, SCHEMA_VERSION, loadGame, readSavedAt, saveGame } from './gameSave';
+import { BACKUP_KEY, SAVE_KEY, SCHEMA_VERSION, backupText, loadGame, parseSave, readSavedAt, saveGame } from './gameSave';
 import { createInitialGameState } from '../../app/gameState';
 import { DEFAULT_LAYOUT } from '../../features/room/roomState';
 
@@ -147,6 +147,20 @@ describe('스티커', () => {
     expect(loadGame().game.stickers).toEqual([]);
     put({ schemaVersion: SCHEMA_VERSION, savedAt: 'x', game: { ...createInitialGameState(), stickers: ['apple', 'apple', 'dragon', 7, 'moon'] }, room: DEFAULT_LAYOUT });
     expect(loadGame().game.stickers).toEqual(['apple', 'moon']);
+  });
+});
+
+describe('백업 파일', () => {
+  it('백업 글을 다시 읽으면 같은 진행 상황', () => {
+    const game = { ...createInitialGameState(), resources: { acorn: 3 }, completedLessons: ['counting1' as const], stickers: ['apple'] };
+    const text = backupText(game, DEFAULT_LAYOUT);
+    expect(JSON.parse(text)).toMatchObject({ app: 'math-town', schemaVersion: SCHEMA_VERSION });
+    expect(parseSave(text)).toEqual({ game, room: DEFAULT_LAYOUT });
+  });
+
+  it('옛 버전 백업도 변환해서 읽고, 저장본이 아닌 파일은 거절한다', () => {
+    expect(parseSave(JSON.stringify(v1Save))?.game.completedLessons).toEqual(['counting1']);
+    for (const bad of ['', 'hello', '[]', '{}', '{"game": 3}', JSON.stringify({ ...v1Save, schemaVersion: 99 })]) expect(parseSave(bad), bad).toBeNull();
   });
 });
 

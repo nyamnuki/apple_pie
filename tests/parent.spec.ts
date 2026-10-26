@@ -98,3 +98,33 @@ test('어른 설정: 놀이별 기록 (횟수·한 번에 맞힘·힌트·마지
   await expect(page.locator('[data-lesson="counting1"]')).toContainText('3번 함 · 한 번에 맞힘 2번 · 본 힌트 1개');
   await expect(page.locator('[data-lesson="tens1"]')).toContainText('아직 안 했어요');
 });
+
+test('어른 설정: 파일로 저장하고, 파일에서 되살린다 (이상한 파일은 거절)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ resources: { acorn: 7 }, completedLessons: ['counting1'] }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('button', { name: 'For grown-ups' }).click();
+  await answer(page, true, 'Check answer');
+  await answer(page, true, 'Check answer');
+
+  // 파일로 저장: 내려받은 파일 내용 확인
+  const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Save to a file' }).click()]);
+  expect(download.suggestedFilename()).toMatch(/^math-town-backup-\d{4}-\d{2}-\d{2}\.json$/);
+  const saved = JSON.parse(await (await download.createReadStream()).toArray().then((c) => Buffer.concat(c).toString('utf8')));
+  expect(saved).toMatchObject({ app: 'math-town', game: { resources: { acorn: 7 }, completedLessons: ['counting1'] } });
+  await expect(page.getByText('Saved. Look for the file in your downloads.')).toBeVisible();
+
+  // 이상한 파일
+  await page.getByTestId('restore-file').setInputFiles({ name: 'notes.json', mimeType: 'application/json', buffer: Buffer.from('{"hello": 1}') });
+  await expect(page.getByText("This file can't be used. Please choose a Math Town backup file.")).toBeVisible();
+
+  // 다른 진행 상황이 든 백업 → 확인 → 되살리기
+  const other = { ...saved, game: { ...saved.game, resources: { apple: 5 }, completedLessons: ['counting1', 'comparing1', 'addition1'], stickers: ['apple', 'acorn'] } };
+  await page.getByTestId('restore-file').setInputFiles({ name: 'backup.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(other)) });
+  await expect(page.getByText('This file has 3 of 9 math games finished and 2 stickers. Replace the current progress with it?')).toBeVisible();
+  await page.getByRole('button', { name: 'Yes, restore' }).click();
+  await expect(page.getByText('Progress was restored from the file.')).toBeVisible();
+  await expect(page.getByText('Math games finished: 3 of 9')).toBeVisible();
+  await page.waitForTimeout(500);
+  expect((await readSave(page)).game).toMatchObject({ resources: { apple: 5 }, stickers: ['apple', 'acorn'] });
+});

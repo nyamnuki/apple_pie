@@ -20,6 +20,7 @@ export const DEFAULT_LAYOUT: RoomLayout = {
 };
 
 export type RoomAction =
+  | { type: 'load'; layout: RoomLayout } // 백업 파일에서 되살리기 (검사를 마친 배치)
   | { type: 'place'; item: PlacedFurniture }
   | { type: 'move'; uid: string; gx: number; gy: number }
   | { type: 'rotate'; uid: string }
@@ -86,5 +87,7 @@ export function applyRoomAction(state: RoomLayout, action: RoomAction, owned: Ow
     }
     case 'reset':
       return DEFAULT_LAYOUT;
+    case 'load':
+      return action.layout;
   }
 }

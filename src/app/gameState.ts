@@ -55,12 +55,15 @@ export type GameAction =
   // wrongTries: '해 보기'에서 틀린 횟수, at: 끝낸 시각 (ISO)
   | { type: 'completeLesson'; lesson: MathLesson; wrongTries: number; at: string }
   | { type: 'craft'; furnitureId: string }
-  | { type: 'reset' }; // 부모 설정에서 진행 상황 모두 지우기
+  | { type: 'reset' } // 부모 설정에서 진행 상황 모두 지우기
+  | { type: 'load'; state: GameState }; // 백업 파일에서 되살리기 (검사를 마친 상태)
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'reset':
       return createInitialGameState();
+    case 'load':
+      return action.state;
     case 'completeLesson': {
       const { rewards, bonus, sticker } = rewardFor(action.lesson, state);
       return {
