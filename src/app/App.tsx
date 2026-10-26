@@ -52,7 +52,18 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
   function renderScreen() {
     switch (screen) {
       case 'title':
-        return <TitleScreen onStart={() => setScreen('room')} onSettings={() => openSettings('title')} notice={notice} onCloseNotice={() => setNotice(null)} />;
+        return (
+          <TitleScreen
+            onStart={() => setScreen('room')}
+            onSettings={() => openSettings('title')}
+            notice={notice}
+            onCloseNotice={() => setNotice(null)}
+            onContinue={(id) => {
+              setLessonId(id);
+              setScreen('lesson');
+            }}
+          />
+        );
       case 'room':
         return (
           <RoomScreen

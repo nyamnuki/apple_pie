@@ -184,3 +184,25 @@ test('놀이 중 다시 보기: 살펴보기 시범을 다시 보고 닫으면 �
   await expect(dialog).toHaveCount(0);
   await expect(page.getByRole('group', { name: 'Answer choices' })).toBeVisible(); // 예상하기 그대로
 });
+
+test('타이틀 이어서 하기: 마지막으로 한 놀이를 바로 시작 (처음이면 없음)', async ({ page, context }) => {
+  await seed(context, {
+    save: makeSave({
+      completedLessons: ['counting1', 'addition1'],
+      lessonStats: {
+        counting1: { plays: 1, firstTry: 1, hints: 0, lastPlayed: '2026-10-25T09:00:00Z' },
+        addition1: { plays: 1, firstTry: 1, hints: 0, lastPlayed: '2026-10-26T09:00:00Z' },
+      },
+    }),
+  });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Play again: Adding More' }).click();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Adding More');
+});
+
+test('처음 하는 아이의 타이틀에는 이어서 하기가 없다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Play again/ })).toHaveCount(0);
+});

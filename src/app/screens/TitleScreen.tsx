@@ -1,10 +1,14 @@
-import { Play, Settings } from '../../components/icons';
+import { Play, RotateCcw, Settings } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import SaveNotice from '../../components/SaveNotice';
 import Character from '../../components/characters/Character';
 import TitleScene from '../../components/art/TitleScene';
 import { useI18n } from '../../i18n';
+import { useGame } from '../GameProvider';
+import { lessonKey } from '../../data/math/lessons';
+import { lastLesson } from '../../features/math/lastLesson';
+import type { LessonId } from '../../types/math';
 import type { LoadStatus } from '../../services/storage/gameSave';
 
 // 타이틀 화면: 루루가 반겨 준다.
@@ -13,10 +17,13 @@ interface Props {
   onSettings: () => void;
   notice: LoadStatus | null; // 보여줄 저장 안내 (없으면 null)
   onCloseNotice: () => void;
+  onContinue?: (id: LessonId) => void; // 마지막으로 한 놀이를 바로 시작
 }
 
-export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice }: Props) {
+export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice, onContinue }: Props) {
   const { t } = useI18n();
+  const { game } = useGame();
+  const last = lastLesson(game.lessonStats);
   return (
     <AppShell background="bg-gradient-to-b from-mist via-cream to-moss">
       <TitleScene />
@@ -34,7 +41,7 @@ export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice
           <Character expression="cheer" size={150} bob />
           <Character id="momo" expression="happy" size={92} />
         </div>
-        <div className="flex w-full max-w-xs flex-col items-center gap-6">
+        <div className="flex w-full max-w-xs flex-col items-center gap-6 [@media(max-height:500px)]:gap-3">
           <div>
             {/* 제목: 크림색 종이 띠 위에 (뒤 풍경과 겹쳐도 또렷하게) */}
             <h1 className="storybook-card rounded-[2rem] px-6 py-2 text-5xl font-bold sm:text-6xl">{t('app.title')}</h1>
@@ -44,6 +51,13 @@ export default function TitleScreen({ onStart, onSettings, notice, onCloseNotice
             <Play size={30} fill="currentColor" aria-hidden />
             {t('menu.start')}
           </BigButton>
+          {/* 이어서 하기: 마지막으로 끝낸 놀이를 바로 (처음 하는 아이에게는 없음) */}
+          {onContinue && last && (
+            <BigButton variant="sage" onClick={() => onContinue(last)} className="w-full">
+              <RotateCcw size={24} aria-hidden />
+              {t('menu.continue', { title: t(lessonKey(last, 'title')) })}
+            </BigButton>
+          )}
         </div>
       </div>
 

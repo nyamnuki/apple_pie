@@ -8,6 +8,7 @@ export const en = {
     promise: 'No ads · No purchases · No personal data',
   },
   menu: {
+    continue: 'Play again: {title}',
     start: 'Start',
     play: 'Play',
     decorate: 'Decorate',

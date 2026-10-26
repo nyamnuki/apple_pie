@@ -9,6 +9,7 @@ export const ko: Messages = {
     promise: '광고 없음 · 결제 없음 · 개인정보 수집 없음',
   },
   menu: {
+    continue: '이어서 하기: {title}',
     start: '시작하기',
     play: '놀이하기',
     decorate: '방 꾸미기',
