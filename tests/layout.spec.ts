@@ -39,7 +39,7 @@ for (const locale of ['en', 'ko'] as const) {
 
       await page.goto('/');
       await check(page, 'title');
-      await page.locator('main button:has(svg.lucide-play)').click();
+      await page.locator('main button:has(svg[data-icon="play"])').click();
       await check(page, 'room');
       await nav(1).click();
       await check(page, 'decorate');
@@ -57,7 +57,7 @@ for (const locale of ['en', 'ko'] as const) {
       await back();
       await page.locator('header button').nth(1).click();
       await check(page, 'settings');
-      await page.locator('button:has(svg.lucide-lock)').click();
+      await page.locator('button:has(svg[data-icon="lock"])').click();
       await check(page, 'parent-gate');
       await back();
       await back();
@@ -72,7 +72,7 @@ for (const locale of ['en', 'ko'] as const) {
       await back();
       await page.locator('ol li button').first().click(); // 지도 맨 위 = 수정 동굴
       await page.locator('li button').last().click();
-      await page.locator('main button:has(svg.lucide-arrow-right)').click();
+      await page.locator('main button:has(svg[data-icon="arrow-right"])').click();
       await check(page, 'lesson-groups');
       expect(problems).toEqual([]);
       await context.close();

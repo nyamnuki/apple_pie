@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check } from '../../components/icons';
 import { useI18n, LOCALES, type Locale, type TranslationKey } from '../../i18n';
 
 // 각 언어 버튼의 이름. 언어 이름은 그 언어 자체로도 함께 보여줘서

@@ -1,5 +1,5 @@
 import { Component, type ReactNode } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw } from '../components/icons';
 import AppShell from '../components/AppShell';
 import BigButton from '../components/BigButton';
 import Character from '../components/characters/Character';

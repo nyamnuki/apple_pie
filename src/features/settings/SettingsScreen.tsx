@@ -1,4 +1,4 @@
-import { Languages, Save, Lock, Volume2, VolumeX, Music, MessageCircle } from 'lucide-react';
+import { Languages, Save, Lock, Volume2, VolumeX, Music, MessageCircle } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';

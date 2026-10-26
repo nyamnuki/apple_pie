@@ -1,4 +1,4 @@
-import { Play, Settings } from 'lucide-react';
+import { Play, Settings } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import SaveNotice from '../../components/SaveNotice';

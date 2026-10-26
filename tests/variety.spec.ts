@@ -52,7 +52,7 @@ test('지도: 마을마다 풍경 그림, 잠긴 마을은 안개와 자물쇠',
   for (const name of [/^Acorn Village/, /^Moonlight Forest/, /^Crystal Cave/]) await expect(page.getByRole('button', { name }).locator('svg').first()).toBeVisible();
   const cave = page.getByRole('button', { name: /^Crystal Cave/ });
   await expect(cave).toBeDisabled();
-  await expect(cave.locator('svg.lucide-lock')).toBeVisible();
+  await expect(cave.locator('svg[data-icon="lock"]')).toBeVisible();
 });
 
 test('방 크게 보기: 돋보기 버튼으로 바닥 칸이 커지고, 커진 상태에서도 놓을 수 있다', async ({ page, context }) => {

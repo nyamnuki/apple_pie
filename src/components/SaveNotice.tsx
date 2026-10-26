@@ -1,4 +1,4 @@
-import { Info } from 'lucide-react';
+import { Info } from './icons';
 import BigButton from './BigButton';
 import { useI18n } from '../i18n';
 import type { LoadStatus } from '../services/storage/gameSave';

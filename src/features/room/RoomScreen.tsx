@@ -1,4 +1,4 @@
-import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart } from 'lucide-react';
+import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';

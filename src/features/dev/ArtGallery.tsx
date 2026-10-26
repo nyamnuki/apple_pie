@@ -7,6 +7,7 @@ import { MATH_ITEMS } from '../../data/math/items';
 import { RESOURCES } from '../../data/resources/resources';
 import { CHARACTERS, EXPRESSIONS, type CharacterId } from '../../data/characters/characters';
 import { DEFAULT_LAYOUT } from '../room/roomState';
+import * as Icons from '../../components/icons';
 
 // 그림 모아 보기 (주소 끝에 #gallery). 모든 그림이 같은 세계처럼 보이는지 한 화면에서 비교하는 용도.
 // 아이에게는 보이지 않는다 (메뉴에서 갈 수 없음).
@@ -38,6 +39,21 @@ export default function ArtGallery() {
             {FURNITURE.map((f) => (
               <AssetThumb key={f.id} def={f} size={96} />
             ))}
+          </div>
+        </section>
+        <section className={section}>
+          <h2 className="mb-2 text-xl font-bold">Icons</h2>
+          <div className="flex flex-wrap gap-3 text-wood">
+            {Object.entries(Icons)
+              .filter(([, I]) => typeof I === 'function')
+              .map(([name, I]) => {
+                const Icon = I as (p: { size: number }) => JSX.Element;
+                return (
+                  <span key={name} title={name} className="flex h-14 w-14 items-center justify-center rounded-2xl bg-cream shadow-pop-sm">
+                    <Icon size={32} />
+                  </span>
+                );
+              })}
           </div>
         </section>
         <section className={section}>

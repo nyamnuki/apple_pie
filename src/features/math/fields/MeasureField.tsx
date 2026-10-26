@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus } from '../../../components/icons';
 import BigButton from '../../../components/BigButton';
 import CountBubble from './CountBubble';
 import { range, useSequence, type FieldMode } from './useSequence';

@@ -1,4 +1,4 @@
-import { X } from 'lucide-react';
+import { X } from '../../../components/icons';
 import AssetIcon from '../../../components/AssetIcon';
 import { MATH_ITEMS } from '../../../data/math/items';
 import type { MathItemId } from '../../../types/math';

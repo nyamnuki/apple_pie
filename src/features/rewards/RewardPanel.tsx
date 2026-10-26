@@ -1,4 +1,4 @@
-import { Hammer, LayoutGrid, RotateCcw } from 'lucide-react';
+import { Hammer, LayoutGrid, RotateCcw } from '../../components/icons';
 import BigButton from '../../components/BigButton';
 import ResourceChip from '../../components/ResourceChip';
 import Character from '../../components/characters/Character';

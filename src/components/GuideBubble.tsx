@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Volume2 } from 'lucide-react';
+import { Volume2 } from './icons';
 import Character from './characters/Character';
 import { CHARACTERS, type CharacterId, type Expression } from '../data/characters/characters';
 import { useI18n } from '../i18n';

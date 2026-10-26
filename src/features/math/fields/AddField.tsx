@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus } from '../../../components/icons';
 import ItemToken from './ItemToken';
 import CountBubble from './CountBubble';
 import { range, useSequence, type FieldMode } from './useSequence';

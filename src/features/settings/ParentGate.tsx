@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Delete, Check } from 'lucide-react';
+import { Delete, Check } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
 import { useI18n } from '../../i18n';

@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState, type ReactNode, type TouchEvent } from 'react';
-import { ZoomIn, ZoomOut } from 'lucide-react';
+import { ZoomIn, ZoomOut } from '../../../components/icons';
 import BigButton from '../../../components/BigButton';
 import { useI18n } from '../../../i18n';
 import { GRID, VIEW_H, VIEW_W, toScreen } from '../iso';

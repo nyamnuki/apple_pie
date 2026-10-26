@@ -1,4 +1,4 @@
-import { Move, RotateCw, PackageOpen, Check } from 'lucide-react';
+import { Move, RotateCw, PackageOpen, Check } from '../../../components/icons';
 import BigButton from '../../../components/BigButton';
 import AssetThumb from '../../../components/AssetThumb';
 import { useI18n } from '../../../i18n';

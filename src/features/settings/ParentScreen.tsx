@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ShieldCheck, BarChart3, BookOpen, Trash2 } from 'lucide-react';
+import { ShieldCheck, BarChart3, BookOpen, Trash2 } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';

@@ -1,4 +1,4 @@
-import { Lock, ChevronRight } from 'lucide-react';
+import { Lock, ChevronRight } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
 import { REGIONS, getRegion } from '../../data/regions/regions';

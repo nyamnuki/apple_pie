@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Hammer, Lock, Sofa } from 'lucide-react';
+import { Hammer, Lock, Sofa } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';

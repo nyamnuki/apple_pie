@@ -1,5 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from './icons';
 import BigButton from './BigButton';
 import { useI18n } from '../i18n';
 

@@ -8,10 +8,10 @@
 - 새 문구·그림은 docs/ART_BIBLE.md 규칙
 
 ## 진행 중 / 다음
-5. [ ] 손그림 버튼 아이콘 (lucide 대신)
 6. [ ] 반려동물 (방에서 돌아다니는 작은 친구)
 
 ## 끝난 것
+- [x] 손그림 아이콘 33개 (`src/components/icons/`), lucide-react 의존성 제거, 그림 모아 보기에 아이콘 추가
 - [x] 길이 재기 놀이 '얼마나 길까?' (달빛 숲 3번째): 큰 버튼으로 블록을 빈틈없이 놓기, 예상하기는 블록 1개만 보여 줌, 다시 하면 4~9칸 (`MeasureField.tsx`)
 - [x] 방에서 루루가 말 걸기: 첫 놀이 권하기 → 새로 열린 마을 → 가방의 가구 놓기 → 만들 수 있는 가구 → 다정한 말 (`src/features/room/roomTip.ts`)
 - [x] 스티커 도감: 놀이를 끝내면 그 마을 스티커 한 장 (마을마다 6장, 18장), 보상 화면 '새 스티커', 방 메뉴의 '스티커 도감' (`src/data/stickers/stickers.ts`, `tests/stickers.spec.ts`)

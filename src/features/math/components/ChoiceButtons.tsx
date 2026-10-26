@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react';
+import { Check, X } from '../../../components/icons';
 import AssetIcon from '../../../components/AssetIcon';
 import { MATH_ITEMS, itemNameKey } from '../../../data/math/items';
 import { useI18n } from '../../../i18n';

@@ -1,4 +1,4 @@
-import { Check, X } from 'lucide-react';
+import { Check, X } from '../../../components/icons';
 import AssetThumb from '../../../components/AssetThumb';
 import BigButton from '../../../components/BigButton';
 import { useI18n } from '../../../i18n';

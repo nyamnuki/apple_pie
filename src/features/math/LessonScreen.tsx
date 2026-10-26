@@ -1,5 +1,5 @@
 import { useMemo, useReducer, useRef, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '../../components/icons';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
