@@ -80,6 +80,8 @@ export const en = {
     cleared: 'Everything is back in your bag. Your room is ready to decorate again!',
     undoClear: 'Put it all back',
     restored: 'Everything is back where it was!',
+    undo: 'Undo',
+    undone: 'Back the way it was!',
     putAway: 'Put away',
     done: 'Done',
     cancel: 'Cancel',

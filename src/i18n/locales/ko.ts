@@ -81,6 +81,8 @@ export const ko: Messages = {
     cleared: '모두 가방에 넣었어요. 방을 새로 꾸며 봐요!',
     undoClear: '다시 원래대로',
     restored: '모두 원래 자리로 돌아왔어요!',
+    undo: '되돌리기',
+    undone: '방금 전으로 되돌렸어요!',
     putAway: '치우기',
     done: '다 했어요',
     cancel: '그만두기',

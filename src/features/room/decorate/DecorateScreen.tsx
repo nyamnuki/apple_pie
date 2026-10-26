@@ -11,6 +11,7 @@ import PlacingPanel from './PlacingPanel';
 import { GRID } from '../iso';
 import { canPlace, canPlaceWall, isWallItem } from '../placement';
 import { newUid, useRoom } from '../RoomProvider';
+import type { RoomAction } from '../roomState';
 import { getFurniture } from '../../../data/furniture/furniture';
 import { useGame } from '../../../app/GameProvider';
 import { useSound } from '../../../services/audio/SoundProvider';
@@ -86,9 +87,15 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
   const [celebrate, setCelebrate] = useState<{ uid: string; n: number } | null>(null);
   const [shake, setShake] = useState<{ uid: string; n: number } | null>(null);
 
-  // 모두 치우기: 한 번 더 묻는 중인지, 치운 뒤 되돌릴 예전 방
+  // 모두 치우기: 한 번 더 묻는 중인지
   const [confirmClear, setConfirmClear] = useState(false);
-  const [undo, setUndo] = useState<RoomLayout | null>(null);
+  // 되돌리기: 방을 바꾸기 바로 전 모습 (한 번만). cleared: 모두 치우기였는지
+  const [undo, setUndo] = useState<{ layout: RoomLayout; cleared: boolean } | null>(null);
+  // 방을 바꾸는 모든 동작은 여기를 거쳐, 바로 전 모습을 기억해 둔다
+  const act = (action: RoomAction) => {
+    setUndo({ layout, cleared: action.type === 'clear' });
+    dispatch(action);
+  };
   // 묻는 상자가 화면 아래에 가려지지 않게
   useEffect(() => {
     if (confirmClear) document.getElementById('clear-q')?.parentElement?.scrollIntoView({ block: 'nearest' });
@@ -96,7 +103,6 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
 
   const change = (next: Mode, message: TranslationKey | null = null) => {
     setConfirmClear(false);
-    setUndo(null);
     setMode(next);
     setFlash(message);
     setSuggest(null);
@@ -128,7 +134,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     if (!def) return;
     if (def.category === 'wallpaper') {
       const on = layout.wallpaperId !== furnitureId;
-      dispatch({ type: 'setWallpaper', wallpaperId: on ? furnitureId : null });
+      act({ type: 'setWallpaper', wallpaperId: on ? furnitureId : null });
       change({ kind: 'idle' }, on ? 'decorate.wallpaperOn' : 'decorate.wallpaperOff');
       return;
     }
@@ -151,8 +157,8 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     if (mode.kind !== 'placing' && mode.kind !== 'moving') return;
     play.place();
     const uid = mode.kind === 'placing' ? newUid(mode.furnitureId) : mode.uid;
-    if (mode.kind === 'placing') dispatch({ type: 'place', item: { uid, furnitureId: mode.furnitureId, gx: x, gy: y, rotation: 0 } });
-    else dispatch({ type: 'move', uid, gx: x, gy: y });
+    if (mode.kind === 'placing') act({ type: 'place', item: { uid, furnitureId: mode.furnitureId, gx: x, gy: y, rotation: 0 } });
+    else act({ type: 'move', uid, gx: x, gy: y });
     setCelebrate((c) => ({ uid, n: (c?.n ?? 0) + 1 }));
     change({ kind: 'selected', uid }, 'decorate.placed');
   };
@@ -181,10 +187,10 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
     play.place();
     if (mode.kind === 'placing') {
       const uid = newUid(mode.furnitureId);
-      dispatch({ type: 'placeWall', item: { uid, furnitureId: mode.furnitureId, wall, slot } });
+      act({ type: 'placeWall', item: { uid, furnitureId: mode.furnitureId, wall, slot } });
       return change({ kind: 'selected', uid }, 'decorate.placed');
     }
-    dispatch({ type: 'moveWall', uid: mode.uid, wall, slot });
+    act({ type: 'moveWall', uid: mode.uid, wall, slot });
     change({ kind: 'selected', uid: mode.uid }, 'decorate.placed');
   };
 
@@ -218,33 +224,34 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
       return setFlash('decorate.cantTurn');
     }
     play.place();
-    dispatch({ type: 'rotate', uid: selectedItem.uid });
+    act({ type: 'rotate', uid: selectedItem.uid });
     setFlash('decorate.turned');
   };
 
   const paint = (tint: 0 | 1 | 2) => {
     if (!selectedItem || (selectedItem.tint ?? 0) === tint) return;
     play.place();
-    dispatch({ type: 'tint', uid: selectedItem.uid, tint });
+    act({ type: 'tint', uid: selectedItem.uid, tint });
     setFlash('decorate.painted');
   };
 
   const clearAll = () => {
-    const before = layout;
-    dispatch({ type: 'clear' });
+    act({ type: 'clear' });
     change({ kind: 'idle' }, 'decorate.cleared');
-    setUndo(before);
     play.place();
   };
+  // 바로 전 모습으로 (한 번만)
   const restore = () => {
     if (!undo) return;
-    dispatch({ type: 'load', layout: undo });
-    change({ kind: 'idle' }, 'decorate.restored');
+    dispatch({ type: 'load', layout: undo.layout });
+    change({ kind: 'idle' }, undo.cleared ? 'decorate.restored' : 'decorate.undone');
+    setUndo(null);
+    play.place();
   };
 
   const putAway = () => {
     if (!activeUid) return;
-    dispatch({ type: 'remove', uid: activeUid });
+    act({ type: 'remove', uid: activeUid });
     change({ kind: 'idle' });
   };
 
@@ -273,23 +280,31 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
       </p>
 
       <div className="flex min-h-0 flex-1 flex-col gap-3 [@media(max-height:500px)]:flex-row">
-        <ZoomableRoom className="min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0">
-          <RoomView
-            layout={layout}
-            selectedUid={activeUid}
-            validSpots={validSpots}
-            onTileClick={tapTile}
-            onFurnitureClick={(uid) => change({ kind: 'selected', uid })}
-            validWallSpots={validWallSpots}
-            wallBand={(placingDef ?? (selectedWall && getFurniture(selectedWall.furnitureId)))?.wallBand ?? 'middle'}
-            onWallClick={tapWall}
-            onTileHover={picking ? setHover : undefined}
-            ghost={ghost}
-            wallGhost={wallGhost}
-            shake={shake}
-            celebrate={celebrate}
-          />
-        </ZoomableRoom>
+        <div className="relative flex min-h-[240px] flex-1 flex-col [@media(max-height:500px)]:min-h-0">
+          <ZoomableRoom className="min-h-[240px] flex-1 [@media(max-height:500px)]:min-h-0">
+            <RoomView
+              layout={layout}
+              selectedUid={activeUid}
+              validSpots={validSpots}
+              onTileClick={tapTile}
+              onFurnitureClick={(uid) => change({ kind: 'selected', uid })}
+              validWallSpots={validWallSpots}
+              wallBand={(placingDef ?? (selectedWall && getFurniture(selectedWall.furnitureId)))?.wallBand ?? 'middle'}
+              onWallClick={tapWall}
+              onTileHover={picking ? setHover : undefined}
+              ghost={ghost}
+              wallGhost={wallGhost}
+              shake={shake}
+              celebrate={celebrate}
+            />
+          </ZoomableRoom>
+          {/* 되돌리기: 방금 바꾼 것 하나를 되돌린다 (방 왼쪽 위) */}
+          {undo && (
+            <BigButton variant="soft" size="icon" className="absolute left-0 top-0" aria-label={t('decorate.undo')} onClick={restore}>
+              <RotateCcw size={28} aria-hidden />
+            </BigButton>
+          )}
+        </div>
 
         <div className="[@media(max-height:500px)]:w-72 [@media(max-height:500px)]:overflow-y-auto">
           {mode.kind === 'selected' && selectedDef ? (
@@ -315,7 +330,7 @@ export default function DecorateScreen({ onBack }: { onBack: () => void }) {
             <div className="flex flex-col gap-3">
               <FurnitureTray layout={layout} owned={game.furniture} onPick={pick} />
               {/* 모두 치우기 (한 번 더 묻기) → 치운 뒤에는 되돌리기 */}
-              {undo ? (
+              {undo?.cleared ? (
                 <BigButton variant="sage" onClick={restore}>
                   <RotateCcw size={24} aria-hidden />
                   {t('decorate.undoClear')}

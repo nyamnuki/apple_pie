@@ -223,3 +223,20 @@ test('꾸미기 모두 치우기: 한 번 더 묻고, 치운 뒤 다시 원래�
   await page.waitForTimeout(400);
   expect((await readSave(page)).room.placed).toHaveLength(4);
 });
+
+test('꾸미기 되돌리기: 방금 바꾼 것 하나를 되돌린다', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Decorate' }).click();
+  await expect(page.getByRole('button', { name: 'Undo' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Flower Pot in your room' }).click();
+  await page.getByRole('button', { name: 'Put away' }).click();
+  await expect(page.getByRole('button', { name: 'Flower Pot in your room' })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(guide(page)).toHaveText('Back the way it was!');
+  await expect(page.getByRole('button', { name: 'Flower Pot in your room' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Undo' })).toHaveCount(0); // 한 번만
+  await page.waitForTimeout(400);
+  expect((await readSave(page)).room.placed.some((p: { furnitureId: string }) => p.furnitureId === 'flowerPot')).toBe(true);
+});
