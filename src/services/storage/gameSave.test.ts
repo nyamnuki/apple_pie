@@ -141,6 +141,15 @@ describe('놀이 기록', () => {
   });
 });
 
+describe('스티커', () => {
+  it('예전 저장본은 빈 도감, 모르는 스티커·겹친 스티커는 버린다', () => {
+    put(v1Save);
+    expect(loadGame().game.stickers).toEqual([]);
+    put({ schemaVersion: SCHEMA_VERSION, savedAt: 'x', game: { ...createInitialGameState(), stickers: ['apple', 'apple', 'dragon', 7, 'moon'] }, room: DEFAULT_LAYOUT });
+    expect(loadGame().game.stickers).toEqual(['apple', 'moon']);
+  });
+});
+
 describe('저장이 막힌 브라우저', () => {
   it('처음 상태로 시작하고(unavailable), 저장은 실패를 알려준다', () => {
     store.blocked = true;

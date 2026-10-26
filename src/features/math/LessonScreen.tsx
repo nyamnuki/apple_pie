@@ -65,7 +65,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo), [lessonId, playNo]);
   const { play } = useSound();
   // 이번에 받은 보상 (보상 화면에 보여준다)
-  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; newRegion: RegionId | null } | null>(null);
+  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null } | null>(null);
 
   // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
   const rewarded = useRef(false);
@@ -163,6 +163,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           bonus={earned.bonus}
           discovery={t(k('discover'))}
           newRegion={earned.newRegion}
+          sticker={earned.sticker}
           onWorkshop={onWorkshop}
           onAgain={() => {
             rewarded.current = false; // 다시 하면 새 판 (새 수)

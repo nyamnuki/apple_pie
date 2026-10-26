@@ -28,7 +28,7 @@ test('달빛 숲 놀이 2개를 끝내면 수정 동굴이 열린다', async ({ 
   await page.getByRole('button', { name: 'Next' }).click();
   await choices.getByRole('button', { name: '5', exact: true }).click();
   await page.getByRole('button', { name: 'Finish' }).click();
-  await expect(page.getByRole('status')).toHaveText(/A new place opened: Crystal Cave!/);
+  await expect(page.getByRole('status').filter({ hasText: 'A new place opened' })).toHaveText(/A new place opened: Crystal Cave!/);
 
   await page.getByRole('button', { name: 'More games' }).click();
   await page.getByRole('button', { name: 'Go back' }).click();

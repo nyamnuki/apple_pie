@@ -21,10 +21,10 @@ describe('처음 상태', () => {
 describe('보상 정책', () => {
   it('처음 끝내면 기본 보상 + 처음 보너스, 다시 하면 기본 보상만', () => {
     let s = createInitialGameState();
-    expect(rewardFor(counting, s)).toEqual({ rewards: { acorn: 3, apple: 1 }, bonus: { goldenAcorn: 1 } });
+    expect(rewardFor(counting, s)).toEqual({ rewards: { acorn: 3, apple: 1 }, bonus: { goldenAcorn: 1 }, sticker: 'apple' });
     s = gameReducer(s, finish(counting));
     expect(s.resources).toEqual({ acorn: 3, apple: 1, goldenAcorn: 1 });
-    expect(rewardFor(counting, s)).toEqual({ rewards: { acorn: 3, apple: 1 }, bonus: {} });
+    expect(rewardFor(counting, s)).toEqual({ rewards: { acorn: 3, apple: 1 }, bonus: {}, sticker: 'acorn' });
     s = gameReducer(s, finish(counting));
     expect(s.resources).toEqual({ acorn: 6, apple: 2, goldenAcorn: 1 });
     expect(s.completedLessons).toEqual(['counting1']); // 같은 놀이는 한 번만 기록
@@ -34,6 +34,21 @@ describe('보상 정책', () => {
     let s = gameReducer(createInitialGameState(), finish(counting));
     s = gameReducer(s, finish(getLesson('addition1')));
     expect(s.resources.goldenAcorn).toBe(2);
+  });
+});
+
+describe('스티커 도감', () => {
+  it('끝낼 때마다 그 마을의 다음 스티커를 한 장씩, 다 모으면 더 주지 않는다', () => {
+    let s = createInitialGameState();
+    for (let i = 0; i < 8; i++) s = gameReducer(s, finish(counting));
+    expect(s.stickers).toEqual(['apple', 'acorn', 'flower', 'ladybug', 'butterfly', 'frog']);
+    expect(rewardFor(counting, s).sticker).toBeNull();
+  });
+
+  it('마을마다 따로 모은다', () => {
+    let s = gameReducer(createInitialGameState(), finish(counting));
+    s = gameReducer(s, finish(patterns));
+    expect(s.stickers).toEqual(['apple', 'moon']);
   });
 });
 
@@ -92,6 +107,6 @@ describe('가구 만들기', () => {
   });
 
   it('달빛 숲 레슨 보상은 달빛 숲 재료', () => {
-    expect(rewardFor(patterns, createInitialGameState())).toEqual({ rewards: { glowBranch: 2 }, bonus: { moonDew: 1 } });
+    expect(rewardFor(patterns, createInitialGameState())).toEqual({ rewards: { glowBranch: 2 }, bonus: { moonDew: 1 }, sticker: 'moon' });
   });
 });

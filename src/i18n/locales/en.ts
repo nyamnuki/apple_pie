@@ -14,6 +14,7 @@ export const en = {
     settings: 'Settings',
     workshop: 'Workshop',
     inventory: 'My Bag',
+    stickers: 'Sticker Book',
     back: 'Back',
   },
   room: {
@@ -309,6 +310,12 @@ export const en = {
       hint3: "Let's count together: 10, 20, 30…",
       correct: 'Yes! {groups} tens and {ones} ones make {answer}!',
     },
+  },
+  stickers: {
+    title: 'Sticker Book',
+    intro: 'Finish a game to get a sticker from that place. You have {n} of {total}.',
+    missing: 'Sticker not found yet',
+    got: 'New sticker: {name}!',
   },
   reward: {
     title: 'You discovered something new!',

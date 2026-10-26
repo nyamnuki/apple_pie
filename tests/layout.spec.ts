@@ -52,6 +52,9 @@ for (const locale of ['en', 'ko'] as const) {
       await nav(3).click();
       await check(page, 'bag');
       await back();
+      await nav(4).click();
+      await check(page, 'stickers');
+      await back();
       await page.locator('header button').nth(1).click();
       await check(page, 'settings');
       await page.locator('button:has(svg.lucide-lock)').click();

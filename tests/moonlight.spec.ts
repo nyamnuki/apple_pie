@@ -14,7 +14,7 @@ test('도토리 마을 놀이 2개를 끝내면 달빛 숲이 열린다', async 
 
   await goToRegion(page, /^Acorn Village/);
   await playLesson(page, /Taking Away/, 'Take this one away', '7');
-  await expect(page.getByRole('status')).toHaveText(/A new place opened: Moonlight Forest!/);
+  await expect(page.getByRole('status').filter({ hasText: 'A new place opened' })).toHaveText(/A new place opened: Moonlight Forest!/);
 
   await page.getByRole('button', { name: 'More games' }).click();
   await page.getByRole('button', { name: 'Go back' }).click(); // 놀이 고르기 → 지도

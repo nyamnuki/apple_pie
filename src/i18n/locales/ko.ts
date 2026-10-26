@@ -15,6 +15,7 @@ export const ko: Messages = {
     settings: '설정',
     workshop: '공방',
     inventory: '내 가방',
+    stickers: '스티커 도감',
     back: '뒤로',
   },
   room: {
@@ -311,6 +312,12 @@ export const ko: Messages = {
       hint3: '같이 세어 볼게요. 10, 20, 30…',
       correct: '맞아요! 10묶음 {groups}개와 낱개 {ones}개, 모두 {answer}개예요!',
     },
+  },
+  stickers: {
+    title: '스티커 도감',
+    intro: '놀이를 끝내면 그 마을의 스티커를 받아요. 지금 {total}장 중 {n}장 모았어요.',
+    missing: '아직 못 찾은 스티커',
+    got: '새 스티커: {name}!',
   },
   reward: {
     title: '새로운 것을 발견했어요!',

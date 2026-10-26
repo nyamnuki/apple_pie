@@ -1,5 +1,6 @@
 import { FURNITURE, getFurniture } from '../data/furniture/furniture';
 import { canAfford, lockedRegionOf, bundleEntries } from '../utils/bundles';
+import { nextSticker } from '../data/stickers/stickers';
 import type { LessonId, MathLesson } from '../types/math';
 import type { ResourceBundle } from '../types/resources';
 
@@ -18,6 +19,7 @@ export interface GameState {
   furniture: Record<string, number>; // 가구 id → 가진 개수 (방에 놓은 것 포함)
   completedLessons: LessonId[];
   lessonStats: Partial<Record<LessonId, LessonStats>>;
+  stickers: string[]; // 모은 스티커 id (받은 순서)
 }
 
 // 처음 상태: 재료 없음, '처음부터 가진' 가구 1개씩
@@ -27,13 +29,15 @@ export function createInitialGameState(): GameState {
     furniture: Object.fromEntries(FURNITURE.filter((f) => f.unlockCondition.type === 'starter').map((f) => [f.id, 1])),
     completedLessons: [],
     lessonStats: {},
+    stickers: [],
   };
 }
 
 // 놀이를 끝냈을 때 받을 보상 (정답 여부와 상관없이, 처음이면 보너스 추가)
 export function rewardFor(lesson: MathLesson, state: GameState) {
   const firstTime = !state.completedLessons.includes(lesson.id);
-  return { rewards: lesson.rewards, bonus: firstTime ? lesson.firstTimeBonus : {} };
+  // 스티커: 그 마을에서 아직 없는 다음 한 장 (다 모았으면 없음)
+  return { rewards: lesson.rewards, bonus: firstTime ? lesson.firstTimeBonus : {}, sticker: nextSticker(lesson.region, state.stickers)?.id ?? null };
 }
 
 function addBundle(have: ResourceBundle, add: ResourceBundle, sign = 1): ResourceBundle {
@@ -58,12 +62,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'reset':
       return createInitialGameState();
     case 'completeLesson': {
-      const { rewards, bonus } = rewardFor(action.lesson, state);
+      const { rewards, bonus, sticker } = rewardFor(action.lesson, state);
       return {
         ...state,
         resources: addBundle(addBundle(state.resources, rewards), bonus),
         completedLessons: state.completedLessons.includes(action.lesson.id) ? state.completedLessons : [...state.completedLessons, action.lesson.id],
         lessonStats: { ...state.lessonStats, [action.lesson.id]: addPlay(state.lessonStats[action.lesson.id], action.wrongTries, action.at) },
+        stickers: sticker ? [...state.stickers, sticker] : state.stickers,
       };
     }
     case 'craft': {

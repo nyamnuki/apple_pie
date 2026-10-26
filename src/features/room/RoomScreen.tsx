@@ -1,4 +1,4 @@
-import { Puzzle, Sofa, Settings, Hammer, Backpack } from 'lucide-react';
+import { Puzzle, Sofa, Settings, Hammer, Backpack, BookHeart } from 'lucide-react';
 import AppShell from '../../components/AppShell';
 import BigButton from '../../components/BigButton';
 import ScreenHeader from '../../components/ScreenHeader';
@@ -11,12 +11,13 @@ interface Props {
   onDecorate: () => void;
   onWorkshop: () => void;
   onInventory: () => void;
+  onStickers: () => void;
   onSettings: () => void;
   onBack: () => void;
 }
 
 // 내 방(홈) 화면: 지금 꾸며진 방을 보여주고, 놀이하기·방 꾸미기로 갈 수 있다.
-export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory, onSettings, onBack }: Props) {
+export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory, onStickers, onSettings, onBack }: Props) {
   const { t } = useI18n();
   const { layout } = useRoom();
   return (
@@ -51,9 +52,13 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
             <Hammer size={26} aria-hidden />
             {t('menu.workshop')}
           </BigButton>
-          <BigButton variant="soft" className="col-span-2 !min-h-[52px]" onClick={onInventory}>
+          <BigButton variant="soft" className="!min-h-[52px] !px-2" onClick={onInventory}>
             <Backpack size={24} aria-hidden />
             {t('menu.inventory')}
+          </BigButton>
+          <BigButton variant="soft" className="!min-h-[52px] !px-2" onClick={onStickers}>
+            <BookHeart size={24} aria-hidden />
+            {t('menu.stickers')}
           </BigButton>
         </nav>
       </div>

@@ -8,6 +8,7 @@ import MathMenuScreen from '../features/math/MathMenuScreen';
 import LessonScreen from '../features/math/LessonScreen';
 import WorkshopScreen from '../features/workshop/WorkshopScreen';
 import InventoryScreen from '../features/inventory/InventoryScreen';
+import StickerBookScreen from '../features/stickers/StickerBookScreen';
 import ParentGate from '../features/settings/ParentGate';
 import ParentScreen from '../features/settings/ParentScreen';
 import RegionMapScreen from '../features/map/RegionMapScreen';
@@ -55,6 +56,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
             onDecorate={() => setScreen('decorate')}
             onWorkshop={() => setScreen('workshop')}
             onInventory={() => setScreen('inventory')}
+            onStickers={() => setScreen('stickers')}
             onSettings={() => openSettings('room')}
             onBack={() => setScreen('title')}
           />
@@ -102,6 +104,8 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
         );
       case 'workshop':
         return <WorkshopScreen onBack={() => setScreen('room')} onDecorate={() => setScreen('decorate')} />;
+      case 'stickers':
+        return <StickerBookScreen onBack={() => setScreen('room')} />;
       case 'inventory':
         return <InventoryScreen onBack={() => setScreen('room')} onWorkshop={() => setScreen('workshop')} onDecorate={() => setScreen('decorate')} />;
     }

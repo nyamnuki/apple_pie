@@ -6,6 +6,8 @@ import { bundleEntries } from '../../utils/bundles';
 import { getRegion } from '../../data/regions/regions';
 import RegionIcon from '../../components/RegionIcon';
 import { useI18n } from '../../i18n';
+import { ItemArt } from '../../components/art/itemArt';
+import { getSticker } from '../../data/stickers/stickers';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 
 interface Props {
@@ -13,15 +15,17 @@ interface Props {
   bonus: ResourceBundle; // 처음 끝냈을 때 보너스 (없으면 빈 묶음)
   discovery: string; // 이번 놀이에서 발견한 원리
   newRegion?: RegionId | null; // 이번에 새로 열린 마을
+  sticker?: string | null; // 이번에 받은 스티커
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
 }
 
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, newRegion, onWorkshop, onAgain, onMoreGames }: Props) {
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, onWorkshop, onAgain, onMoreGames }: Props) {
   const { t, tKey } = useI18n();
   const bonusEntries = bundleEntries(bonus);
+  const stickerDef = sticker ? getSticker(sticker) : undefined;
 
   return (
     // 세로 화면: 위에서 아래로 / 높이가 낮은 가로 화면: 왼쪽 받은 재료, 오른쪽 발견한 것과 버튼
@@ -54,6 +58,16 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, onWo
             </div>
           )}
         </section>
+
+        {/* 새 스티커: 살짝 기울어진 흰 테두리 스티커 */}
+        {stickerDef && (
+          <div role="status" className="flex w-full max-w-md animate-rise items-center gap-3 rounded-3xl bg-apricot/60 p-3" style={{ animationDelay: '500ms' }}>
+            <span className="flex h-20 w-20 shrink-0 rotate-[-4deg] items-center justify-center rounded-3xl bg-white shadow-pop-sm ring-4 ring-white">
+              <ItemArt path={stickerDef.art} size={60} />
+            </span>
+            <span className="text-left text-xl font-bold">{t('stickers.got', { name: tKey(stickerDef.nameKey) })}</span>
+          </div>
+        )}
 
         {newRegion && (
           <p role="status" className="w-full max-w-md animate-rise rounded-3xl bg-lavender p-4 text-xl font-bold" style={{ animationDelay: '600ms' }}>
