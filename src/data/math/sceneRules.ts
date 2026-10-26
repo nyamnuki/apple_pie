@@ -34,6 +34,8 @@ export function sizeOk(scene: MathScene): boolean {
       return scene.n >= 1 && scene.n * 2 <= MAX;
     case 'makeTen':
       return Number.isInteger(scene.have) && scene.have >= 1 && scene.have <= 9;
+    case 'difference':
+      return scene.b >= 1 && scene.a > scene.b && scene.a <= 15;
   }
 }
 

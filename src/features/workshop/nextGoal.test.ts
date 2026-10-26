@@ -34,7 +34,7 @@ describe('공방 다음 목표', () => {
     expect(open.missing).toEqual([['goldenAcorn', 1]]);
     expect(open.from.map((l) => l.id)).not.toContain('counting1');
     expect(open.daily).toBe(false);
-    const done = ['counting1', 'comparing1', 'addition1', 'subtraction1'] as GameState['completedLessons'];
+    const done = ['counting1', 'comparing1', 'addition1', 'subtraction1', 'difference1'] as GameState['completedLessons'];
     const later = nextGoal(state({ resources: { acorn: 99, apple: 99 }, completedLessons: done }))!;
     expect(later.missing).toEqual([['goldenAcorn', 1]]);
     expect(later.from).toEqual([]);

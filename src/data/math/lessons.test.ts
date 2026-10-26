@@ -11,8 +11,8 @@ import { sizeOk } from './sceneRules';
 // 레슨 데이터 점검: 선택지에 정답이 있는지, 수의 범위, 보상과 레시피가 서로 맞는지
 
 describe('레슨 목록', () => {
-  it('도토리 마을 4개, 달빛 숲 3개, 수정 동굴 3개, 햇살 들판 3개, 바람 언덕 2개, 무지개 호수 2개 (README 와 같다)', () => {
-    expect(LESSONS.filter((l) => l.region === 'acornVillage')).toHaveLength(4);
+  it('도토리 마을 5개, 달빛 숲 3개, 수정 동굴 3개, 햇살 들판 3개, 바람 언덕 2개, 무지개 호수 2개 (README 와 같다)', () => {
+    expect(LESSONS.filter((l) => l.region === 'acornVillage')).toHaveLength(5);
     expect(LESSONS.filter((l) => l.region === 'moonlightForest').map((l) => l.id)).toEqual(['patterns1', 'shapes1', 'measure1']);
     expect(LESSONS.filter((l) => l.region === 'crystalCave').map((l) => l.id)).toEqual(['skipCount1', 'skipCount5', 'tens1']);
     expect(LESSONS.filter((l) => l.region === 'sunnyMeadow').map((l) => l.id)).toEqual(['numberLine1', 'evenOdd1', 'makeTen1']);

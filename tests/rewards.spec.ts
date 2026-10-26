@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { seed, makeSave, playCountingApples, goToRegion } from './helpers';
+import { seed, makeSave, playCountingApples, goToRegion, guide, waitLastButtonEnabled } from './helpers';
 
 // 보상 → 공방 → 방에 놓기 → 가방
 test('놀이 보상으로 재료를 모아 공방에서 가구를 만든다', async ({ page, context }) => {
@@ -66,7 +66,7 @@ test('공방 다음 목표: 곧 만들 가구, 모자란 재료, 그 재료를 �
 });
 
 test('마을 완성: 마지막 놀이를 처음 끝내면 축하, 지도에 리본 (다시 해도 축하는 한 번)', async ({ page, context }) => {
-  await seed(context, { save: makeSave({ completedLessons: ['comparing1', 'addition1', 'subtraction1'] }) });
+  await seed(context, { save: makeSave({ completedLessons: ['comparing1', 'addition1', 'subtraction1', 'difference1'] }) });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
   await page.getByRole('button', { name: 'Play' }).click();
@@ -114,4 +114,28 @@ test('보상 화면 다음 놀이: 같은 마을의 안 한 놀이로 바로 간
   await page.getByRole('button', { name: 'Next: Which Has More?' }).click();
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Which Has More?');
   await expect(page.getByRole('button', { name: 'Next', exact: true })).toBeVisible(); // 새 놀이의 살펴보기
+});
+
+test('놀이: 몇 개 더 많을까? (위아래로 짝지으면 남는 수)', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await page.getByRole('button', { name: /How Many More\?/ }).click();
+  await expect(guide(page)).toHaveText('There are 7 apples and 4 pears. Line them up, one apple with one pear.');
+  await page.getByRole('button', { name: 'Next' }).click();
+  const match = page.getByRole('button', { name: 'Give this one a partner' });
+  await expect(match).toHaveCount(4);
+  while (await match.count()) await match.first().click();
+  await expect(page.getByRole('status', { name: 'Count: 3' })).toBeVisible();
+  await expect(guide(page)).toHaveText('3 apples have no partner. There are 3 more apples than pears!');
+  await page.getByRole('button', { name: 'Next' }).click();
+  const choices = page.getByRole('group', { name: 'Answer choices' });
+  await choices.getByRole('button', { name: '14', exact: true }).click();
+  await waitLastButtonEnabled(page);
+  await page.getByRole('button', { name: 'Next' }).click();
+  await page.getByRole('button', { name: 'Next' }).click();
+  await choices.getByRole('button', { name: '2', exact: true }).click();
+  await expect(guide(page)).toHaveText('Yes! 2 more ladybugs.');
 });

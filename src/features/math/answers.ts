@@ -31,6 +31,8 @@ export function answerOf(scene: MathScene): MathAnswer {
       return scene.n * 2;
     case 'makeTen':
       return 10 - scene.have;
+    case 'difference':
+      return scene.a - scene.b;
   }
 }
 
@@ -67,5 +69,7 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
       return { ...vars, n: formatNumber(scene.n), total: formatNumber(scene.n * 2) };
     case 'makeTen':
       return { ...vars, have: formatNumber(scene.have), more: formatNumber(10 - scene.have) };
+    case 'difference':
+      return { ...vars, a: formatNumber(scene.a), b: formatNumber(scene.b), diff: formatNumber(scene.a - scene.b) };
   }
 }

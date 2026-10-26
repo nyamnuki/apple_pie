@@ -46,7 +46,9 @@ export type MathScene =
   // 두 배: 물가의 n 개가 호수에 비치면 모두 몇 개인지 (n + n)
   | { kind: 'double'; item: MathItemId; n: number }
   // 10 만들기: 10칸 틀에 have 개가 있을 때 몇 개 더 있으면 10 인지
-  | { kind: 'makeTen'; item: MathItemId; have: number };
+  | { kind: 'makeTen'; item: MathItemId; have: number }
+  // 몇 개 더 많을까: a 개와 b 개(a > b)를 하나씩 짝지으면 짝 없이 남는 수가 차이
+  | { kind: 'difference'; itemA: MathItemId; itemB: MathItemId; a: number; b: number };
 
 // 길이를 재는 물건 (그림은 src/features/math/fields/MeasureField.tsx)
 export type MeasureThing = 'twig' | 'ribbon' | 'caterpillar';
@@ -80,7 +82,7 @@ export interface MathLesson {
 }
 
 // 놀이 id 목록 (언어 파일의 lessons.<id> 와 같아야 한다)
-export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2' | 'share1' | 'double1' | 'skipCount5' | 'makeTen1';
+export type LessonId = 'counting1' | 'comparing1' | 'addition1' | 'subtraction1' | 'patterns1' | 'shapes1' | 'skipCount1' | 'tens1' | 'measure1' | 'numberLine1' | 'evenOdd1' | 'clock1' | 'clock2' | 'share1' | 'double1' | 'skipCount5' | 'makeTen1' | 'difference1';
 
 // 놀이마다 언어 파일에 있어야 하는 문장들
 export type LessonTextPart =

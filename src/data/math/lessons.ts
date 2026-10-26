@@ -65,6 +65,21 @@ export const LESSONS: MathLesson[] = [
     applyChoices: [5, 6, 7, 8],
   },
 
+  {
+    id: 'difference1',
+    rewards: { acorn: 2, apple: 1 },
+    firstTimeBonus: { goldenAcorn: 1 },
+    area: 'comparing',
+    region: 'acornVillage',
+    icon: 'pear',
+    // 몇 개 더 많을까: 하나씩 짝지으면 짝 없이 남는 수
+    explore: { kind: 'difference', itemA: 'apple', itemB: 'pear', a: 7, b: 4 }, // 3
+    predict: { kind: 'difference', itemA: 'mushroom', itemB: 'flower', a: 9, b: 5 }, // 4 (5 는 적은 쪽, 14 는 더한 실수)
+    predictChoices: [4, 5, 9, 14],
+    apply: { kind: 'difference', itemA: 'ladybug', itemB: 'butterfly', a: 8, b: 6 }, // 2
+    applyChoices: [2, 6, 8, 14],
+  },
+
   // ===== 달빛 숲 =====
   {
     id: 'patterns1',
