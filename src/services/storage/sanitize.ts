@@ -6,6 +6,7 @@ import { createInitialGameState, type GameState } from '../../app/gameState';
 import { DEFAULT_LAYOUT } from '../../features/room/roomState';
 import { canPlace, canPlaceWall } from '../../features/room/placement';
 import { isTint } from '../../features/room/tints';
+import { canWear } from '../../features/outfits/outfits';
 import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';
 import type { LessonId } from '../../types/math';
@@ -58,7 +59,14 @@ export function sanitizeGame(raw: unknown): GameState {
   // 오늘의 문제 도장 (날짜 글자만, 겹치지 않게)
   const dailyDone = Array.isArray(raw.dailyDone) ? [...new Set(raw.dailyDone.filter((d): d is string => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)))].slice(-1000) : [];
 
-  return { resources, furniture, completedLessons, lessonStats, stickers, dailyDone };
+  // 루루 옷 (예전 저장본에는 없다): 모은 스티커로 열린 옷만
+  const rawOutfit = isObject(raw.outfit) ? raw.outfit : {};
+  const outfit = {
+    hat: canWear('hat', rawOutfit.hat, stickers.length) ? rawOutfit.hat : null,
+    scarf: canWear('scarf', rawOutfit.scarf, stickers.length) ? rawOutfit.scarf : null,
+  };
+
+  return { resources, furniture, completedLessons, lessonStats, stickers, dailyDone, outfit };
 }
 
 export function sanitizeRoom(raw: unknown, game: GameState): RoomLayout {

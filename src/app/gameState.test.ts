@@ -52,6 +52,25 @@ describe('스티커 도감', () => {
   });
 });
 
+describe('루루 옷장', () => {
+  const withStickers = (n: number): GameState => ({ ...createInitialGameState(), stickers: Array.from({ length: n }, (_, i) => `s${i}`) });
+
+  it('처음에는 아무것도 입지 않는다', () => {
+    expect(createInitialGameState().outfit).toEqual({ hat: null, scarf: null });
+  });
+
+  it('스티커로 열린 옷만, 맞는 자리에만 입는다', () => {
+    const s = withStickers(7);
+    expect(gameReducer(s, { type: 'wear', slot: 'hat', id: 'acornCap' }).outfit).toEqual({ hat: 'acornCap', scarf: null });
+    expect(gameReducer(s, { type: 'wear', slot: 'scarf', id: 'berryScarf' }).outfit.scarf).toBe('berryScarf');
+    expect(gameReducer(s, { type: 'wear', slot: 'hat', id: 'flowerCrown' })).toBe(s); // 11장 필요
+    expect(gameReducer(s, { type: 'wear', slot: 'scarf', id: 'acornCap' })).toBe(s); // 모자는 목에 안 된다
+    expect(gameReducer(s, { type: 'wear', slot: 'hat', id: 'crown' })).toBe(s);
+    const worn = gameReducer(s, { type: 'wear', slot: 'hat', id: 'acornCap' });
+    expect(gameReducer(worn, { type: 'wear', slot: 'hat', id: null }).outfit.hat).toBeNull();
+  });
+});
+
 describe('놀이 기록 (부모 화면)', () => {
   it('끝낼 때마다 횟수·한 번에 맞힘·본 힌트·마지막 시각을 쌓는다', () => {
     let s = gameReducer(createInitialGameState(), finish(counting, 0, AT));

@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useReducer, type ReactNode } from 'react';
 import { gameReducer, type GameAction, type GameState } from './gameState';
+import { OutfitContext } from '../features/outfits/OutfitContext';
 
 // 플레이어 상태를 앱 전체에 나눠 준다. 처음 값은 저장본에서 불러온다 (main.tsx).
 interface GameValue {
@@ -12,7 +13,11 @@ const GameContext = createContext<GameValue | null>(null);
 export function GameProvider({ initial, children }: { initial: GameState; children: ReactNode }) {
   const [game, dispatch] = useReducer(gameReducer, initial);
   const value = useMemo(() => ({ game, dispatch }), [game]);
-  return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
+  return (
+    <GameContext.Provider value={value}>
+      <OutfitContext.Provider value={game.outfit}>{children}</OutfitContext.Provider>
+    </GameContext.Provider>
+  );
 }
 
 export function useGame(): GameValue {

@@ -1,6 +1,7 @@
 import { FURNITURE, getFurniture } from '../data/furniture/furniture';
 import { canAfford, lockedRegionOf, bundleEntries } from '../utils/bundles';
 import { nextSticker } from '../data/stickers/stickers';
+import { NO_OUTFIT, canWear, type Outfit, type OutfitSlot } from '../features/outfits/outfits';
 import type { LessonId, MathLesson } from '../types/math';
 import type { ResourceBundle } from '../types/resources';
 
@@ -21,6 +22,7 @@ export interface GameState {
   lessonStats: Partial<Record<LessonId, LessonStats>>;
   stickers: string[]; // 모은 스티커 id (받은 순서)
   dailyDone: string[]; // 오늘의 문제를 푼 날짜 ('2026-10-26', 기기 날짜)
+  outfit: Outfit; // 루루가 입은 모자·스카프 (스티커로 열림)
 }
 
 // 처음 상태: 재료 없음, '처음부터 가진' 가구 1개씩
@@ -32,6 +34,7 @@ export function createInitialGameState(): GameState {
     lessonStats: {},
     stickers: [],
     dailyDone: [],
+    outfit: NO_OUTFIT,
   };
 }
 
@@ -59,7 +62,8 @@ export type GameAction =
   | { type: 'craft'; furnitureId: string }
   | { type: 'reset' } // 부모 설정에서 진행 상황 모두 지우기
   | { type: 'load'; state: GameState } // 백업 파일에서 되살리기 (검사를 마친 상태)
-  | { type: 'dailyDone'; date: string }; // 오늘의 문제를 풀었다 (도장)
+  | { type: 'dailyDone'; date: string } // 오늘의 문제를 풀었다 (도장)
+  | { type: 'wear'; slot: OutfitSlot; id: string | null }; // 루루 옷 고르기 (null = 벗기)
 
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
@@ -69,6 +73,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return action.state;
     case 'dailyDone':
       return state.dailyDone.includes(action.date) ? state : { ...state, dailyDone: [...state.dailyDone, action.date] };
+    case 'wear': {
+      if (state.outfit[action.slot] === action.id) return state;
+      if (action.id !== null && !canWear(action.slot, action.id, state.stickers.length)) return state;
+      return { ...state, outfit: { ...state.outfit, [action.slot]: action.id } };
+    }
     case 'completeLesson': {
       const { rewards, bonus, sticker } = rewardFor(action.lesson, state);
       return {

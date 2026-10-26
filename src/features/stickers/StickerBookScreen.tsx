@@ -7,6 +7,7 @@ import { REGIONS } from '../../data/regions/regions';
 import { useGame } from '../../app/GameProvider';
 import { useI18n } from '../../i18n';
 import { nextPetGoal } from '../pets/pets';
+import Closet from '../outfits/Closet';
 
 // 스티커 도감: 마을마다 6칸. 모은 스티커는 그림과 이름, 아직 없는 칸은 점선 테두리와 '?' (색만으로 구분하지 않음)
 export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
@@ -21,6 +22,7 @@ export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
       <p className="mb-1 text-lg">{t('stickers.intro', { n: formatNumber(owned.size), total: formatNumber(STICKERS.length) })}</p>
       {game.dailyDone.length > 0 && <p className="mb-1 text-base font-semibold">{t('stickers.stamps', { n: formatNumber(game.dailyDone.length) })}</p>}
       {goal && <p className="mb-3 text-base font-semibold text-wood">{t('stickers.petGoal', { n: formatNumber(goal.stickers - owned.size) })}</p>}
+      <Closet />
       <div className="flex flex-col gap-4 pb-4">
         {REGIONS.map((region) => {
           const list = STICKERS.filter((s) => s.region === region.id);

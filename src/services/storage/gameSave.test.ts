@@ -150,6 +150,18 @@ describe('스티커', () => {
   });
 });
 
+describe('루루 옷', () => {
+  it('예전 저장본은 아무것도 안 입음, 안 열린 옷·모르는 옷은 벗긴다', () => {
+    put(v1Save);
+    expect(loadGame().game.outfit).toEqual({ hat: null, scarf: null });
+    const stickers = ['apple', 'acorn', 'flower', 'ladybug'];
+    put({ schemaVersion: SCHEMA_VERSION, savedAt: 'x', game: { ...createInitialGameState(), stickers, outfit: { hat: 'acornCap', scarf: 'berryScarf' } }, room: DEFAULT_LAYOUT });
+    expect(loadGame().game.outfit).toEqual({ hat: 'acornCap', scarf: null });
+    put({ schemaVersion: SCHEMA_VERSION, savedAt: 'x', game: { ...createInitialGameState(), stickers, outfit: { hat: 'cape', scarf: 3 } }, room: DEFAULT_LAYOUT });
+    expect(loadGame().game.outfit).toEqual({ hat: null, scarf: null });
+  });
+});
+
 describe('가구 색', () => {
   it('색 1·2 는 남기고, 이상한 값은 원래 색으로 (예전 저장본은 그대로)', () => {
     put(v1Save);
