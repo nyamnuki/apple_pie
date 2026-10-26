@@ -4,6 +4,7 @@ import ScreenHeader from '../../components/ScreenHeader';
 import { REGIONS, getRegion } from '../../data/regions/regions';
 import { useGame } from '../../app/GameProvider';
 import { isRegionOpen, regionProgress } from '../../utils/regions';
+import Rosette from '../../components/art/Rosette';
 import { useI18n } from '../../i18n';
 import RegionLandmark from '../../components/art/RegionLandmark';
 import { dateKey } from '../daily/daily';
@@ -87,6 +88,12 @@ export default function RegionMapScreen({ onPick, onBack, onDaily }: { onPick: (
               >
                 <span className="relative h-[3.6rem] w-20 shrink-0 overflow-visible rounded-[22px] min-[360px]:h-[4.4rem] min-[360px]:w-24 min-[400px]:h-[5.5rem] min-[400px]:w-32 [@media(max-height:500px)]:!h-16 [@media(max-height:500px)]:!w-24 shadow-[inset_0_0_0_2px_rgb(89_72_60/0.12)]" aria-hidden="true">
                   <RegionLandmark id={region.id} locked={!open} />
+                  {/* 놀이를 모두 끝낸 마을: 모서리에 리본 */}
+                  {open && done === total && (
+                    <span className="absolute -right-3 -top-3" data-complete={region.id}>
+                      <Rosette size={34} />
+                    </span>
+                  )}
                   {!open && (
                     <span className="absolute -bottom-1 -right-1 rounded-full bg-bark p-1.5 text-cream">
                       <Lock size={18} />
@@ -97,7 +104,9 @@ export default function RegionMapScreen({ onPick, onBack, onDaily }: { onPick: (
                   <span className="block text-xl font-bold leading-tight min-[360px]:text-2xl">{tKey(region.nameKey)}</span>
                   <span className="block text-base">{tKey(region.topicsKey)}</span>
                   {open ? (
-                    <span className="mt-1 block text-base font-bold">{t('map.gamesDone', { n: formatNumber(done), total: formatNumber(total) })}</span>
+                    <span className="mt-1 block text-base font-bold">
+                      {done === total ? t('map.complete') : t('map.gamesDone', { n: formatNumber(done), total: formatNumber(total) })}
+                    </span>
                   ) : (
                     unlock.type === 'lessons' && (
                       <span className="mt-1 block text-base font-semibold">

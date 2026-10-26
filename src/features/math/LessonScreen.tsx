@@ -11,7 +11,7 @@ import RewardPanel from '../rewards/RewardPanel';
 import { useGame } from '../../app/GameProvider';
 import { rewardFor } from '../../app/gameState';
 import { REGIONS } from '../../data/regions/regions';
-import { isRegionOpen } from '../../utils/regions';
+import { isRegionOpen, regionProgress } from '../../utils/regions';
 import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
@@ -66,7 +66,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
   const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo), [lessonId, playNo]);
   const { play } = useSound();
   // 이번에 받은 보상 (보상 화면에 보여준다)
-  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null } | null>(null);
+  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null; regionComplete: boolean } | null>(null);
 
   // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
   const rewarded = useRef(false);
@@ -79,9 +79,12 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
     const newRegion = REGIONS.find((r) => !isRegionOpen(r.id, game.completedLessons) && isRegionOpen(r.id, after))?.id ?? null;
     const reward = rewardFor(lesson, game);
     const pet = newPet(game.stickers.length, game.stickers.length + (reward.sticker ? 1 : 0));
-    setEarned({ ...reward, newRegion, newPet: pet?.id ?? null });
+    // 이 놀이로 그 마을 놀이를 처음 모두 끝냈는지
+    const progress = regionProgress(lesson.region, after);
+    const regionComplete = !game.completedLessons.includes(lesson.id) && progress.done === progress.total;
+    setEarned({ ...reward, newRegion, newPet: pet?.id ?? null, regionComplete });
     play.reward();
-    if (newRegion) play.unlock();
+    if (newRegion || regionComplete) play.unlock();
     gameDispatch({ type: 'completeLesson', lesson, wrongTries: state.wrong.length, at: new Date().toISOString() });
     dispatch({ type: 'next' });
   };
@@ -170,6 +173,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop }: Props) {
           guide={speaker}
           praise={playNo}
           newPet={earned.newPet}
+          completedRegion={earned.regionComplete ? lesson.region : null}
           onWorkshop={onWorkshop}
           onAgain={() => {
             rewarded.current = false; // 다시 하면 새 판 (새 수)

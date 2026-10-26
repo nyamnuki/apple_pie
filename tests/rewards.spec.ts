@@ -64,3 +64,26 @@ test('공방 다음 목표: 곧 만들 가구, 모자란 재료, 그 재료를 �
   await expect(goal.getByRole('img', { name: 'Apple 1' })).toBeVisible();
   await expect(goal).toContainText('Play to get them: Counting Apples');
 });
+
+test('마을 완성: 마지막 놀이를 처음 끝내면 축하, 지도에 리본 (다시 해도 축하는 한 번)', async ({ page, context }) => {
+  await seed(context, { save: makeSave({ completedLessons: ['comparing1', 'addition1', 'subtraction1'] }) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await expect(page.locator('[data-complete]')).toHaveCount(0);
+  await goToRegion(page, /^Acorn Village/);
+  await playCountingApples(page);
+  await expect(page.getByRole('status').filter({ hasText: 'You finished every game in Acorn Village!' })).toBeVisible();
+  if (process.env.SHOT_DIR) await page.waitForTimeout(1500).then(() => page.screenshot({ path: `${process.env.SHOT_DIR}/complete-reward.png` }));
+
+  await page.getByRole('button', { name: 'More games' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await expect(page.locator('[data-complete="acornVillage"]')).toBeVisible();
+  await expect(page.getByRole('button', { name: /^Acorn Village/ })).toContainText('All games done!');
+  if (process.env.SHOT_DIR) await page.locator('[data-complete="acornVillage"]').scrollIntoViewIfNeeded().then(() => page.screenshot({ path: `${process.env.SHOT_DIR}/complete-map.png` }));
+
+  await goToRegion(page, /^Acorn Village/);
+  await playCountingApples(page, true, 1); // 두 번째 판 (수가 바뀐다)
+  await expect(page.getByRole('heading', { name: 'You discovered something new!' })).toBeVisible();
+  await expect(page.getByText('You finished every game in Acorn Village!')).toHaveCount(0);
+});

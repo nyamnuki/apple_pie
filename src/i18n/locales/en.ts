@@ -210,6 +210,7 @@ export const en = {
     },
   },
   map: {
+    complete: 'All games done!',
     title: 'Map',
     intro: 'Where shall we go today?',
     gamesDone: '{n} of {total} games finished',
@@ -491,6 +492,7 @@ export const en = {
     sayHi: '{name}: tap to say hi',
   },
   reward: {
+    regionComplete: 'You finished every game in {region}!',
     praise1: 'You thought it through all by yourself!',
     praise2: 'Great counting, step by step!',
     praise3: 'You kept trying. That is how we learn!',

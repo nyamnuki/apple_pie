@@ -211,6 +211,7 @@ export const ko: Messages = {
     },
   },
   map: {
+    complete: '놀이를 모두 끝냈어요!',
     title: '지도',
     intro: '오늘은 어디로 가 볼까요?',
     gamesDone: '놀이 {total}개 중 {n}개 끝냄',
@@ -493,6 +494,7 @@ export const ko: Messages = {
     sayHi: '{name}: 눌러서 인사하기',
   },
   reward: {
+    regionComplete: '{region}의 놀이를 모두 끝냈어요!',
     praise1: '혼자서 끝까지 생각했어요!',
     praise2: '하나하나 차근차근 잘 셌어요!',
     praise3: '포기하지 않고 계속 해 봤어요. 그렇게 배우는 거예요!',

@@ -10,6 +10,7 @@ import type { CharacterId } from '../../data/characters/characters';
 import { ItemArt } from '../../components/art/itemArt';
 import { getSticker } from '../../data/stickers/stickers';
 import PetArt from '../pets/PetArt';
+import Rosette from '../../components/art/Rosette';
 import { PETS, type PetId } from '../pets/pets';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 
@@ -22,6 +23,7 @@ interface Props {
   guide?: CharacterId; // 칭찬해 주는 친구 (그 마을 안내 친구)
   praise?: number; // 칭찬 말 번호 (판마다 달라진다)
   newPet?: PetId | null; // 이번에 방에 찾아온 친구
+  completedRegion?: RegionId | null; // 이번에 놀이를 모두 끝낸 마을 (처음일 때만)
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
@@ -30,7 +32,7 @@ interface Props {
 const PRAISE: TranslationKey[] = ['reward.praise1', 'reward.praise2', 'reward.praise3', 'reward.praise4', 'reward.praise5'];
 
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames }: Props) {
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, completedRegion, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames }: Props) {
   const { t, tKey } = useI18n();
   const bonusEntries = bundleEntries(bonus);
   const stickerDef = sticker ? getSticker(sticker) : undefined;
@@ -94,6 +96,15 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
               <PetArt id={petDef.id} />
             </svg>
             <span className="text-left text-xl font-bold">{t('reward.newPet', { name: tKey(petDef.nameKey) })}</span>
+          </div>
+        )}
+
+        {completedRegion && (
+          <div role="status" className="flex w-full max-w-md animate-rise items-center gap-3 rounded-3xl bg-apricot p-3" style={{ animationDelay: '580ms' }}>
+            <span className="shrink-0 animate-hop pl-1" style={{ animationDelay: '800ms' }}>
+              <Rosette size={48} />
+            </span>
+            <span className="text-left text-xl font-bold">{t('reward.regionComplete', { region: tKey(getRegion(completedRegion).nameKey) })}</span>
           </div>
         )}
 
