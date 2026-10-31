@@ -5,11 +5,21 @@ import { seed, makeSave, goToRegion, guide } from './helpers';
 
 const SAVE = makeSave({ furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1, leafFrame: 1, woodlandWallpaper: 1 } });
 
-test('없는 그림 파일은 아예 요청하지 않는다 (404 없음)', async ({ page, context }) => {
+// 그림을 넣기 전(요청 0건)과 넣은 뒤(요청 전부 200) 모두 지켜야 하는 규칙:
+// 없는 그림은 아예 요청하지 않고, 요청한 그림은 반드시 성공한다. (404 가 생기면 실패)
+test('그림 요청은 모두 성공한다 (없는 그림은 요청하지 않는다)', async ({ page, context }) => {
   await seed(context, { save: SAVE });
+  const IMAGE = /\/assets\/.+\.(png|webp|svg|jpe?g)$/;
   const asked: string[] = [];
+  const broken: string[] = [];
   page.on('request', (r) => {
-    if (/\/assets\/.+\.(png|webp|svg|jpe?g)$/.test(r.url())) asked.push(r.url());
+    if (IMAGE.test(r.url())) asked.push(r.url());
+  });
+  page.on('response', (r) => {
+    if (IMAGE.test(r.url()) && r.status() !== 200) broken.push(`${r.status()} ${r.url()}`);
+  });
+  page.on('requestfailed', (r) => {
+    if (IMAGE.test(r.url())) broken.push(`요청 실패 ${r.url()}`);
   });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
@@ -23,7 +33,8 @@ test('없는 그림 파일은 아예 요청하지 않는다 (404 없음)', async
   await page.getByRole('button', { name: /^Acorn Village/ }).click();
   await page.getByRole('button', { name: /Counting Apples/ }).click();
   await expect(page.getByRole('button', { name: 'Next' })).toBeVisible();
-  expect(asked).toEqual([]);
+  expect(broken).toEqual([]);
+  console.info(`그림 요청 ${asked.length}건 (모두 성공)`);
 });
 
 test('꾸미기 목록의 그림은 방에 그려지는 것과 같은 그림이다 (그림 문자가 아님)', async ({ page, context }) => {

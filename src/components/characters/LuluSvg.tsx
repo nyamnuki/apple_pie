@@ -1,10 +1,10 @@
 import Face from './Face';
 import type { Expression } from '../../data/characters/characters';
-import OutfitArt from '../../features/outfits/OutfitArt';
-import { useOutfit } from '../../features/outfits/OutfitContext';
 
 // 루루: 크림색 토끼. 한쪽 귀가 살짝 접혀 있고(알아보기 쉬운 모양), 잎사귀 망토와 귀에 꽂은 분홍 꽃이 상징.
 // 수채화 효과(#wc-small)와 둥근 빛(#wc-ball)은 src/components/art/WatercolorDefs.tsx
+// 옷장에서 고른 모자·스카프는 여기서 그리지 않고 Character 가 위에 겹쳐 준다
+// (src/features/outfits/OutfitLayer.tsx — 루루를 그림 파일로 바꿔도 옷이 그대로 보이게)
 const C = {
   fur: '#FFF6E6',
   furShade: '#F1E2CB',
@@ -18,7 +18,6 @@ const C = {
 };
 
 export default function LuluSvg({ expression }: { expression: Expression }) {
-  const outfit = useOutfit(); // 옷장에서 고른 모자·스카프
   return (
     <svg viewBox="0 0 120 150" className="h-full w-full overflow-visible" aria-hidden="true">
       <g filter="url(#wc-small)">
@@ -45,8 +44,6 @@ export default function LuluSvg({ expression }: { expression: Expression }) {
           <path d="M60 104 C51 99 42 101 38 108 C47 113 56 111 60 104 Z" fill={C.leaf} />
           <path d="M60 104 C69 99 78 101 82 108 C73 113 64 111 60 104 Z" fill={C.leaf} />
           <circle cx="60" cy="106" r="3.6" fill="#C79461" strokeWidth="1.4" />
-          {outfit.scarf && <OutfitArt id={outfit.scarf} />}
-          {outfit.hat && <OutfitArt id={outfit.hat} />}
           {/* 귀에 꽂은 분홍 꽃 (상징) */}
           <g transform="translate(86 20)">
             {[0, 72, 144, 216, 288].map((a) => (
