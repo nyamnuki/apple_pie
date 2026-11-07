@@ -17,6 +17,15 @@ export const en = {
     stickers: 'Sticker Book',
     back: 'Back',
   },
+  // 타이틀 화면에서 고르는 문제 어려움 단계
+  level: {
+    label: 'Number size',
+    normal: 'Normal',
+    hard: 'Harder',
+    normalRange: 'up to 20',
+    hardRange: 'up to 50',
+    hint: 'Same games, bigger numbers. You can change this any time.',
+  },
   room: {
     photoCaption: 'My Woodland Room · {date}',
     light: '{name} light',
@@ -613,6 +622,10 @@ export const en = {
     settingBody: 'Lulu suggests a short rest after this much playing time (counted only while the game is on screen).',
     off: 'Off',
     minutes: '{n} min',
+    // 타이틀 화면의 쉬어 가기 표시 (누르면 어른 설정으로 간다)
+    every: 'Rest every {n} min',
+    everyOff: 'Rest reminder off',
+    open: 'Rest reminder: {state}. Go to grown-up settings.',
   },
   daily: {
     title: "Today's puzzle",

@@ -1,12 +1,16 @@
 import { answerOf } from './answers';
-import type { LessonId, MathAnswer, MathLesson, MathScene, ShapeId, ShapeSpec } from '../../types/math';
+import type { Level } from '../../data/math/sceneRules';
+import type { MathAnswer, MathLesson, MathScene, ShapeId, ShapeSpec } from '../../types/math';
 
 // ===== 다시 할 때마다 바뀌는 문제 =====
-// 처음 하는 판(play 0)은 lessons.ts 에 적힌 그대로 (선생님이 고른 첫 경험).
+// 보통 단계에서 처음 하는 판(play 0)은 lessons.ts 에 적힌 그대로 (선생님이 고른 첫 경험).
 // 다시 하면 '예상하기'와 '해 보기' 장면의 수가 바뀌어 답을 외울 수 없게 한다.
-// - 같은 판 번호면 언제나 같은 문제 (판 번호 + 놀이 id 로 정해지는 난수)
-// - 난이도 범위와 가르치는 점은 그대로: 비교의 '똑같다'는 계속 똑같게, 더하기는 10 을 넘게, 빼기는 10 아래로 내려가게
+// - 같은 판 번호면 언제나 같은 문제 (판 번호 + 놀이 id + 단계로 정해지는 난수)
+// - 가르치는 점은 그대로: 비교의 '똑같다'는 계속 똑같게, 더하기는 십의 자리를 넘게, 빼기는 십의 자리 아래로 내려가게
 // - 살펴보기·만져 보기(가르치는 장면)와 규칙 찾기는 바꾸지 않는다 (문장이 그 장면을 설명하기 때문)
+//
+// 어려움 단계('hard')는 같은 놀이를 50 까지의 수로 낸다. 첫 판부터 바꾼다 (어려운 문제를 고른 것이므로).
+// 도형 찾기·시계·몇 번째·10 만들기·규칙 찾기는 수 크기가 어려움의 핵심이 아니라서 두 단계가 같다.
 
 type Rng = () => number;
 
@@ -36,45 +40,57 @@ function shuffle<T>(rng: Rng, list: T[]): T[] {
 const COLORS = ['#A8C3A0', '#F5D0AD', '#F3C6D2', '#C8DFE8', '#D9D0EC'];
 const SHAPES: ShapeId[] = ['circle', 'square', 'triangle'];
 
-// 장면 하나를 같은 종류·같은 난이도로 새로 만든다
-export function varyScene(scene: MathScene, rng: Rng): MathScene {
+// 장면 하나를 같은 종류·같은 가르치는 점으로 새로 만든다 (단계에 따라 수의 크기만 달라진다)
+export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): MathScene {
+  const hard = level === 'hard';
   switch (scene.kind) {
     case 'count':
-      return { ...scene, total: int(rng, 11, 19) };
+      return { ...scene, total: hard ? int(rng, 23, 48) : int(rng, 11, 19) };
     case 'compare': {
       if (scene.a === scene.b) {
-        const n = int(rng, 6, 14);
+        const n = hard ? int(rng, 18, 40) : int(rng, 6, 14);
         return { ...scene, a: n, b: n };
       }
       // 많은 쪽은 그대로, 차이는 1~3 (가까울수록 세어 봐야 안다)
-      const small = int(rng, 6, 12);
+      const small = hard ? int(rng, 18, 40) : int(rng, 6, 12);
       const big = small + int(rng, 1, 3);
       return scene.a > scene.b ? { ...scene, a: big, b: small } : { ...scene, a: small, b: big };
     }
     case 'add': {
-      // 10 을 넘는 덧셈 (20 까지)
+      // 십의 자리를 넘는 덧셈 (보통 20 까지 / 어려움 50 까지)
+      if (hard) {
+        const start = int(rng, 12, 28);
+        const add = int(rng, 11 - (start % 10), Math.min(19, 50 - start)); // 다음 십의 자리를 넘도록
+        return { ...scene, start, add };
+      }
       const start = int(rng, 6, 10);
       const add = int(rng, 11 - start, Math.min(9, 20 - start));
       return { ...scene, start, add };
     }
     case 'subtract': {
-      // 10 보다 큰 수에서 빼서 10 아래로
+      // 십의 자리 아래로 내려가는 뺄셈
+      if (hard) {
+        const start = int(rng, 22, 48);
+        const remove = int(rng, (start % 10) + 1, Math.min(19, start - 2)); // 아래 십의 자리로 내려가도록
+        return { ...scene, start, remove };
+      }
       const start = int(rng, 11, 18);
       const remove = int(rng, start - 9, Math.min(9, start - 2));
       return { ...scene, start, remove };
     }
     case 'groups':
       if (scene.size === 10) {
-        // 10 묶음 3~4 개 (문장이 '10, 20, 30…' 하고 세기 때문에 3 개 이상), 낱개 1~9 개 (묶음 수와 다르게: 자리 바꾸기 실수를 구별할 수 있게)
-        const groups = int(rng, 3, 4);
+        // 10 묶음 (문장이 '10, 20, 30…' 하고 세기 때문에 3 개 이상), 낱개 1~9 개
+        // 낱개를 묶음 수와 다르게 둔다: 자리를 바꿔 읽은 실수를 구별할 수 있게
+        const groups = hard ? int(rng, 5, 9) : int(rng, 3, 4);
         let ones = int(rng, 1, 9);
         if (ones === groups) ones = ones === 9 ? 8 : ones + 1;
         return { ...scene, groups, ones };
       }
-      // 5묶음 3~7 개 (15~35), 따로 있는 것은 원래대로 (문장이 그것을 말한다)
-      if (scene.size === 5) return { ...scene, groups: int(rng, 3, 7) };
-      // 짝 5~10 쌍 (20 을 넘지 않게), 혼자 있는 것은 원래대로 (문장이 그것을 말한다)
-      return { ...scene, groups: int(rng, 5, Math.floor((20 - scene.ones) / 2)) };
+      // 5 묶음 (보통 15~35 / 어려움 40~75), 따로 있는 것은 원래대로 (문장이 그것을 말한다)
+      if (scene.size === 5) return { ...scene, groups: hard ? int(rng, 8, 15) : int(rng, 3, 7) };
+      // 짝 (보통 20 / 어려움 50 을 넘지 않게), 혼자 있는 것은 원래대로 (문장이 그것을 말한다)
+      return { ...scene, groups: int(rng, hard ? 11 : 5, Math.floor(((hard ? 50 : 20) - scene.ones) / 2)) };
     case 'shapes': {
       // 찾는 도형 4~7 개 + 다른 도형 5~8 개, 색·크기·돌림·순서를 새로
       const others = SHAPES.filter((s) => s !== scene.target);
@@ -88,28 +104,29 @@ export function varyScene(scene: MathScene, rng: Rng): MathScene {
       return { ...scene, shapes: shuffle(rng, list) };
     }
     case 'measure':
-      // 블록 4~9 개 (좁은 휴대폰에서도 한 줄에 보이게)
-      return { ...scene, length: int(rng, 4, 9) };
+      // 블록 (좁은 휴대폰에서도 한 줄에 보이게 10 개까지)
+      return { ...scene, length: hard ? int(rng, 7, 10) : int(rng, 4, 9) };
     case 'hops': {
-      // 앞으로 뛰기는 3~7 칸, 끝이 20 을 넘지 않게. 뒤로 뛰기는 3~7 칸, 0 아래로 가지 않게
-      const n = int(rng, 3, 7);
-      return scene.hop > 0 ? { ...scene, start: int(rng, 2, 20 - n), hop: n } : { ...scene, start: int(rng, n + 1, 18), hop: -n };
+      // 앞으로 뛰기: 끝이 범위를 넘지 않게. 뒤로 뛰기: 0 아래로 가지 않게 (한 번에 9 칸까지)
+      const top = hard ? 50 : 20;
+      const n = int(rng, 3, hard ? 9 : 7);
+      return scene.hop > 0 ? { ...scene, start: int(rng, 2, top - n), hop: n } : { ...scene, start: int(rng, n + 1, top - 2), hop: -n };
     }
     case 'pairs':
-      return { ...scene, total: int(rng, 6, 15) };
+      return { ...scene, total: hard ? int(rng, 17, 24) : int(rng, 6, 15) };
     case 'clock':
       return { ...scene, hour: int(rng, 1, 12) };
     case 'share':
-      return { ...scene, total: int(rng, 3, 8) * 2 };
+      return { ...scene, total: (hard ? int(rng, 9, 12) : int(rng, 3, 8)) * 2 };
     case 'double':
-      return { ...scene, n: int(rng, 2, 9) };
+      return { ...scene, n: hard ? int(rng, 11, 18) : int(rng, 2, 9) };
     case 'makeTen':
       return { ...scene, have: int(rng, 2, 8) };
     case 'ordinal':
       return { ...scene, position: int(rng, 2, scene.items.length) };
     case 'difference': {
-      const b = int(rng, 3, 8);
-      return { ...scene, b, a: b + int(rng, 1, 5) };
+      const b = hard ? int(rng, 10, 18) : int(rng, 3, 8);
+      return { ...scene, b, a: b + int(rng, 1, hard ? 9 : 5) };
     }
     case 'pattern':
       return scene;
@@ -160,9 +177,9 @@ function choicesFor(scene: MathScene, original: MathAnswer[], rng: Rng): MathAns
   return numberChoices(scene, rng);
 }
 
-function makeVariant(lesson: MathLesson, rng: Rng): MathLesson {
-  const predict = varyScene(lesson.predict, rng);
-  const apply = varyScene(lesson.apply, rng);
+function makeVariant(lesson: MathLesson, rng: Rng, level: Level = 'normal'): MathLesson {
+  const predict = varyScene(lesson.predict, rng, level);
+  const apply = varyScene(lesson.apply, rng, level);
   return {
     ...lesson,
     predict,
@@ -177,26 +194,36 @@ function makeVariant(lesson: MathLesson, rng: Rng): MathLesson {
 export const sameKey = (scene: MathScene) => (scene.kind === 'compare' ? `${scene.a}:${scene.b}` : scene.kind === 'pairs' ? `${scene.total}` : scene.kind === 'ordinal' ? `${scene.position}` : String(answerOf(scene)));
 
 
-// 판마다 만든 문제를 기억해 둔다 (놀이 id → [0판, 1판, …])
-const cache = new Map<LessonId, MathLesson[]>();
+// 판마다 만든 문제를 기억해 둔다 ('단계:놀이 id' → [0판, 1판, …])
+const cache = new Map<string, { base: MathLesson; plays: MathLesson[] }>();
+const levelSeed = (level: Level) => (level === 'hard' ? 611_953 : 0);
 
-// play 번째 판의 놀이 (0 = 원래 그대로). 바로 앞 판과 '해 보기' 정답이 같으면 다시 만든다 (또 같은 문제라고 느끼지 않게).
-export function lessonForPlay(lesson: MathLesson, play: number): MathLesson {
-  if (play <= 0) return lesson;
-  let list = cache.get(lesson.id);
-  if (!list || list[0] !== lesson) cache.set(lesson.id, (list = [lesson]));
-  for (let p = list.length; p <= play; p++) {
-    const rng = makeRng(hash(lesson.id) + p * 7919);
-    const prev = sameKey(list[p - 1].apply);
-    let next = makeVariant(lesson, rng);
+// play 번째 판의 놀이. 바로 앞 판과 '해 보기' 정답이 같으면 다시 만든다 (또 같은 문제라고 느끼지 않게).
+// 보통 단계의 0 판은 lessons.ts 에 적힌 그대로, 어려움 단계는 0 판부터 수를 바꾼다.
+export function lessonForPlay(lesson: MathLesson, play: number, level: Level = 'normal'): MathLesson {
+  const want = Math.max(play, 0);
+  if (level === 'normal' && want === 0) return lesson;
+  const key = `${level}:${lesson.id}`;
+  let entry = cache.get(key);
+  if (!entry || entry.base !== lesson) cache.set(key, (entry = { base: lesson, plays: [] }));
+  const plays = entry.plays;
+  for (let p = plays.length; p <= want; p++) {
+    // 보통 단계의 0 판은 원래 문제 그대로 (선생님이 고른 첫 경험)
+    if (p === 0 && level === 'normal') {
+      plays.push(lesson);
+      continue;
+    }
+    const rng = makeRng(hash(lesson.id) + p * 7919 + levelSeed(level));
+    const prev = sameKey((plays[p - 1] ?? lesson).apply);
+    let next = makeVariant(lesson, rng, level);
     // 규칙 찾기는 바뀌지 않으므로 다시 만들 필요가 없다
-    for (let tries = 0; tries < 8 && lesson.apply.kind !== 'pattern' && sameKey(next.apply) === prev; tries++) next = makeVariant(lesson, rng);
-    list.push(next);
+    for (let tries = 0; tries < 8 && lesson.apply.kind !== 'pattern' && sameKey(next.apply) === prev; tries++) next = makeVariant(lesson, rng, level);
+    plays.push(next);
   }
-  return list[play];
+  return plays[want];
 }
 
 // 판 번호와 상관없는 한 번짜리 문제 (오늘의 문제: 날짜로 seed 를 정한다)
-export function lessonForSeed(lesson: MathLesson, seed: number): MathLesson {
-  return makeVariant(lesson, makeRng(hash(lesson.id) + seed * 104729));
+export function lessonForSeed(lesson: MathLesson, seed: number, level: Level = 'normal'): MathLesson {
+  return makeVariant(lesson, makeRng(hash(lesson.id) + seed * 104729 + levelSeed(level)), level);
 }

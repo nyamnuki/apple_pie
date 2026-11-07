@@ -67,8 +67,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
   // 몇 번째 판인지 (처음 = 0). 다시 하면 예상하기·해 보기의 수가 바뀐다 (variation.ts)
   const playsSoFar = game.lessonStats[lessonId]?.plays ?? 0;
   const [playNo, setPlayNo] = useState(playsSoFar);
-  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo), [lessonId, playNo]);
-  const { play } = useSound();
+  const { play, mathLevel } = useSound();
+  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo, mathLevel), [lessonId, playNo, mathLevel]);
   // 이번에 받은 보상 (보상 화면에 보여준다)
   const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null; regionComplete: boolean } | null>(null);
 

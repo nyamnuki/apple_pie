@@ -87,7 +87,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
       {/* 가진 재료 */}
       <section aria-label={t('inventory.materials')} className="mb-4 flex flex-wrap gap-2">
         {shownResources.map((r) => (
-          <ResourceChip key={r.id} id={r.id} amount={game.resources[r.id] ?? 0} />
+          <ResourceChip key={r.id} id={r.id} amount={game.resources[r.id] ?? 0} withName />
         ))}
       </section>
 
@@ -103,7 +103,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
             <div className="flex flex-wrap items-center gap-2" aria-label={t('workshop.stillNeed')}>
               <span className="text-base font-semibold">{t('workshop.stillNeed')}</span>
               {goal.missing.map(([id, n]) => (
-                <ResourceChip key={id} id={id} amount={n} />
+                <ResourceChip key={id} id={id} amount={n} withName />
               ))}
             </div>
             {goal.from.length > 0 && <p className="text-base">{t('workshop.getFrom', { games: goal.from.map((l) => t(lessonKey(l.id, 'title'))).join(', ') })}</p>}
@@ -140,7 +140,7 @@ export default function WorkshopScreen({ onBack, onDecorate }: { onBack: () => v
 
               <div className="flex flex-wrap gap-2" aria-label={t('workshop.needs')}>
                 {bundleEntries(cost).map(([id, n]) => (
-                  <ResourceChip key={id} id={id} amount={game.resources[id] ?? 0} need={n} />
+                  <ResourceChip key={id} id={id} amount={game.resources[id] ?? 0} need={n} withName />
                 ))}
               </div>
 

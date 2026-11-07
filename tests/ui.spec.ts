@@ -217,3 +217,49 @@ test('처음 하는 아이의 타이틀에는 이어서 하기가 없다', async
   await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
   await expect(page.getByRole('button', { name: /^Play again/ })).toHaveCount(0);
 });
+
+// 타이틀 화면에서 바로 고르는 것 두 가지: 문제의 수 크기, 그리고 쉬어 가기(어른 설정으로 가는 길)
+test('타이틀에서 수의 크기를 고르면 바로 저장된다', async ({ page, context }) => {
+  await seed(context, { save: SAVE });
+  await page.goto('/');
+  const normal = page.getByRole('radio', { name: /Normal/ });
+  const harder = page.getByRole('radio', { name: /Harder/ });
+  await expect(normal).toHaveAttribute('aria-checked', 'true'); // 처음은 보통
+  await expect(harder).toHaveAttribute('aria-checked', 'false');
+
+  await harder.click();
+  await expect(harder).toHaveAttribute('aria-checked', 'true');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mathTown.settings') ?? '{}').mathLevel)).toBe('hard');
+
+  // 새로 열어도 고른 단계가 남아 있다
+  await page.reload();
+  await expect(page.getByRole('radio', { name: /Harder/ })).toHaveAttribute('aria-checked', 'true');
+
+  // 다시 보통으로
+  await page.getByRole('radio', { name: /Normal/ }).click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mathTown.settings') ?? '{}').mathLevel)).toBe('normal');
+});
+
+test('타이틀의 쉬어 가기 표시: 지금 상태가 보이고, 누르면 어른 설정으로 간다', async ({ page, context }) => {
+  await seed(context, { save: SAVE });
+  await page.goto('/');
+  // 기본 20분이 타이틀에 그대로 보인다 (어른 설정 안에서 찾지 않아도 된다)
+  const rest = page.getByRole('button', { name: /Rest every 20 min/ });
+  await expect(rest).toBeVisible();
+
+  await rest.click();
+  // 어른 확인(곱셈 2문제)을 지나면 어른 설정
+  for (let i = 0; i < 2; i++) {
+    const q = await page.locator('[aria-live="polite"]').textContent();
+    const [a, b] = (q ?? '').match(/\d+/g)!.map(Number);
+    for (const d of String(a * b)) await page.locator('.grid-cols-3').getByRole('button', { name: d, exact: true }).click();
+    await page.getByRole('button', { name: 'Check answer' }).click();
+  }
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Grown-up settings');
+
+  // 15분으로 바꾸고 뒤로 가면 타이틀로 돌아오고, 표시도 함께 바뀐다
+  await page.getByRole('radio', { name: '15 min' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await expect(page.getByRole('button', { name: /Rest every 15 min/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
+});

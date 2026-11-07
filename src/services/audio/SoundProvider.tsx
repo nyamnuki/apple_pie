@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState, t
 import { SOUNDS, audio } from './sound';
 import { readString, writeString } from '../storage/localStore';
 import { setSlowSpeech } from '../speech/speech';
+import type { Level } from '../../data/math/sceneRules';
 
 // 설정은 게임 데이터·언어와 따로 저장한다
 export const SETTINGS_KEY = 'mathTown.settings';
@@ -12,7 +13,8 @@ interface Settings {
   voice: boolean; // 말풍선이 바뀌면 자동으로 읽어 주기
   bigText: boolean; // 큰 글씨 (앱 전체 글자 12.5% 크게)
   slowVoice: boolean; // 천천히 읽어 주기
-  breakMinutes: 0 | 15 | 20 | 30; // 쉬어 가기 알림 (0 = 끔). 어른 설정에서 바꾼다
+  breakMinutes: 0 | 15 | 20 | 30; // 쉬어 가기 알림 (0 = 끔). 타이틀 화면에서 어른 설정으로 간다
+  mathLevel: Level; // 문제의 어려움 (타이틀 화면에서 고른다). 'normal' = 20 까지, 'hard' = 50 까지
 }
 
 function loadSettings(): Settings {
@@ -21,9 +23,9 @@ function loadSettings(): Settings {
     // 처음에는 모두 켬 (글을 아직 못 읽는 아이를 위해 읽어 주기도 켬)
     const flag = (v: unknown) => (typeof v === 'boolean' ? v : true);
     const breakMinutes = [0, 15, 20, 30].includes(raw?.breakMinutes) ? raw.breakMinutes : 20;
-    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice), bigText: raw?.bigText === true, slowVoice: raw?.slowVoice === true, breakMinutes };
+    return { sound: flag(raw?.sound), music: flag(raw?.music), voice: flag(raw?.voice), bigText: raw?.bigText === true, slowVoice: raw?.slowVoice === true, breakMinutes, mathLevel: raw?.mathLevel === 'hard' ? 'hard' : 'normal' };
   } catch {
-    return { sound: true, music: true, voice: true, bigText: false, slowVoice: false, breakMinutes: 20 };
+    return { sound: true, music: true, voice: true, bigText: false, slowVoice: false, breakMinutes: 20, mathLevel: 'normal' };
   }
 }
 
@@ -40,6 +42,8 @@ interface SoundValue {
   setSlowVoice: (on: boolean) => void;
   breakMinutes: Settings['breakMinutes'];
   setBreakMinutes: (m: Settings['breakMinutes']) => void;
+  mathLevel: Level; // 문제의 어려움 단계
+  setMathLevel: (l: Level) => void;
   // 아이가 화면을 한 번이라도 눌렀는지 (브라우저 규칙상 그 뒤에만 음악을 틀 수 있다)
   interacted: boolean;
   play: typeof SOUNDS; // 효과음이 꺼져 있으면 아무것도 하지 않는다
@@ -67,6 +71,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   // 읽어 주는 빠르기는 음성 모듈이 직접 쓴다
   useEffect(() => setSlowSpeech(settings.slowVoice), [settings.slowVoice]);
   const setBreakMinutes = useCallback((m: Settings['breakMinutes']) => update({ breakMinutes: m }), [update]);
+  const setMathLevel = useCallback((l: Level) => update({ mathLevel: l }), [update]);
 
   // 큰 글씨: <html> 에 표시해 두면 CSS 가 글자 기준 크기를 키운다 (모든 글자가 rem 단위라 함께 커진다)
   useEffect(() => {
@@ -93,8 +98,8 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, [settings.sound]);
 
   const value = useMemo(
-    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, bigText: settings.bigText, setBigText, slowVoice: settings.slowVoice, setSlowVoice, breakMinutes: settings.breakMinutes, setBreakMinutes, interacted, play }),
-    [settings, setSoundOn, setMusicOn, setVoiceOn, setBigText, setSlowVoice, setBreakMinutes, interacted, play],
+    () => ({ soundOn: settings.sound, setSoundOn, musicOn: settings.music, setMusicOn, voiceOn: settings.voice, setVoiceOn, bigText: settings.bigText, setBigText, slowVoice: settings.slowVoice, setSlowVoice, breakMinutes: settings.breakMinutes, setBreakMinutes, mathLevel: settings.mathLevel, setMathLevel, interacted, play }),
+    [settings, setSoundOn, setMusicOn, setVoiceOn, setBigText, setSlowVoice, setBreakMinutes, setMathLevel, interacted, play],
   );
   return <SoundContext.Provider value={value}>{children}</SoundContext.Provider>;
 }
