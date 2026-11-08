@@ -49,7 +49,7 @@ export async function saveRoomPhoto(roomEl: HTMLElement, fileName: string, capti
       ctx.fillStyle = '#59483C';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = `600 ${30 * SCALE}px Fredoka, Jua, system-ui, sans-serif`;
+      ctx.font = `600 ${30 * SCALE}px Fraunces, 'Gowun Batang', Georgia, serif`;
       ctx.fillText(caption, (W / 2) * SCALE, (H - FRAME - CAPTION / 2 + 4) * SCALE, (W - FRAME * 2 - 40) * SCALE);
     }
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));

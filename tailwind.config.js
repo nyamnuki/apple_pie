@@ -19,8 +19,15 @@ export default {
         bark: v('text'),
       },
       fontFamily: {
-        // 영문은 Fredoka, 한글은 Jua 로 표시된다 (index.html 에서 불러온다)
-        display: ['Fredoka', 'Jua', 'system-ui', 'sans-serif'],
+        // 본문: 영문 Nunito, 한글 고운돋움 (index.html 에서 불러온다)
+        display: ['Nunito', 'Gowun Dodum', 'system-ui', 'sans-serif'],
+        // 제목·버튼: 그림책 느낌의 부드러운 세리프. 영문 Fraunces(SOFT), 한글 고운바탕
+        title: ['Fraunces', 'Gowun Batang', 'Georgia', 'serif'],
+      },
+      // 굵기를 한 단계 낮춘다 (Nunito·Fraunces 는 가변 글꼴이라 중간 굵기도 그대로 그린다)
+      fontWeight: {
+        semibold: '540',
+        bold: '620',
       },
       keyframes: {
         // 숫자 배지가 톡 나타나는 짧은 효과

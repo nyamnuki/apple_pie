@@ -49,6 +49,13 @@
     word-break: keep-all;
     overflow-wrap: break-word;
   }
+  /* 제목과 버튼은 그림책 제목처럼 부드러운 세리프 (본문은 읽기 쉬운 둥근 고딕) */
+  h1,
+  h2,
+  h3,
+  button {
+    @apply font-title;
+  }
   img {
     -webkit-user-drag: none;
     pointer-events: none;
