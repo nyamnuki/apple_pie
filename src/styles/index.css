@@ -134,3 +134,20 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* 한국어 본문 글꼴(고운돋움)은 굵기가 한 가지뿐이고 가늘어서, 작은 글씨~보통 글씨만 조금 키운다.
+   제목 크기(text-xl 이상)와 화면 배치는 그대로. (큰 글씨 설정과 함께 쓰면 그 위에 곱해진다) */
+@layer utilities {
+  html[lang='ko'] .text-xs {
+    font-size: 0.85rem;
+  }
+  html[lang='ko'] .text-sm {
+    font-size: 0.975rem;
+  }
+  html[lang='ko'] .text-base {
+    font-size: 1.075rem;
+  }
+  html[lang='ko'] .text-lg {
+    font-size: 1.2rem;
+  }
+}
