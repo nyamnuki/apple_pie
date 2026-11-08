@@ -18,7 +18,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!-- 글꼴: 제목은 부드러운 세리프(Fraunces·고운바탕), 본문은 둥근 고딕(Nunito·고운돋움). 굵기는 가변 글꼴로 조금 낮게 -->
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,100&family=Nunito:wght@400..800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet" />
+    <!-- 글꼴을 기다리느라 첫 화면이 멈추지 않게 한다.
+         media="print" 로 받아 두고 다 받으면 media='all' 로 바꿔서 쓴다 (그 동안은 기기 기본 글꼴로 먼저 보여 준다).
+         한글 글꼴이 커서, 이렇게 하지 않으면 느린 인터넷에서 몇 초 동안 흰 화면만 보인다. -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,100&family=Nunito:wght@400..800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,100&family=Nunito:wght@400..800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400..700,100&family=Nunito:wght@400..800&family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&display=swap" rel="stylesheet" />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

@@ -78,3 +78,83 @@ describe('다시 할 때 바뀌는 문제', () => {
     });
   }
 });
+
+// 어려움 단계: 같은 놀이를 더 큰 수로 낸다 (타이틀 화면에서 고른다)
+const HARD_PLAYS = Array.from({ length: 60 }, (_, i) => i);
+// 그 장면에서 아이가 다루는 가장 큰 수 (단계에 따라 실제로 커지는지 보기 위해)
+// 묶어 세기는 전체 개수, 비교는 많은 쪽, 나머지는 정답 (정답이 수가 아니면 장면에 적힌 수 가운데 가장 큰 것)
+const biggest = (scene: MathScene): number => {
+  if (scene.kind === 'groups') return scene.groups * scene.size + scene.ones;
+  if (scene.kind === 'compare') return Math.max(scene.a, scene.b);
+  const answer = answerOf(scene);
+  return typeof answer === 'number' ? answer : Math.max(...(JSON.stringify(scene).match(/\d+/g) ?? ['0']).map(Number));
+};
+
+describe('어려움 단계 (50까지)', () => {
+  it('첫 판부터 수를 바꾼다 (규칙 찾기만 그대로)', () => {
+    for (const lesson of LESSONS) {
+      const first = lessonForPlay(lesson, 0, 'hard');
+      if (lesson.area === 'patterns') expect(first.apply, lesson.id).toEqual(lesson.apply);
+      else expect(first, lesson.id).not.toBe(lesson);
+    }
+  });
+
+  it('같은 판 번호면 같은 문제 (다시 열어도 바뀌지 않는다)', () => {
+    for (const lesson of LESSONS) expect(lessonForPlay(lesson, 3, 'hard')).toEqual(lessonForPlay(lesson, 3, 'hard'));
+  });
+
+  it('수가 커지는 놀이에서는 보통 단계보다 큰 수가 나온다', () => {
+    const SCALED = ['count', 'compare', 'add', 'subtract', 'groups', 'hops', 'pairs', 'share', 'double', 'difference'];
+    for (const lesson of LESSONS) {
+      if (!SCALED.includes(lesson.apply.kind)) continue;
+      const top = (level: 'normal' | 'hard') => Math.max(...HARD_PLAYS.map((p) => biggest(lessonForPlay(lesson, p, level).apply)));
+      expect(top('hard'), lesson.id).toBeGreaterThan(top('normal'));
+    }
+  });
+
+  for (const lesson of LESSONS) {
+    describe(lesson.id, () => {
+      const variants = HARD_PLAYS.map((p) => lessonForPlay(lesson, p, 'hard'));
+
+      it('어려움 범위 안이고, 정답이 선택지에 딱 한 번, 선택지는 겹치지 않는다', () => {
+        for (const v of variants) {
+          for (const [scene, choices] of [[v.predict, v.predictChoices], [v.apply, v.applyChoices]] as const) {
+            expect(sizeOk(scene, 'hard'), JSON.stringify(scene)).toBe(true);
+            expect(choices.filter((c) => c === answerOf(scene))).toHaveLength(1);
+            expect(new Set(choices).size).toBe(choices.length);
+            if (scene.kind === 'pairs') expect(choices).toEqual(['even', 'odd']);
+            else expect(choices.length).toBeGreaterThanOrEqual(3);
+          }
+        }
+      });
+
+      it('가르치는 점은 그대로 (같은 종류, 비교의 많은 쪽, 십의 자리를 넘는 덧셈·뺄셈)', () => {
+        const tens = (n: number) => Math.floor(n / 10);
+        for (const v of variants) {
+          for (const [orig, next] of [[lesson.predict, v.predict], [lesson.apply, v.apply]] as [MathScene, MathScene][]) {
+            expect(next.kind).toBe(orig.kind);
+            if (orig.kind === 'compare') expect(answerOf(next)).toBe(answerOf(orig));
+            if (next.kind === 'add') expect(tens(next.start + next.add), JSON.stringify(next)).toBeGreaterThan(tens(next.start));
+            if (next.kind === 'subtract') expect(tens(next.start - next.remove), JSON.stringify(next)).toBeLessThan(tens(next.start));
+            if (next.kind === 'groups' && orig.kind === 'groups') {
+              expect(next.size).toBe(orig.size);
+              if (next.size === 2) expect(next.ones).toBe(orig.ones); // 문장이 '혼자 있는 하나'를 말한다
+              else expect(next.groups).toBeGreaterThanOrEqual(3); // 문장이 '10, 20, 30…' 하고 센다
+            }
+          }
+          expect(v.explore).toBe(lesson.explore); // 처음 살펴보는 장면은 두 단계가 같다
+        }
+      });
+
+      it('문장 속 {자리}를 바뀐 장면으로 모두 채울 수 있다', () => {
+        for (const v of variants.slice(0, 20)) {
+          const parts: [LessonTextPart, MathScene][] = [['predict', v.predict], ['verify', v.predict], ['apply', v.apply], ['hint1', v.apply], ['hint2', v.apply], ['hint3', v.apply], ['correct', v.apply]];
+          for (const [part, scene] of parts) {
+            const vars = sceneVars(scene, String);
+            for (const name of placeholders(read(lessonKey(v.id, part)))) expect(vars, `${v.id}.${part} {${name}}`).toHaveProperty(name);
+          }
+        }
+      });
+    });
+  }
+});

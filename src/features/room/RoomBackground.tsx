@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import type { Season, TimeOfDay } from './timeOfDay';
-import { GRID, WALL_H, VIEW_W, VIEW_H, toScreen, toPoints, lift } from './iso';
-import { assetUrl, BACKGROUNDS } from '../../data/assets/assetRegistry';
+import { GRID, WALL_H, VIEW_W, VIEW_H, toScreen, toPoints, lift, wallTransform } from './iso';
+import { assetUrl, BACKGROUNDS, windowSkyPath, windowWoodsPath } from '../../data/assets/assetRegistry';
 import { getFurniture } from '../../data/furniture/furniture';
 import { useAssetStatus } from '../../services/assets/useAssetStatus';
 
@@ -13,9 +13,19 @@ const LEFT_WALL = [top, leftCorner, lift(leftCorner, WALL_H), lift(top, WALL_H)]
 const RIGHT_WALL = [top, rightCorner, lift(rightCorner, WALL_H), lift(top, WALL_H)];
 const FLOOR = [top, rightCorner, front, leftCorner];
 const SLAB = 16;
+// 창밖 그림을 정면에서 본 크기 (창문 1.6칸 × 띠 높이 90). 벽 각도로 눕히는 것은 wallTransform 이 한다.
+const WINDOW_FACE_W = 160;
+const WINDOW_FACE_H = 90;
 
-// 방의 바닥과 벽 (수채화 동화책 스타일). 배경 그림(room-base.png)이 있으면 그 그림을, 없으면 아래 그림을 그린다.
-// 그리는 순서: 바닥·벽 → 벽지 → 창문·덩굴·가랜드·걸레받이 (벽지를 붙여도 창문이 또렷하게 보이도록)
+// 방의 바닥과 벽 (수채화 동화책 스타일).
+// 그리는 순서: 바닥·벽 → 창문 햇빛 → 벽지 → 창문·덩굴·가랜드·걸레받이 (벽지를 붙여도 창문이 또렷하게 보이도록)
+//
+// 겹마다 그림 파일을 따로 쓴다 (한 겹이 없으면 그 겹만 코드로 그린다):
+//  - 바닥·벽: room-base.png
+//  - 창밖 하늘: window-sky-<시간대>.png (해·달·별 포함)
+//  - 창밖 숲: window-woods-<계절>.png (날리는 꽃잎·나비·낙엽·눈 포함)
+// 창문틀·가랜드·햇빛은 늘 코드로 그린다. 그래서 room-base.png 를 넣어도
+// 낮·저녁·밤과 계절이 그대로 바뀐다.
 
 // 창밖 하늘 색 (위 → 아래)
 const SKY: Record<TimeOfDay, [string, string, string]> = {
@@ -76,6 +86,23 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
     lift(toScreen(2.2, 0), 85),
   ];
 
+  // 창밖 그림(하늘·숲): 벽 각도에 맞게 비스듬히 눕힌 창문 네모 안에 그린다.
+  // 그림은 정면에서 본 160×90 네모로 그리면 된다 (창문 1.6칸 × 띠 높이 90).
+  const skyUrl = assetUrl(windowSkyPath(time));
+  const woodsUrl = assetUrl(windowWoodsPath(season));
+  const skyStatus = useAssetStatus(skyUrl);
+  const woodsStatus = useAssetStatus(woodsUrl);
+  const windowFace = wallTransform('right', 2.2, 1.6, 175);
+
+  // 창문에서 바닥으로 비치는 햇빛 (밤에는 없음). 배경 그림이 있을 때도 그린다.
+  const sunbeam = (
+    <polygon
+      opacity={time === 'night' ? 0 : time === 'evening' ? 0.6 : 1}
+      points={toPoints([toScreen(2.2, 0), toScreen(3.8, 0), toScreen(3.2, 2.6), toScreen(1.6, 2.6)])}
+      fill="url(#storybook-sun)"
+    />
+  );
+
   return (
     <g>
       <defs>
@@ -128,7 +155,10 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
       </defs>
 
       {baseStatus === 'ok' ? (
-        <image href={baseUrl} width={VIEW_W} height={VIEW_H} />
+        <>
+          <image href={baseUrl} width={VIEW_W} height={VIEW_H} />
+          <g filter="url(#wc-room)">{sunbeam}</g>
+        </>
       ) : (
         <g filter="url(#wc-room)">
           {/* Warm wooden edge around the miniature room */}
@@ -172,8 +202,7 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
               <polygon points={toPoints(RIGHT_WALL)} fill="url(#storybook-sprigs)" />
             </g>
           )}
-          {/* 창문에서 바닥으로 비치는 햇빛 (밤에는 없음) */}
-          <polygon opacity={time === 'night' ? 0 : time === 'evening' ? 0.6 : 1} points={toPoints([toScreen(2.2, 0), toScreen(3.8, 0), toScreen(3.2, 2.6), toScreen(1.6, 2.6)])} fill="url(#storybook-sun)" />
+          {sunbeam}
         </g>
       )}
 
@@ -185,13 +214,14 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
         </g>
       )}
 
-      {baseStatus !== 'ok' && (
-        <g filter="url(#wc-room)">
+      <g filter="url(#wc-room)">
           {/* Window looking into a layered, leafy forest */}
             <g clipPath="url(#storybook-window-clip)">
-              <polygon points={toPoints(WINDOW)} fill="url(#storybook-window-sky)" />
+              {/* 창밖 하늘: 그림이 있으면 그 그림 한 장, 없으면 색 그라데이션 + 해·달·별 */}
+              {skyStatus === 'ok' && <g data-sky={time} transform={windowFace}><image href={skyUrl} width={WINDOW_FACE_W} height={WINDOW_FACE_H} preserveAspectRatio="none" /></g>}
+              {skyStatus !== 'ok' && <polygon points={toPoints(WINDOW)} fill="url(#storybook-window-sky)" />}
               {/* 낮·저녁: 해, 밤: 초승달과 별 */}
-              {time === 'night' ? (
+              {skyStatus === 'ok' ? null : time === 'night' ? (
                 <g data-sky="night">
                   <circle cx={lift(toScreen(3.43, 0), 140).x} cy={lift(toScreen(3.43, 0), 140).y} r="11" fill="#F4D98C" />
                   <circle cx={lift(toScreen(3.43, 0), 140).x + 5} cy={lift(toScreen(3.43, 0), 140).y - 4} r="10" fill={SKY.night[0]} />
@@ -202,6 +232,10 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
               ) : (
                 <circle data-sky={time} cx={lift(toScreen(3.43, 0), time === 'evening' ? 118 : 140).x} cy={lift(toScreen(3.43, 0), time === 'evening' ? 118 : 140).y} r={time === 'evening' ? 15 : 13} fill={time === 'evening' ? '#F5A97A' : '#FFF0B8'} />
               )}
+              {/* 창밖 숲: 그림이 있으면 그 그림 한 장(날리는 것까지), 없으면 세 겹 + 계절 장식 */}
+              {woodsStatus === 'ok' && <g data-season={season} transform={windowFace}><image href={woodsUrl} width={WINDOW_FACE_W} height={WINDOW_FACE_H} preserveAspectRatio="none" /></g>}
+              {woodsStatus !== 'ok' && (
+              <>
               <path
                 d={`M ${toScreen(2.05, 0).x} ${toScreen(2.05, 0).y - 106}
                     q 17 -28 34 -4 q 17 -28 37 -5 q 20 -26 42 -1 q 18 -18 37 2
@@ -224,6 +258,8 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
                 fill={WOODS[season][2]}
               />
               <SeasonBits season={season} />
+              </>
+              )}
             </g>
             <polygon points={toPoints(WINDOW)} fill="none" stroke="#B9855A" strokeWidth="10" strokeLinejoin="round" />
             <path
@@ -271,8 +307,7 @@ export default memo(function RoomBackground({ wallpaperId, time = 'day', season 
                 </g>
               );
             })()}
-        </g>
-      )}
+      </g>
 
       <polygon points={toPoints([top, leftCorner, lift(leftCorner, 14), lift(top, 14)])} fill="#C59669" stroke="#A8744A" strokeWidth="1.5" />
       <polygon points={toPoints([top, rightCorner, lift(rightCorner, 14), lift(top, 14)])} fill="#A8744A" stroke="#8F613C" strokeWidth="1.5" />

@@ -69,7 +69,7 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
           <div className="flex flex-wrap justify-center gap-3">
             {bundleEntries(rewards).map(([id, n], i) => (
               <span key={id} className="animate-rise" style={{ animationDelay: `${i * 150}ms` }}>
-                <ResourceChip id={id} amount={n} prefix="+" size="lg" />
+                <ResourceChip id={id} amount={n} prefix="+" size="lg" withName />
               </span>
             ))}
           </div>
@@ -78,7 +78,7 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
               <p className="mb-2 text-lg font-bold text-wood">{t('reward.firstTimeBonus')}</p>
               <div className="flex flex-wrap justify-center gap-3">
                 {bonusEntries.map(([id, n]) => (
-                  <ResourceChip key={id} id={id} amount={n} prefix="+" size="lg" />
+                  <ResourceChip key={id} id={id} amount={n} prefix="+" size="lg" withName />
                 ))}
               </div>
             </div>

@@ -18,6 +18,15 @@ export const ko: Messages = {
     stickers: '스티커 도감',
     back: '뒤로',
   },
+  // 타이틀 화면에서 고르는 문제 어려움 단계
+  level: {
+    label: '수의 크기',
+    normal: '보통',
+    hard: '어려움',
+    normalRange: '20까지',
+    hardRange: '50까지',
+    hint: '같은 놀이에 더 큰 수가 나와요. 언제든 다시 바꿀 수 있어요.',
+  },
   room: {
     photoCaption: '나만의 숲속 방 · {date}',
     light: '{name} 불빛',
@@ -615,6 +624,10 @@ export const ko: Messages = {
     settingBody: '이만큼 놀면 루루가 잠깐 쉬자고 해요 (게임 화면을 보고 있는 시간만 세요).',
     off: '끔',
     minutes: '{n}분',
+    // 타이틀 화면의 쉬어 가기 표시 (누르면 어른 설정으로 간다)
+    every: '{n}분마다 쉬어 가기',
+    everyOff: '쉬어 가기 꺼짐',
+    open: '쉬어 가기: {state}. 어른 설정으로 가기.',
   },
   daily: {
     title: '오늘의 문제',

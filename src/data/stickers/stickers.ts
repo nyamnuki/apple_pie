@@ -1,5 +1,7 @@
 import type { TranslationKey } from '../../i18n';
 import type { RegionId } from '../../types/resources';
+import { MATH_ITEMS } from '../math/items';
+import { RESOURCES } from '../resources/resources';
 
 // ===== 스티커 도감 =====
 // 놀이를 끝낼 때마다 그 마을의 스티커를 하나씩 (순서대로, 아직 없는 것) 받는다. 마을마다 6장.
@@ -53,6 +55,13 @@ export const STICKERS: StickerDef[] = [
 ];
 
 export const getSticker = (id: string) => STICKERS.find((x) => x.id === id);
+
+// 스티커 그림이 없을 때 쓰는 그림 문자 (물건·재료와 같은 것)
+const EMOJI_BY_PATH: Record<string, string> = {
+  ...Object.fromEntries(Object.values(MATH_ITEMS).map((m) => [m.assetPath, m.emoji])),
+  ...Object.fromEntries(RESOURCES.map((r) => [r.assetPath, r.placeholder.emoji])),
+};
+export const stickerEmoji = (art: string) => EMOJI_BY_PATH[art] ?? '⭐';
 
 // 이 마을에서 다음에 받을 스티커 (다 모았으면 null)
 export function nextSticker(region: RegionId, owned: readonly string[]): StickerDef | null {

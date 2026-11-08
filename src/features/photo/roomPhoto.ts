@@ -6,6 +6,43 @@ import { downloadBlob } from '../../utils/download';
 // 수채화 효과(필터)도 함께 넣어 화면과 같은 모습으로 저장한다. 어디에도 올리지 않는다.
 // 나무 액자에 넣고, 아래 종이 띠에 글(앱 이름과 날짜)을 적는다.
 
+// 그림 파일(PNG) 을 사진 안에 넣기.
+// 만든 SVG 를 <img> 로 읽어 캔버스에 그리는데, 그렇게 읽은 SVG 는 밖에 있는 그림을 불러오지 못한다.
+// 그래서 <image> 가 가리키는 그림을 미리 받아 data: 주소로 바꿔 둔다. (가구 그림이 사진에서 사라지지 않게)
+async function inlineImages(root: Element): Promise<void> {
+  const images = [...root.querySelectorAll('image')];
+  const hrefOf = (el: Element) => el.getAttribute('href') ?? el.getAttribute('xlink:href');
+  const urls = new Set(images.map(hrefOf).filter((h): h is string => Boolean(h) && !h!.startsWith('data:')));
+  const inlined = new Map<string, string>();
+
+  await Promise.all(
+    [...urls].map(async (url) => {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(new Error('read'));
+          reader.readAsDataURL(blob);
+        });
+        inlined.set(url, data);
+      } catch {
+        // 못 받은 그림은 그냥 둔다 (사진에서 그 자리만 비어 보인다)
+      }
+    }),
+  );
+
+  for (const el of images) {
+    const href = hrefOf(el);
+    const data = href ? inlined.get(href) : undefined;
+    if (!data) continue;
+    el.removeAttribute('xlink:href');
+    el.setAttribute('href', data);
+  }
+}
+
 const SCALE = 2; // 사진 크기 배율
 const PAD = 40; // 방 둘레 여백 (방 좌표)
 const FRAME = 22; // 나무 액자 두께
@@ -18,7 +55,10 @@ export async function saveRoomPhoto(roomEl: HTMLElement, fileName: string, capti
   if (svgs.length === 0) return false;
   const W = VIEW_W + PAD * 2 + FRAME * 2;
   const H = VIEW_H + PAD * 2 + FRAME * 2 + CAPTION;
-  const layers = svgs.map((s) => `<g transform="translate(${PAD + FRAME} ${PAD + FRAME})">${s.innerHTML}</g>`).join('');
+  // 화면의 방 그림을 복사해 두고, 그 복사본의 그림 파일을 data: 주소로 바꾼다 (화면은 건드리지 않는다)
+  const clones = svgs.map((s) => s.cloneNode(true) as SVGSVGElement);
+  await Promise.all(clones.map(inlineImages));
+  const layers = clones.map((s) => `<g transform="translate(${PAD + FRAME} ${PAD + FRAME})">${s.innerHTML}</g>`).join('');
   // 나무 액자: 바깥 나무색, 안쪽 가장자리에 옅은 그늘, 네 모서리에 작은 잎
   const leaf = (x: number, y: number, r: number) => `<path transform="translate(${x} ${y}) rotate(${r})" d="M0 0 C6 -10 18 -10 22 0 C18 8 6 8 0 0 Z" fill="#A8C3A0" stroke="#6B5444" stroke-width="1.5"/>`;
   const frame = `<rect x="${FRAME / 2}" y="${FRAME / 2}" width="${W - FRAME}" height="${H - FRAME}" rx="18" fill="none" stroke="#B9855A" stroke-width="${FRAME}"/>

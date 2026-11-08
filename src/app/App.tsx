@@ -27,6 +27,8 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
   // 저장 안내는 한 번 닫으면 이번 실행 동안 다시 보이지 않는다
   const [notice, setNotice] = useState<LoadStatus | null>(loadStatus);
   const [settingsFrom, setSettingsFrom] = useState<Screen>('title');
+  // 어른 설정을 어디서 열었는지 (타이틀의 쉬어 가기 표시에서도 열 수 있다)
+  const [parentFrom, setParentFrom] = useState<Screen>('settings');
   const [lessonId, setLessonId] = useState<LessonId>('counting1');
   const [regionId, setRegionId] = useState<RegionId>('acornVillage');
   const [placeFirst, setPlaceFirst] = useState<string | null>(null); // 가방에서 고른 가구 (꾸미기에서 바로 놓기)
@@ -34,6 +36,11 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
   const openSettings = (from: Screen) => {
     setSettingsFrom(from);
     setScreen('settings');
+  };
+
+  const openParent = (from: Screen) => {
+    setParentFrom(from);
+    setScreen('parentGate');
   };
 
   // 배경 음악: 달빛 숲(놀이 고르기·놀이)은 밤의 곡, 수정 동굴은 동굴 곡, 나머지는 낮의 곡
@@ -62,6 +69,7 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
               setLessonId(id);
               setScreen('lesson');
             }}
+            onParent={() => openParent('title')}
           />
         );
       case 'room':
@@ -87,11 +95,11 @@ export default function App({ loadStatus }: { loadStatus: LoadStatus }) {
           />
         );
       case 'settings':
-        return <SettingsScreen onBack={() => setScreen(settingsFrom)} onParent={() => setScreen('parentGate')} canSave={loadStatus !== 'unavailable'} />;
+        return <SettingsScreen onBack={() => setScreen(settingsFrom)} onParent={() => openParent('settings')} canSave={loadStatus !== 'unavailable'} />;
       case 'parentGate':
-        return <ParentGate onPass={() => setScreen('parent')} onBack={() => setScreen('settings')} />;
+        return <ParentGate onPass={() => setScreen('parent')} onBack={() => setScreen(parentFrom)} />;
       case 'parent':
-        return <ParentScreen onBack={() => setScreen('settings')} />;
+        return <ParentScreen onBack={() => setScreen(parentFrom)} />;
       case 'map':
         return (
           <RegionMapScreen

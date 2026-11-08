@@ -5,11 +5,21 @@ import { seed, makeSave, goToRegion, guide } from './helpers';
 
 const SAVE = makeSave({ furniture: { leafBed: 1, petalRug: 1, mushroomLamp: 1, flowerPot: 1, toyChest: 1, leafFrame: 1, woodlandWallpaper: 1 } });
 
-test('없는 그림 파일은 아예 요청하지 않는다 (404 없음)', async ({ page, context }) => {
+// 그림을 넣기 전(요청 0건)과 넣은 뒤(요청 전부 200) 모두 지켜야 하는 규칙:
+// 없는 그림은 아예 요청하지 않고, 요청한 그림은 반드시 성공한다. (404 가 생기면 실패)
+test('그림 요청은 모두 성공한다 (없는 그림은 요청하지 않는다)', async ({ page, context }) => {
   await seed(context, { save: SAVE });
+  const IMAGE = /\/assets\/.+\.(png|webp|svg|jpe?g)$/;
   const asked: string[] = [];
+  const broken: string[] = [];
   page.on('request', (r) => {
-    if (/\/assets\/.+\.(png|webp|svg|jpe?g)$/.test(r.url())) asked.push(r.url());
+    if (IMAGE.test(r.url())) asked.push(r.url());
+  });
+  page.on('response', (r) => {
+    if (IMAGE.test(r.url()) && r.status() !== 200) broken.push(`${r.status()} ${r.url()}`);
+  });
+  page.on('requestfailed', (r) => {
+    if (IMAGE.test(r.url())) broken.push(`요청 실패 ${r.url()}`);
   });
   await page.goto('/');
   await page.getByRole('button', { name: 'Start' }).click();
@@ -23,7 +33,8 @@ test('없는 그림 파일은 아예 요청하지 않는다 (404 없음)', async
   await page.getByRole('button', { name: /^Acorn Village/ }).click();
   await page.getByRole('button', { name: /Counting Apples/ }).click();
   await expect(page.getByRole('button', { name: 'Next' })).toBeVisible();
-  expect(asked).toEqual([]);
+  expect(broken).toEqual([]);
+  console.info(`그림 요청 ${asked.length}건 (모두 성공)`);
 });
 
 test('꾸미기 목록의 그림은 방에 그려지는 것과 같은 그림이다 (그림 문자가 아님)', async ({ page, context }) => {
@@ -205,4 +216,50 @@ test('처음 하는 아이의 타이틀에는 이어서 하기가 없다', async
   await page.goto('/');
   await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
   await expect(page.getByRole('button', { name: /^Play again/ })).toHaveCount(0);
+});
+
+// 타이틀 화면에서 바로 고르는 것 두 가지: 문제의 수 크기, 그리고 쉬어 가기(어른 설정으로 가는 길)
+test('타이틀에서 수의 크기를 고르면 바로 저장된다', async ({ page, context }) => {
+  await seed(context, { save: SAVE });
+  await page.goto('/');
+  const normal = page.getByRole('radio', { name: /Normal/ });
+  const harder = page.getByRole('radio', { name: /Harder/ });
+  await expect(normal).toHaveAttribute('aria-checked', 'true'); // 처음은 보통
+  await expect(harder).toHaveAttribute('aria-checked', 'false');
+
+  await harder.click();
+  await expect(harder).toHaveAttribute('aria-checked', 'true');
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mathTown.settings') ?? '{}').mathLevel)).toBe('hard');
+
+  // 새로 열어도 고른 단계가 남아 있다
+  await page.reload();
+  await expect(page.getByRole('radio', { name: /Harder/ })).toHaveAttribute('aria-checked', 'true');
+
+  // 다시 보통으로
+  await page.getByRole('radio', { name: /Normal/ }).click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('mathTown.settings') ?? '{}').mathLevel)).toBe('normal');
+});
+
+test('타이틀의 쉬어 가기 표시: 지금 상태가 보이고, 누르면 어른 설정으로 간다', async ({ page, context }) => {
+  await seed(context, { save: SAVE });
+  await page.goto('/');
+  // 기본 20분이 타이틀에 그대로 보인다 (어른 설정 안에서 찾지 않아도 된다)
+  const rest = page.getByRole('button', { name: /Rest every 20 min/ });
+  await expect(rest).toBeVisible();
+
+  await rest.click();
+  // 어른 확인(곱셈 2문제)을 지나면 어른 설정
+  for (let i = 0; i < 2; i++) {
+    const q = await page.locator('[aria-live="polite"]').textContent();
+    const [a, b] = (q ?? '').match(/\d+/g)!.map(Number);
+    for (const d of String(a * b)) await page.locator('.grid-cols-3').getByRole('button', { name: d, exact: true }).click();
+    await page.getByRole('button', { name: 'Check answer' }).click();
+  }
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Grown-up settings');
+
+  // 15분으로 바꾸고 뒤로 가면 타이틀로 돌아오고, 표시도 함께 바뀐다
+  await page.getByRole('radio', { name: '15 min' }).click();
+  await page.getByRole('button', { name: 'Go back' }).click();
+  await expect(page.getByRole('button', { name: /Rest every 15 min/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Start' })).toBeVisible();
 });

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import AppShell from '../../components/AppShell';
 import ScreenHeader from '../../components/ScreenHeader';
 import RegionIcon from '../../components/RegionIcon';
-import { ItemArt } from '../../components/art/itemArt';
-import { STICKERS } from '../../data/stickers/stickers';
+import AssetIcon from '../../components/AssetIcon';
+import { STICKERS, stickerEmoji } from '../../data/stickers/stickers';
 import { REGIONS } from '../../data/regions/regions';
 import { useGame } from '../../app/GameProvider';
 import { useI18n } from '../../i18n';
@@ -77,7 +77,7 @@ export default function StickerBookScreen({ onBack }: { onBack: () => void }) {
                           onClick={() => setOpen(ownedList.findIndex((o) => o.id === s.id))}
                           className="flex h-full w-full flex-col items-center justify-center gap-1 rounded-3xl"
                         >
-                          <ItemArt path={s.art} size={56} />
+                          <AssetIcon path={s.art} emoji={stickerEmoji(s.art)} size={56} />
                           <span className="text-sm font-semibold leading-tight">{tKey(s.nameKey)}</span>
                         </button>
                       ) : (

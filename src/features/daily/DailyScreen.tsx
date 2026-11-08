@@ -26,7 +26,7 @@ import type { LessonId, MathAnswer } from '../../types/math';
 export default function DailyScreen({ onBack }: { onBack: () => void }) {
   const { t, formatNumber } = useI18n();
   const { game, dispatch } = useGame();
-  const { play } = useSound();
+  const { play, mathLevel } = useSound();
   const [today] = useState(() => new Date());
   const key = dateKey(today);
   const lesson = useMemo(() => {
@@ -37,8 +37,8 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
     } catch {
       // 기억이 없거나 읽을 수 없으면 새로 고른다
     }
-    return dailyLesson(today, game.completedLessons, keep);
-  }, [today, key, game.completedLessons]);
+    return dailyLesson(today, game.completedLessons, keep, mathLevel);
+  }, [today, key, game.completedLessons, mathLevel]);
   useEffect(() => {
     if (lesson) writeString(PICK_KEY, JSON.stringify({ date: key, lessonId: lesson.id }));
   }, [lesson, key]);
@@ -92,7 +92,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
             {justSolved && goldenForStamp(game.dailyDone.length) ? (
               <div role="status" className="flex animate-rise items-center gap-3 text-xl font-bold" style={{ animationDelay: '300ms' }}>
                 {t('daily.golden')}
-                <ResourceChip id="goldenAcorn" amount={1} prefix="+" size="lg" />
+                <ResourceChip id="goldenAcorn" amount={1} prefix="+" size="lg" withName />
               </div>
             ) : (
               <p className="text-lg font-semibold">{t('daily.nextGolden', { n: formatNumber(STAMPS_PER_GOLDEN - (game.dailyDone.length % STAMPS_PER_GOLDEN)) })}</p>

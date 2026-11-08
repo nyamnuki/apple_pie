@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import BigButton from '../../components/BigButton';
 import RegionIcon from '../../components/RegionIcon';
-import { ItemArt } from '../../components/art/itemArt';
+import AssetIcon from '../../components/AssetIcon';
 import { ArrowLeft, ArrowRight, Volume2, X } from '../../components/icons';
 import { getRegion } from '../../data/regions/regions';
-import type { StickerDef } from '../../data/stickers/stickers';
+import { stickerEmoji, type StickerDef } from '../../data/stickers/stickers';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
 import { speak, stopSpeaking } from '../../services/speech/speech';
@@ -52,7 +52,7 @@ export default function StickerCloseUp({ list, index, onIndex, onClose }: Props)
         {/* 흰 테두리를 두른 큰 스티커 (도감처럼 살짝 기울임) */}
         <span key={sticker.id} data-closeup={sticker.id} className="mt-4 flex h-44 w-44 shrink-0 animate-hop items-center justify-center rounded-[2.5rem] bg-white shadow-pop-sm ring-8 ring-white [@media(max-height:500px)]:mt-0 [@media(max-height:500px)]:h-36 [@media(max-height:500px)]:w-36">
           <span className="rotate-[-4deg]">
-            <ItemArt path={sticker.art} size={136} />
+            <AssetIcon path={sticker.art} emoji={stickerEmoji(sticker.art)} size={136} />
           </span>
         </span>
         <div className="flex w-full flex-col items-center gap-3">

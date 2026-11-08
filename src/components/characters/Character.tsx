@@ -5,6 +5,7 @@ import MomoSvg from './MomoSvg';
 import { CHARACTERS, characterAssetPath, type CharacterId, type Expression } from '../../data/characters/characters';
 import { assetUrl } from '../../data/assets/assetRegistry';
 import { useAssetStatus } from '../../services/assets/useAssetStatus';
+import OutfitLayer from '../../features/outfits/OutfitLayer';
 import { useI18n, type TranslationKey } from '../../i18n';
 
 // 코드로 그린 캐릭터 그림 (새 캐릭터를 그리면 여기에 추가)
@@ -26,6 +27,7 @@ interface Props {
 }
 
 // 캐릭터 한 명. 그림 순서: 표정 그림 파일 → 기본 그림 파일 → 코드로 그린 그림 → 그림 문자
+// 루루는 그림 위에 옷장에서 고른 모자·스카프를 한 겹 더 얹는다 (어느 그림이든 옷이 보이게)
 export default function Character({ id = 'lulu', expression = 'default', size = 64, bob = false }: Props) {
   const { t, tKey } = useI18n();
   const def = CHARACTERS[id];
@@ -50,8 +52,9 @@ export default function Character({ id = 'lulu', expression = 'default', size = 
     );
 
   return (
-    <span role="img" aria-label={label} className={`inline-block shrink-0 ${bob ? 'animate-bob' : ''}`} style={{ width: size * 0.8, height: size }}>
+    <span role="img" aria-label={label} className={`relative inline-block shrink-0 ${bob ? 'animate-bob' : ''}`} style={{ width: size * 0.8, height: size }}>
       {body}
+      {id === 'lulu' && <OutfitLayer />}
     </span>
   );
 }
