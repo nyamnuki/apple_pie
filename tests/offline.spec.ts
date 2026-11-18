@@ -30,5 +30,7 @@ test('한 번 열고 나면 인터넷이 끊겨도 앱이 열리고 놀 수 있�
   await page.getByRole('button', { name: /^Acorn Village/ }).click();
   await page.getByRole('button', { name: /Counting Apples/ }).click();
   await expect(page.getByRole('button', { name: 'Next' })).toBeVisible();
+  // 글꼴도 앱 안에 있어 인터넷 없이 같은 글꼴로 보인다 (예전에는 Google 에서 받아 끊기면 기기 글꼴로 바뀌었다)
+  await expect.poll(() => page.evaluate(async () => { await document.fonts.ready; return [...document.fonts].some((f) => f.family.replace(/"/g, '') === 'Nunito' && f.status === 'loaded'); })).toBe(true);
   await context.setOffline(false);
 });

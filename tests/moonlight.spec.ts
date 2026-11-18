@@ -52,7 +52,7 @@ test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) 
   for (const [i, name] of ['Star', 'Moon', 'Owl'].entries()) await expect(choices.getByRole('button').nth(i)).toHaveAccessibleName(name);
   await choices.getByRole('button', { name: 'Star' }).click();
   await waitLastButtonEnabled(page);
-  await expect(guide(page)).toHaveText(/After star, star comes a moon! Good guess!/);
+  await expect(guide(page)).toHaveText(/next comes: Moon! Good guess!/); // 답(물건 이름)을 문장에 채워 넣는다
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
 
@@ -64,7 +64,7 @@ test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) 
   await choices.getByRole('button', { name: 'Leaf' }).click();
   await expect(page.getByRole('button', { name: /Say the next one/ }).first()).toBeVisible(); // 힌트 2: 직접 해 보기
   await choices.getByRole('button', { name: 'Acorn' }).click();
-  await expect(guide(page)).toHaveText('Yes! Leaf, mushroom — and then an acorn!');
+  await expect(guide(page)).toHaveText('Yes! The pattern starts again, so next comes: Acorn!');
 
   await page.getByRole('button', { name: 'Finish' }).click();
   await expect(page.getByRole('img', { name: 'Glow Branch +2' })).toBeVisible();
