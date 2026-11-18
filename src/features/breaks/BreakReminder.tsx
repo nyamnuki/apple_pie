@@ -4,6 +4,7 @@ import BigButton from '../../components/BigButton';
 import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
 import { speak } from '../../services/speech/speech';
+import { useBackHandler } from '../../app/backButton';
 
 const REST_SECONDS = 20; // 쉬는 시간 (이만큼 지나야 '다시 놀래요' 버튼이 켜진다)
 const AWAY_RESET = 5 * 60; // 이만큼(초) 앱을 떠나 있었으면 이미 쉰 것으로 친다
@@ -17,6 +18,8 @@ export default function BreakReminder() {
   const [left, setLeft] = useState(REST_SECONDS);
   const active = useRef(0); // 앱을 보고 있던 초
   const hiddenAt = useRef<number | null>(null);
+  // 쉬는 동안에는 휴대폰 뒤로 가기로 창을 닫거나 앱을 나가지 않는다
+  useBackHandler(resting ? () => {} : undefined);
 
   // 1초마다: 보이는 동안만 센다
   useEffect(() => {

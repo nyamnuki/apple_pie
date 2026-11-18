@@ -9,6 +9,8 @@ import { useCanSpeak } from '../../services/speech/useCanSpeak';
 import type { RoomLayout } from '../../types/furniture';
 
 const SIZE = 64; // 방 좌표에서 친구 그림 크기
+// 누르는 자리 크기 (방 그림 좌표). 방은 휴대폰에서 반쯤 줄어 보이므로 그림 크기의 두 배쯤
+const HIT = 100;
 const WALK_MS = 3200; // 몇 초마다 한 친구가 한 칸 걷는지
 
 // 방의 반려 친구들: 빈 칸을 천천히 돌아다니고, 누르면 폴짝 뛰며 하트를 보여준다.
@@ -77,6 +79,8 @@ export default function PetLayer({ pets, layout }: { pets: PetDef[]; layout: Roo
             onKeyDown={onKeyDown}
             style={{ transform: `translate(${x}px, ${y}px)`, transition: 'transform 0.9s ease-in-out', cursor: 'pointer' }}
           >
+            {/* 누르는 자리: 그림보다 넉넉하게 (휴대폰에서 손가락 크기 44px 이상) */}
+            <rect x={SIZE / 2 - HIT / 2} y={SIZE - HIT + 10} width={HIT} height={HIT} rx={HIT / 3} fill="transparent" pointerEvents="all" />
             <g key={hopping ? hop!.n : 0} className={hopping ? 'animate-hop' : undefined} style={{ transformBox: 'fill-box', transformOrigin: '50% 100%' }}>
               <svg width={SIZE} height={SIZE} viewBox="0 0 64 64" overflow="visible">
                 <PetArt id={pet.id} />

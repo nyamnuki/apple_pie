@@ -16,8 +16,8 @@ describe('다시 할 때 바뀌는 문제', () => {
     for (const lesson of LESSONS) expect(lessonForPlay(lesson, 0)).toBe(lesson);
   });
 
-  it('바로 앞 판과 해 보기 정답이 같지 않다 (비교는 두 수가 같지 않다, 규칙 찾기 제외)', () => {
-    for (const lesson of LESSONS.filter((l) => l.area !== 'patterns'))
+  it('바로 앞 판과 해 보기 정답이 같지 않다 (비교는 두 수가 같지 않다)', () => {
+    for (const lesson of LESSONS)
       for (const p of PLAYS) expect(sameKey(lessonForPlay(lesson, p).apply), `${lesson.id} ${p}`).not.toEqual(sameKey(lessonForPlay(lesson, p - 1).apply));
   });
 
@@ -69,11 +69,11 @@ describe('다시 할 때 바뀌는 문제', () => {
         }
       });
 
-      it('여러 판을 하면 실제로 다른 문제가 나온다 (규칙 찾기는 그대로)', () => {
+      it('여러 판을 하면 실제로 다른 문제가 나온다', () => {
         // 비교는 '어느 쪽이 많은지'는 그대로 두고 수만 바꾸므로 장면 자체를 비교한다
+        // 규칙 찾기는 멈추는 자리만 바뀐다 (묶음 하나 길이만큼, 예상하기 × 해 보기)
         const scenes = new Set(variants.map((v) => JSON.stringify([v.predict, v.apply])));
-        if (lesson.area === 'patterns') expect(scenes.size).toBe(1);
-        else expect(scenes.size).toBeGreaterThan(10);
+        expect(scenes.size).toBeGreaterThan(lesson.area === 'patterns' ? 8 : 10);
       });
     });
   }
@@ -91,12 +91,8 @@ const biggest = (scene: MathScene): number => {
 };
 
 describe('어려움 단계 (50까지)', () => {
-  it('첫 판부터 수를 바꾼다 (규칙 찾기만 그대로)', () => {
-    for (const lesson of LESSONS) {
-      const first = lessonForPlay(lesson, 0, 'hard');
-      if (lesson.area === 'patterns') expect(first.apply, lesson.id).toEqual(lesson.apply);
-      else expect(first, lesson.id).not.toBe(lesson);
-    }
+  it('첫 판부터 문제를 바꾼다', () => {
+    for (const lesson of LESSONS) expect(lessonForPlay(lesson, 0, 'hard'), lesson.id).not.toBe(lesson);
   });
 
   it('같은 판 번호면 같은 문제 (다시 열어도 바뀌지 않는다)', () => {

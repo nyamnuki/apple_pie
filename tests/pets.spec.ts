@@ -52,3 +52,12 @@ test('놀이로 3번째 스티커를 받으면 새 친구가 왔다고 알려 �
   await playCountingApples(page);
   await expect(page.getByText('A new friend came to your room: Dudu the duckling!')).toBeVisible();
 });
+
+test('방 친구는 손가락으로 누르기 쉬운 크기 (44px 이상)', async ({ page, context }) => {
+  await seed(context, { save: withStickers(['apple', 'acorn', 'flower']) });
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  const pet = page.getByRole('button', { name: /Dudu the duckling/ });
+  const box = (await pet.boundingBox())!;
+  expect(Math.min(box.width, box.height)).toBeGreaterThanOrEqual(44);
+});

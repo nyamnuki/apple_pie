@@ -1,4 +1,4 @@
-import type { MathAnswer, MathScene } from '../../types/math';
+import type { MathAnswer, MathItemId, MathScene } from '../../types/math';
 
 // 장면 정보로 정답을 계산한다 (번역 문구와 상관없음)
 export function answerOf(scene: MathScene): MathAnswer {
@@ -38,8 +38,8 @@ export function answerOf(scene: MathScene): MathAnswer {
   }
 }
 
-// 문장 속 {start}, {answer} 같은 자리에 넣을 값들
-export function sceneVars(scene: MathScene, formatNumber: (n: number) => string): Record<string, string> {
+// 문장 속 {start}, {answer} 같은 자리에 넣을 값들. itemName: 규칙 문제의 답(물건)을 그 언어의 이름으로 ({next})
+export function sceneVars(scene: MathScene, formatNumber: (n: number) => string, itemName: (id: MathItemId) => string = String): Record<string, string> {
   const answer = answerOf(scene);
   const vars: Record<string, string> = typeof answer === 'number' ? { answer: formatNumber(answer) } : {};
   switch (scene.kind) {
@@ -52,7 +52,7 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string)
     case 'subtract':
       return { ...vars, start: formatNumber(scene.start), remove: formatNumber(scene.remove), left: formatNumber(scene.start - scene.remove) };
     case 'pattern':
-      return vars;
+      return { ...vars, next: itemName(answer as MathItemId) };
     case 'shapes':
       return { ...vars, total: formatNumber(scene.shapes.length) };
     case 'groups':

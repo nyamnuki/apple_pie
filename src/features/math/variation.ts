@@ -45,14 +45,16 @@ export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): 
   const hard = level === 'hard';
   switch (scene.kind) {
     case 'count':
-      return { ...scene, total: hard ? int(rng, 23, 48) : int(rng, 11, 19) };
+      // 어려움도 하나씩 세는 놀이라 30 까지 (그보다 많으면 세다가 지친다. 큰 수는 묶어 세기에서)
+      return { ...scene, total: hard ? int(rng, 21, 30) : int(rng, 11, 19) };
     case 'compare': {
       if (scene.a === scene.b) {
-        const n = hard ? int(rng, 18, 40) : int(rng, 6, 14);
+        const n = hard ? int(rng, 13, 25) : int(rng, 6, 14);
         return { ...scene, a: n, b: n };
       }
       // 많은 쪽은 그대로, 차이는 1~3 (가까울수록 세어 봐야 안다)
-      const small = hard ? int(rng, 18, 40) : int(rng, 6, 12);
+      // 어려움: 두 묶음을 한 화면에 모두 늘어놓으므로 25 까지
+      const small = hard ? int(rng, 13, 24) : int(rng, 6, 12);
       const big = small + int(rng, 1, 3);
       return scene.a > scene.b ? { ...scene, a: big, b: small } : { ...scene, a: small, b: big };
     }
@@ -119,17 +121,20 @@ export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): 
     case 'share':
       return { ...scene, total: (hard ? int(rng, 9, 12) : int(rng, 3, 8)) * 2 };
     case 'double':
-      return { ...scene, n: hard ? int(rng, 11, 18) : int(rng, 2, 9) };
+      // 어려움: 물가와 물속에 모두 그리므로 15 까지 (모두 30)
+      return { ...scene, n: hard ? int(rng, 10, 15) : int(rng, 2, 9) };
     case 'makeTen':
       return { ...scene, have: int(rng, 2, 8) };
     case 'ordinal':
       return { ...scene, position: int(rng, 2, scene.items.length) };
     case 'difference': {
-      const b = hard ? int(rng, 10, 18) : int(rng, 3, 8);
-      return { ...scene, b, a: b + int(rng, 1, hard ? 9 : 5) };
+      // 어려움: 위아래 짝을 한 칸씩 늘어놓으므로 많은 쪽이 20 을 넘지 않게
+      const b = hard ? int(rng, 9, 14) : int(rng, 3, 8);
+      return { ...scene, b, a: b + int(rng, 1, hard ? 6 : 5) };
     }
     case 'pattern':
-      return scene;
+      // 되풀이 묶음은 그대로 두고 멈추는 자리만 바꾼다 (묶음이 두 번 넘게 보이게) → 다음에 올 것이 판마다 달라진다
+      return { ...scene, shown: int(rng, scene.unit.length * 2, scene.unit.length * 3 - 1) };
   }
 }
 
@@ -216,8 +221,7 @@ export function lessonForPlay(lesson: MathLesson, play: number, level: Level = '
     const rng = makeRng(hash(lesson.id) + p * 7919 + levelSeed(level));
     const prev = sameKey((plays[p - 1] ?? lesson).apply);
     let next = makeVariant(lesson, rng, level);
-    // 규칙 찾기는 바뀌지 않으므로 다시 만들 필요가 없다
-    for (let tries = 0; tries < 8 && lesson.apply.kind !== 'pattern' && sameKey(next.apply) === prev; tries++) next = makeVariant(lesson, rng, level);
+    for (let tries = 0; tries < 8 && sameKey(next.apply) === prev; tries++) next = makeVariant(lesson, rng, level);
     plays.push(next);
   }
   return plays[want];

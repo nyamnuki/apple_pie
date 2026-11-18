@@ -49,7 +49,7 @@ export default function ResourceChip({ id, amount, need, prefix = '', size = 'md
       </span>
       </span>
       {/* 재료 이름 (그림만으로는 구분하기 어려운 곳에서만 보여 준다) */}
-      {withName && <span className="max-w-[7rem] text-center text-xs font-semibold leading-tight text-bark">{name}</span>}
+      {withName && <span className="max-w-[7rem] text-center text-sm font-semibold leading-tight text-bark">{name}</span>}
     </span>
   );
 }

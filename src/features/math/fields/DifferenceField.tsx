@@ -15,12 +15,13 @@ export default function DifferenceField({ scene, mode, onDone }: { scene: Scene;
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <div className="flex max-w-md flex-wrap justify-center gap-x-1 gap-y-3">
+      {/* 한 칸 = 한 짝. 칸마다 테두리를 둘러, 줄이 접혀도 위아래 짝이 한 덩어리로 보이게 한다 */}
+      <div className="flex max-w-md flex-wrap justify-center gap-x-1.5 gap-y-4">
         {range(scene.a).map((i) => {
           const paired = picked.includes(i);
           const extra = i >= scene.b;
           return (
-            <div key={i} className={`flex w-12 flex-col items-center rounded-2xl py-1 ${paired ? 'bg-apricot/60' : ''}`} data-column={i}>
+            <div key={i} className={`flex w-[3.25rem] flex-col items-center rounded-2xl py-1 ring-2 ${paired ? 'bg-apricot/60 ring-wood/40' : 'bg-cream/70 ring-oak/30'}`} data-column={i}>
               <ItemToken compact item={scene.itemA} badge={showExtra && extra ? formatNumber(i - scene.b + 1) : undefined} />
               {/* 짝을 지으면 위아래를 잇는 막대 */}
               <span className={`h-3 w-1 rounded ${paired ? 'bg-wood' : 'bg-transparent'}`} aria-hidden="true" />

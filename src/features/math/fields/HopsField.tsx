@@ -19,8 +19,9 @@ export default function HopsField({ scene, mode, onDone }: { scene: Scene; mode:
   const dir = Math.sign(scene.hop);
   const { picked, pick } = useSequence({ steps, mode, demoOrder: range(steps), onDone });
   const end = scene.start + scene.hop;
+  // 보여 줄 구간: 시작과 끝 둘레만 (단계와 상관없이 많아야 11칸). 어려움 단계는 50 까지 가므로 위쪽을 막지 않는다
   const lo = Math.max(0, Math.min(scene.start, end) - 1);
-  const hi = Math.min(20, Math.max(scene.start, end) + 1);
+  const hi = Math.max(scene.start, end) + 1;
   const xOf = (n: number) => 20 + (n - lo) * GAP;
   const width = xOf(hi) + 20;
   const done = picked.length;

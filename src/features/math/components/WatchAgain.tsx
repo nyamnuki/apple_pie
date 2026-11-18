@@ -3,6 +3,7 @@ import { X } from '../../../components/icons';
 import SceneField from '../fields/SceneField';
 import { useI18n } from '../../../i18n';
 import type { MathScene } from '../../../types/math';
+import { useBackHandler } from '../../../app/backButton';
 
 interface Props {
   scene: MathScene; // 살펴보기 장면
@@ -14,6 +15,7 @@ interface Props {
 // 다시 보기: 놀이 중 언제든 살펴보기 장면을 시범(자동으로 하나씩)으로 다시 보여 준다.
 // Esc·닫기·바깥을 누르면 닫히고, 하던 단계는 그대로다.
 export default function WatchAgain({ scene, before, after, onClose }: Props) {
+  useBackHandler(onClose); // 휴대폰 뒤로 가기는 이 창만 닫는다
   const { t } = useI18n();
   const [done, setDone] = useState(false);
   const closeRef = useRef<HTMLButtonElement>(null);

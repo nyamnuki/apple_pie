@@ -3,7 +3,9 @@ import { defineConfig, devices } from '@playwright/test';
 // ===== 자동 테스트 설정 =====
 // npm test 를 실행하면: 배포용으로 빌드 → 미리보기 서버를 켜고 → tests/ 의 테스트를 실제 브라우저(Chromium)로 돌린다.
 // 처음 한 번은 브라우저를 내려받아야 한다:  npx playwright install chromium
+// 이미 설치된 다른 버전의 Chromium 을 쓰려면 경로를 알려 준다:  PW_CHROMIUM_PATH=/path/to/chrome npm test
 const PORT = 4321;
+const executablePath = process.env.PW_CHROMIUM_PATH;
 
 export default defineConfig({
   testDir: './tests',
@@ -16,6 +18,7 @@ export default defineConfig({
     browserName: 'chromium',
     // 서비스 워커(인터넷 없이 실행)는 보통 테스트에서 끈다. tests/offline.spec.ts 에서만 켠다.
     serviceWorkers: 'block',
+    ...(executablePath ? { launchOptions: { executablePath } } : {}),
   },
   webServer: {
     command: `npm run build && npx vite preview --port ${PORT} --strictPort`,

@@ -41,7 +41,7 @@ export default function StageProgress({ stage }: { stage: Stage }) {
           </li>
         ))}
       </ol>
-      <span className="text-lg font-semibold">
+      <span className="text-lg font-semibold [@media(max-height:500px)]:text-base">
         {t('math.stepOf', { n: formatNumber(index + 1), total: formatNumber(STAGES.length), name: t(STAGE_KEY[stage]) })}
       </span>
     </div>

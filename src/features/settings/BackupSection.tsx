@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { Save, Download, Upload } from '../../components/icons';
 import BigButton from '../../components/BigButton';
 import { useGame } from '../../app/GameProvider';
@@ -7,6 +7,7 @@ import { backupText, parseSave } from '../../services/storage/gameSave';
 import { LESSONS } from '../../data/math/lessons';
 import { useI18n } from '../../i18n';
 import { downloadBlob } from '../../utils/download';
+import { isPersisted, requestPersist } from '../../services/storage/persist';
 import type { GameState } from '../../app/gameState';
 import type { RoomLayout } from '../../types/furniture';
 
@@ -20,6 +21,10 @@ export default function BackupSection({ className }: { className: string }) {
   const { layout, dispatch: roomDispatch } = useRoom();
   const [step, setStep] = useState<Step>({ kind: 'idle' });
   const input = useRef<HTMLInputElement>(null);
+  const [kept, setKept] = useState<boolean | null>(null); // 브라우저가 지우지 않게 지키는 중인지 (모르면 null)
+  useEffect(() => {
+    void isPersisted().then(setKept);
+  }, []);
 
   const download = () => {
     downloadBlob(new Blob([backupText(game, layout)], { type: 'application/json' }), `math-town-backup-${new Date().toISOString().slice(0, 10)}.json`);
@@ -49,6 +54,17 @@ export default function BackupSection({ className }: { className: string }) {
         {t('parent.backupTitle')}
       </h2>
       <p className="mb-3 text-lg">{t('parent.backupBody')}</p>
+      {/* 이 기기에서 지켜지고 있는지: 아니면 어른이 직접 요청할 수 있다 (파이어폭스는 이때 허락을 묻는다) */}
+      {kept !== null && (
+        <div className="mb-3 flex flex-col gap-2 rounded-2xl bg-cream/80 px-4 py-3" data-persisted={kept}>
+          <p className="text-base">{t(kept ? 'parent.keptSafe' : 'parent.notKept')}</p>
+          {!kept && (
+            <BigButton variant="soft" onClick={() => requestPersist(false).then((ok) => setKept(ok ?? false))}>
+              {t('parent.keepSafe')}
+            </BigButton>
+          )}
+        </div>
+      )}
 
       {step.kind === 'confirm' ? (
         <div role="alertdialog" aria-labelledby="backup-h" aria-describedby="backup-confirm" className="flex flex-col gap-3">

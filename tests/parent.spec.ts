@@ -190,3 +190,26 @@ test('함께 해 보면 좋은 놀이: 힌트를 많이 본 놀이만', async ({
   await expect(box).toContainText('Nice to play together');
   await expect(box.getByRole('listitem')).toHaveText(['Adding More']);
 });
+
+test('진행 상황 지키기: 놀이를 끝낸 적이 있으면 조용히 요청, 어른 설정에서 상태와 요청 버튼', async ({ page, context }) => {
+  // 브라우저의 저장 공간 API 를 흉내 낸다 (처음엔 지키지 않음, 요청하면 지킴)
+  await context.addInitScript(() => {
+    const w = window as unknown as { __persistCalls: number };
+    w.__persistCalls = 0;
+    let kept = false;
+    Object.defineProperty(navigator, 'storage', {
+      configurable: true,
+      value: { persisted: async () => kept, persist: async () => { w.__persistCalls++; kept = w.__persistCalls > 1; return kept; } },
+    });
+  });
+  await seed(context, { save: makeSave({ completedLessons: ['counting1'] }) });
+  await page.goto('/');
+  await expect.poll(() => page.evaluate(() => (window as unknown as { __persistCalls: number }).__persistCalls)).toBe(1); // 조용한 요청
+  await page.getByRole('button', { name: 'Open settings' }).click();
+  await page.getByRole('button', { name: 'For grown-ups' }).click();
+  await answer(page, true, 'Check answer');
+  await answer(page, true, 'Check answer');
+  await expect(page.locator('[data-persisted="false"]')).toContainText('This browser may delete the progress');
+  await page.getByRole('button', { name: 'Ask the browser to keep it' }).click();
+  await expect(page.locator('[data-persisted="true"]')).toContainText('This browser keeps the progress safe on this device.');
+});

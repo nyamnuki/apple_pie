@@ -7,6 +7,7 @@ import GuideBubble from '../../components/GuideBubble';
 import StageProgress from './components/StageProgress';
 import ChoiceButtons from './components/ChoiceButtons';
 import WatchAgain from './components/WatchAgain';
+import ExitConfirm from './components/ExitConfirm';
 import SceneField from './fields/SceneField';
 import RewardPanel from '../rewards/RewardPanel';
 import { useGame } from '../../app/GameProvider';
@@ -26,6 +27,7 @@ import { useSound } from '../../services/audio/SoundProvider';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 import type { Expression } from '../../data/characters/characters';
+import { itemNameKey } from '../../data/math/items';
 
 // 다시 보기 버튼이 나오는 단계 (살펴보기·만져 보기 중에는 이미 그 장면을 보고 있다)
 const WATCH_STAGES: Stage[] = ['predict', 'verify', 'discover', 'apply'];
@@ -61,7 +63,7 @@ interface Props {
 }
 
 export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: Props) {
-  const { t, formatNumber } = useI18n();
+  const { t, tKey, formatNumber } = useI18n();
   const [state, dispatch] = useReducer(lessonReducer, initialLessonState);
   const { game, dispatch: gameDispatch } = useGame();
   // 몇 번째 판인지 (처음 = 0). 다시 하면 예상하기·해 보기의 수가 바뀐다 (variation.ts)
@@ -75,6 +77,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
   // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
   const rewarded = useRef(false);
   const [watching, setWatching] = useState(false); // 다시 보기 창
+  // 놀이 도중 나가기: 만져 보기부터 해 보기까지는 한 번 묻는다 (나가면 이 판은 처음부터)
+  const [askExit, setAskExit] = useState(false);
 
   // 끝내기: 보상을 계산해 지급하고 보상 화면으로. 이 놀이로 새 마을이 열리면 함께 알려준다.
   const finish = () => {
@@ -94,7 +98,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
     dispatch({ type: 'next' });
   };
   const k = (part: Parameters<typeof lessonKey>[1]) => lessonKey(lessonId, part);
-  const vars = (scene: MathScene) => sceneVars(scene, formatNumber);
+  const vars = (scene: MathScene) => sceneVars(scene, formatNumber, (id) => tKey(itemNameKey(id)));
 
   const predictAnswer = answerOf(lesson.predict);
   const applyAnswer = answerOf(lesson.apply);
@@ -142,6 +146,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
     }
   })();
 
+  const requestExit = () => (state.stage === 'observe' || state.stage === 'complete' ? onExit() : setAskExit(true));
+
   const speaker = GUIDE_OF[lesson.region];
   // 끝낸 뒤 권할 다음 놀이 (끝낸 기록이 반영된 뒤 계산된다)
   const upNext = state.stage === 'complete' ? nextLesson(game.completedLessons, lesson) : null;
@@ -167,8 +173,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
   );
 
   return (
-    <AppShell background="bg-gradient-to-b from-mist/60 via-cream to-moss">
-      <ScreenHeader title={t(k('title'))} onBack={onExit} />
+    <AppShell background="bg-gradient-to-b from-mist/60 via-cream to-moss" fit={state.stage !== 'complete'}>
+      <ScreenHeader title={t(k('title'))} onBack={requestExit} />
 
       {state.stage === 'complete' && earned ? (
         <RewardPanel
@@ -197,7 +203,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
       ) : (
         // 세로 화면: 단계 → 말풍선 → 장면 → 버튼 (위에서 아래로)
         // 높이가 낮은 가로 화면: 왼쪽에 장면, 오른쪽에 단계·말풍선·버튼
-        <div className="grid flex-1 grid-rows-[auto_auto_1fr_auto] gap-4 [grid-template-areas:'progress'_'guide'_'field'_'controls'] [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:grid-rows-[auto_1fr_auto] [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:[grid-template-areas:'field_progress'_'field_guide'_'field_controls']">
+        <div className="grid min-h-0 flex-1 grid-rows-[auto_auto_minmax(11rem,1fr)_auto] gap-4 [grid-template-areas:'progress'_'guide'_'field'_'controls'] [@media(max-height:500px)]:grid-cols-2 [@media(max-height:500px)]:grid-rows-[auto_1fr_auto] [@media(max-height:500px)]:gap-3 [@media(max-height:500px)]:[grid-template-areas:'field_progress'_'field_guide'_'field_controls']">
           <div className="flex items-center gap-2 [grid-area:progress]">
             <div className="min-w-0 flex-1">
               <StageProgress stage={state.stage} />
@@ -207,7 +213,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
               // 좁은 화면에서는 아이콘만 (이름은 화면 읽기용으로 그대로)
               <BigButton variant="soft" className="shrink-0 !min-h-[48px] !px-3 !text-base" aria-label={t('math.watchAgain')} onClick={() => setWatching(true)}>
                 <RotateCcw size={22} aria-hidden />
-                <span aria-hidden="true" className="hidden min-[420px]:inline">
+                <span aria-hidden="true" className="hidden min-[420px]:inline [@media(max-height:500px)]:hidden">
                   {t('math.watchAgain')}
                 </span>
               </BigButton>
@@ -217,8 +223,11 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
             <GuideBubble text={guide} expression={expression} speaker={speaker} />
           </div>
 
-          <section className="flex min-h-[220px] items-center justify-center overflow-auto rounded-[2rem] border-2 border-bark/10 bg-cream/85 p-4 shadow-[inset_0_2px_10px_rgb(89_72_60/0.08)] [grid-area:field] [@media(max-height:500px)]:min-h-0">
-            <SceneField key={fieldKey} scene={field.scene} mode={field.mode} onDone={onFieldDone} />
+          {/* 놀이판: 장면이 크면(어려움 단계 등) 이 안에서만 스크롤된다. m-auto 로 가운데 두되 넘치면 위가 잘리지 않게 */}
+          <section className="flex min-h-0 overflow-auto rounded-[2rem] border-2 border-bark/10 bg-cream/85 p-4 shadow-[inset_0_2px_10px_rgb(89_72_60/0.08)] [grid-area:field]">
+            <div className="m-auto flex w-full justify-center">
+              <SceneField key={fieldKey} scene={field.scene} mode={field.mode} onDone={onFieldDone} />
+            </div>
           </section>
 
           {/* 아래 버튼: 단계마다 다르다 */}
@@ -255,6 +264,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
           </div>
         </div>
       )}
+      {askExit && <ExitConfirm onStay={() => setAskExit(false)} onLeave={onExit} />}
       {watching && (
         <WatchAgain scene={lesson.explore} before={t(k('observe'), vars(lesson.explore))} after={t(k('manipulateDone'), vars(lesson.explore))} onClose={() => setWatching(false)} />
       )}

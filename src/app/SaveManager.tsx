@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useGame } from './GameProvider';
 import { useRoom } from '../features/room/RoomProvider';
 import { saveGame } from '../services/storage/gameSave';
+import { requestPersist } from '../services/storage/persist';
 
 const SAVE_DELAY = 300; // 바뀐 뒤 잠깐 기다렸다 한 번에 저장 (ms)
 
@@ -18,6 +19,12 @@ export default function SaveManager() {
     const timer = setTimeout(() => saveGame(game, layout), SAVE_DELAY);
     return () => clearTimeout(timer);
   }, [game, layout]);
+
+  // 놀이를 하나라도 끝냈으면 '지우지 말아 주세요'라고 조용히 요청한다 (지킬 진행 상황이 생긴 뒤)
+  const hasProgress = game.completedLessons.length > 0;
+  useEffect(() => {
+    if (hasProgress) void requestPersist(true);
+  }, [hasProgress]);
 
   useEffect(() => {
     const flush = () => saveGame(latest.current.game, latest.current.layout);

@@ -2,11 +2,13 @@ import { useEffect, useRef, type ReactNode } from 'react';
 import { ArrowLeft } from './icons';
 import BigButton from './BigButton';
 import { useI18n } from '../i18n';
+import { useBackHandler } from '../app/backButton';
 
 // 하위 화면 머리말: 뒤로 가기 버튼 + 제목 (+ 오른쪽 추가 영역)
 export default function ScreenHeader({ title, onBack, right }: { title: string; onBack?: () => void; right?: ReactNode }) {
   const { t } = useI18n();
   const titleRef = useRef<HTMLHeadingElement>(null);
+  useBackHandler(onBack); // 휴대폰 뒤로 가기도 ← 버튼과 같게
   // 새 화면이 열리면 제목으로 초점을 옮긴다 (손가락으로 누를 때는 테두리가 보이지 않는다)
   useEffect(() => {
     titleRef.current?.focus({ preventScroll: true });

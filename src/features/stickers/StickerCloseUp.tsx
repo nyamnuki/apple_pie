@@ -9,6 +9,7 @@ import { useI18n } from '../../i18n';
 import { useSound } from '../../services/audio/SoundProvider';
 import { speak, stopSpeaking } from '../../services/speech/speech';
 import { useCanSpeak } from '../../services/speech/useCanSpeak';
+import { useBackHandler } from '../../app/backButton';
 
 interface Props {
   list: StickerDef[]; // 모은 스티커 (도감 순서). 화살표로 넘겨 본다
@@ -20,6 +21,7 @@ interface Props {
 // 스티커 크게 보기: 큰 그림, 이름, 받은 마을. 열거나 넘길 때 이름을 읽어 준다 (자동 읽기를 켰을 때).
 // Esc 나 닫기로 닫으면 누른 스티커로 초점이 돌아간다 (StickerBookScreen).
 export default function StickerCloseUp({ list, index, onIndex, onClose }: Props) {
+  useBackHandler(onClose); // 휴대폰 뒤로 가기는 이 창만 닫는다
   const { t, tKey, locale } = useI18n();
   const { voiceOn, interacted } = useSound();
   const speakable = useCanSpeak(locale);

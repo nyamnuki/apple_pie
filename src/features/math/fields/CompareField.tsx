@@ -8,7 +8,8 @@ type Scene = Extract<MathScene, { kind: 'compare' }>;
 // 비교하기: 두 그릇에서 하나씩 꺼내 짝을 짓는다. 짝 없이 남는 쪽이 더 많다.
 export default function CompareField({ scene, mode, onDone }: { scene: Scene; mode: FieldMode; onDone?: () => void }) {
   const { t } = useI18n();
-  const compact = Math.max(scene.a, scene.b) > 8; // 물건이 많으면 조금 작게
+  // 물건이 5개 넘으면 조금 작게, 두 그릇을 위아래로 (나란히 두면 한 줄에 하나씩만 들어가 답 버튼이 화면 밖으로 밀린다)
+  const compact = Math.max(scene.a, scene.b) > 4;
   const pairsNeeded = Math.min(scene.a, scene.b);
   const { picked, pick, finished } = useSequence({ steps: pairsNeeded, mode, demoOrder: range(pairsNeeded), onDone });
   const pairs = picked.length;

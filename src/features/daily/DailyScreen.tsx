@@ -21,10 +21,11 @@ import { useSound } from '../../services/audio/SoundProvider';
 import { useI18n } from '../../i18n';
 import { Check } from '../../components/icons';
 import type { LessonId, MathAnswer } from '../../types/math';
+import { itemNameKey } from '../../data/math/items';
 
 // 오늘의 문제: 끝낸 놀이에서 하루 한 문제. 틀리면 그 놀이의 힌트, 두 번 틀리면 직접 만져 보기, 세 번이면 같이 해 보기.
 export default function DailyScreen({ onBack }: { onBack: () => void }) {
-  const { t, formatNumber } = useI18n();
+  const { t, tKey, formatNumber } = useI18n();
   const { game, dispatch } = useGame();
   const { play, mathLevel } = useSound();
   const [today] = useState(() => new Date());
@@ -48,7 +49,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
 
   if (!lesson) return null;
   const answer = answerOf(lesson.apply);
-  const vars = sceneVars(lesson.apply, formatNumber);
+  const vars = sceneVars(lesson.apply, formatNumber, (id) => tKey(itemNameKey(id)));
   const level = Math.min(wrong.length, 3);
   const k = (part: Parameters<typeof lessonKey>[1]) => t(lessonKey(lesson.id, part), vars);
   const text = solved ? `${k('correct')} ${t('daily.stamp')}` : level === 0 ? k('apply') : `${t('math.tryAgain')} ${k(`hint${level}` as 'hint1')}`;

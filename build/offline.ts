@@ -57,7 +57,6 @@ function serviceWorker(files: string[], version: string): string {
   return `// 자동으로 만든 파일 (build/offline.ts). 직접 고치지 마세요.
 const CACHE = 'math-town-' + ${JSON.stringify(hash(version))};
 const FILES = ${JSON.stringify([...new Set(files)])};
-const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
 // 설치: 이번 버전의 파일을 모두 내려받아 둔다
 self.addEventListener('install', (event) => {
@@ -88,17 +87,6 @@ self.addEventListener('fetch', (event) => {
           return res;
         })
         .catch(() => caches.match('./')),
-    );
-    return;
-  }
-
-  // 글꼴: 한 번 받은 것은 저장해 두고 쓴다
-  if (FONT_HOSTS.includes(url.hostname)) {
-    event.respondWith(
-      caches.match(req).then((hit) => hit || fetch(req).then((res) => {
-        if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); }
-        return res;
-      })),
     );
     return;
   }

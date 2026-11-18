@@ -74,7 +74,7 @@ export default function Closet() {
                       ) : (
                         <>
                           <Lock size={24} aria-hidden className="text-bark/50" />
-                          <span aria-hidden="true" className="text-xs font-bold leading-tight text-bark/70">
+                          <span aria-hidden="true" className="text-sm font-bold leading-tight text-bark">
                             {t('outfits.needs', { n: formatNumber(o.stickers) })}
                           </span>
                         </>
