@@ -69,7 +69,7 @@ test('놀이: 2씩 뛰어 세기 (묶음을 누르면 2, 4, 6…)', async ({ pag
   await choices.getByRole('button', { name: '18', exact: true }).click();
   await expect(guide(page)).toHaveText(/Count the pairs by twos first\. Then add the one that is alone\./);
   await choices.getByRole('button', { name: '19', exact: true }).click();
-  await expect(guide(page)).toHaveText('Yes! 18 in pairs and one more make 19!');
+  await expect(guide(page)).toHaveText('Yes! 18 candles in pairs and one more make 19!');
   await page.getByRole('button', { name: 'Finish' }).click();
   await expect(page.getByRole('img', { name: 'Crystal +2' })).toBeVisible();
   await expect(page.getByRole('img', { name: 'Mithril +1' })).toBeVisible(); // 처음 보너스
@@ -112,7 +112,7 @@ test('놀이: 10씩 묶어 세기 (10, 20, 21, 22, 23)', async ({ page, context 
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
   await choices.getByRole('button', { name: '42', exact: true }).click();
-  await expect(guide(page)).toHaveText('Yes! 4 tens and 2 ones make 42!');
+  await expect(guide(page)).toHaveText('Yes! 4 boxes of ten and 2 more make 42!');
   await page.getByRole('button', { name: 'Finish' }).click();
   await expect(page.getByRole('img', { name: 'Crystal +1' })).toBeVisible();
 
@@ -172,5 +172,5 @@ test('놀이: 5씩 뛰어 세기 (주사위 눈 모양 묶음, 5, 10, 15, 20)', 
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('button', { name: 'Next' }).click();
   await choices.getByRole('button', { name: '27', exact: true }).click();
-  await expect(guide(page)).toHaveText('Yes! 25 in groups of five and 2 more make 27!');
+  await expect(guide(page)).toHaveText('Yes! 25 candles in groups of five and 2 more make 27!');
 });

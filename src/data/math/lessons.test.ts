@@ -45,11 +45,18 @@ describe('레슨 목록', () => {
         }
       });
 
-      it('비교 문제에는 그룹 이름이, 규칙 문제에는 아는 물건만 있다', () => {
-        if (lesson.explore.kind === 'compare') {
-          expect(lesson.predictLabels).toBeDefined();
-          expect(lesson.applyLabels).toBeDefined();
+      it('바꿔 넣을 물건 묶음: 아는 물건이고, 처음 문제의 물건을 품는다', () => {
+        for (const part of ['predict', 'apply'] as const) {
+          const pool = lesson.pools?.[part];
+          if (!pool) continue;
+          for (const id of pool) expect(Object.keys(MATH_ITEMS), `${lesson.id}.${part}`).toContain(id);
+          const scene = lesson[part];
+          const used = 'item' in scene ? [scene.item] : 'itemA' in scene ? [scene.itemA, scene.itemB] : scene.kind === 'pattern' ? scene.unit : scene.kind === 'ordinal' ? scene.items : [];
+          for (const id of used) expect(pool, `${lesson.id}.${part}`).toContain(id);
         }
+      });
+
+      it('규칙·몇 번째 문제의 선택지는 아는 물건만 있다', () => {
         if (lesson.explore.kind === 'pattern' || lesson.explore.kind === 'ordinal') {
           for (const c of [...lesson.predictChoices, ...lesson.applyChoices]) expect(Object.keys(MATH_ITEMS)).toContain(c);
         }

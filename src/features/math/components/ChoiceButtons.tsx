@@ -1,23 +1,25 @@
 import { Check, X } from '../../../components/icons';
 import AssetIcon from '../../../components/AssetIcon';
-import { MATH_ITEMS, itemNameKey } from '../../../data/math/items';
+import { MATH_ITEMS, itemManyKey, itemNameKey } from '../../../data/math/items';
 import { useI18n } from '../../../i18n';
-import type { CompareLabels, MathAnswer, MathItemId } from '../../../types/math';
+import type { MathAnswer, MathItemId, MathScene } from '../../../types/math';
 
 const isItem = (c: MathAnswer): c is MathItemId => typeof c === 'string' && c in MATH_ITEMS;
 const isTime = (c: MathAnswer) => typeof c === 'string' && /^\d{1,2}:\d\d$/.test(c);
 
 interface Props {
   choices: MathAnswer[];
-  labels?: CompareLabels; // 비교 문제의 그룹 이름
+  scene?: MathScene; // 이 선택지의 장면 (비교 문제는 두 묶음의 물건 이름을 버튼에 쓴다)
   tried?: MathAnswer[]; // 이미 고른 오답 (흐리게 + ✕)
   chosen?: MathAnswer | null; // 맞힌 답 (✓)
   onChoose: (answer: MathAnswer) => void;
 }
 
 // 큰 답 버튼들. 상태를 색만이 아니라 ✓ / ✕ 표시로도 알려준다.
-export default function ChoiceButtons({ choices, labels, tried = [], chosen = null, onChoose }: Props) {
-  const { t, formatNumber } = useI18n();
+export default function ChoiceButtons({ choices, scene, tried = [], chosen = null, onChoose }: Props) {
+  const { t, tKey, formatNumber } = useI18n();
+  const groupLabel = (side: 'a' | 'b') =>
+    scene?.kind === 'compare' ? t('math.groupLabel', { item: tKey(itemManyKey(side === 'a' ? scene.itemA : scene.itemB)) }) : side;
   // 시각: 영어 '7:00' / 한국어 '7시', '7시 30분'
   const timeLabel = (c: MathAnswer) => {
     const [h, m] = String(c).split(':');
@@ -34,7 +36,7 @@ export default function ChoiceButtons({ choices, labels, tried = [], chosen = nu
             ? t(c === 'even' ? 'math.even' : 'math.odd')
             : isTime(c)
               ? timeLabel(c)
-          : t(c === 'a' ? labels!.a : labels!.b);
+          : groupLabel(c === 'a' ? 'a' : 'b');
   const numeric = typeof choices[0] === 'number';
   const items = isItem(choices[0]);
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { lessonForPlay, sameKey } from './variation';
+import { itemsOf, lessonForPlay, sameKey, sceneKey } from './variation';
 import { answerOf, sceneVars } from './answers';
 import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { sizeOk } from '../../data/math/sceneRules';
@@ -45,7 +45,8 @@ describe('다시 할 때 바뀌는 문제', () => {
         for (const v of variants) {
           for (const [orig, next] of [[lesson.predict, v.predict], [lesson.apply, v.apply]] as [MathScene, MathScene][]) {
             expect(next.kind).toBe(orig.kind);
-            if (orig.kind === 'compare') expect(answerOf(next)).toBe(answerOf(orig));
+            // 비교: '똑같다'는 계속 똑같게. 똑같지 않은 문제는 어느 쪽이 많은지가 판마다 바뀐다 (똑같아지지는 않는다)
+            if (orig.kind === 'compare') expect(answerOf(next) === 'same').toBe(answerOf(orig) === 'same');
             if (next.kind === 'add') expect(next.start + next.add).toBeGreaterThan(10);
             if (next.kind === 'subtract') expect(next.start - next.remove).toBeLessThan(10);
             if (next.kind === 'groups' && orig.kind === 'groups') {
@@ -129,7 +130,8 @@ describe('어려움 단계 (50까지)', () => {
         for (const v of variants) {
           for (const [orig, next] of [[lesson.predict, v.predict], [lesson.apply, v.apply]] as [MathScene, MathScene][]) {
             expect(next.kind).toBe(orig.kind);
-            if (orig.kind === 'compare') expect(answerOf(next)).toBe(answerOf(orig));
+            // 비교: '똑같다'는 계속 똑같게. 똑같지 않은 문제는 어느 쪽이 많은지가 판마다 바뀐다 (똑같아지지는 않는다)
+            if (orig.kind === 'compare') expect(answerOf(next) === 'same').toBe(answerOf(orig) === 'same');
             if (next.kind === 'add') expect(tens(next.start + next.add), JSON.stringify(next)).toBeGreaterThan(tens(next.start));
             if (next.kind === 'subtract') expect(tens(next.start - next.remove), JSON.stringify(next)).toBeLessThan(tens(next.start));
             if (next.kind === 'groups' && orig.kind === 'groups') {
@@ -153,4 +155,77 @@ describe('어려움 단계 (50까지)', () => {
       });
     });
   }
+});
+
+// 정확히 같은 문제가 되풀이되지 않는다 (수·물건·도형·순서까지 모두 같은 장면)
+describe('정확히 같은 문제는 다시 나오지 않는다', () => {
+  // 낼 수 있는 문제가 적은 놀이는 그만큼만 본다 (시계 12 가지, 길이 재기 3 물건 × 6·5 길이)
+  const runFor = (lesson: (typeof LESSONS)[number], level: 'normal' | 'hard') =>
+    lesson.apply.kind === 'clock' ? 12 : lesson.apply.kind === 'measure' ? (level === 'hard' ? 12 : 18) : 30;
+  for (const level of ['normal', 'hard'] as const) {
+    for (const lesson of LESSONS) {
+      it(`${level} ${lesson.id}: 처음 ${runFor(lesson, level)}판 동안 예상하기·해 보기 장면이 모두 다르다`, () => {
+        const plays = Array.from({ length: runFor(lesson, level) }, (_, p) => lessonForPlay(lesson, p, level));
+        expect(new Set(plays.map((v) => sceneKey(v.predict))).size).toBe(plays.length);
+        expect(new Set(plays.map((v) => sceneKey(v.apply))).size).toBe(plays.length);
+      });
+    }
+  }
+
+  it('나올 수 있는 문제를 다 내면 새 바퀴로 이어진다 (시계: 12 판 뒤에도 문제가 나온다)', () => {
+    const clock = LESSONS.find((l) => l.id === 'clock1')!;
+    const hours = Array.from({ length: 24 }, (_, p) => (lessonForPlay(clock, p).apply as { hour: number }).hour);
+    expect(new Set(hours.slice(0, 12)).size).toBe(12);
+    expect(new Set(hours.slice(12)).size).toBeGreaterThanOrEqual(10);
+  });
+});
+
+describe('물건과 모양도 바뀐다', () => {
+  const plays = (id: string, n = 30) => Array.from({ length: n }, (_, p) => lessonForPlay(LESSONS.find((l) => l.id === id)!, p));
+
+  for (const lesson of LESSONS.filter((l) => l.pools)) {
+    it(`${lesson.id}: 바꿔 넣는 물건은 그 장면의 묶음에서만, 여러 가지가 나온다`, () => {
+      for (const part of ['predict', 'apply'] as const) {
+        const pool = lesson.pools![part]!;
+        const seen = new Set<string>();
+        for (const v of plays(lesson.id)) for (const id of itemsOf(v[part])) {
+          expect(pool, `${lesson.id}.${part}`).toContain(id);
+          seen.add(id);
+        }
+        expect(seen.size, `${lesson.id}.${part}`).toBeGreaterThanOrEqual(Math.min(4, pool.length - 1)); // 살펴보기 물건은 되도록 피한다
+      }
+    });
+  }
+
+  it('같은 판의 예상하기와 해 보기는 되도록 다른 물건을 쓴다', () => {
+    for (const lesson of LESSONS.filter((l) => l.pools && l.apply.kind !== 'ordinal' && l.apply.kind !== 'pattern'))
+      for (const v of plays(lesson.id).slice(1)) expect(itemsOf(v.apply).some((id) => itemsOf(v.predict).includes(id)), lesson.id).toBe(false);
+  });
+
+  it('비교: 어느 쪽이 많은지가 판마다 바뀐다 (버튼 이름도 그 물건)', () => {
+    const answers = new Set(plays('comparing1').map((v) => answerOf(v.apply)));
+    expect([...answers].sort()).toEqual(['a', 'b']);
+  });
+
+  it('규칙 찾기: 물건이 바뀌어도 짜임새(별 별 달 달 / 넷이 다른 것)와 선택지가 맞다', () => {
+    for (const v of plays('patterns1').slice(1)) {
+      const [p, a] = [v.predict, v.apply] as Extract<MathScene, { kind: 'pattern' }>[];
+      expect(p.unit[0]).toBe(p.unit[1]);
+      expect(p.unit[2]).toBe(p.unit[3]);
+      expect(p.unit[0]).not.toBe(p.unit[2]);
+      expect(new Set(a.unit).size).toBe(4);
+      expect(new Set(v.predictChoices).size).toBe(3);
+      for (const id of new Set(p.unit)) expect(v.predictChoices).toContain(id);
+      expect([...v.applyChoices].sort()).toEqual([...a.unit].sort());
+    }
+  });
+
+  it('도형 찾기는 찾는 도형이, 길이 재기는 재는 물건이 바뀐다', () => {
+    expect(new Set(plays('shapes1').map((v) => (v.apply as { target: string }).target)).size).toBe(2);
+    expect(new Set(plays('measure1').map((v) => (v.apply as { thing: string }).thing)).size).toBe(3);
+  });
+
+  it('몇 번째: 줄 선 동물과 순서가 바뀐다', () => {
+    expect(new Set(plays('ordinal1').map((v) => (v.apply as { items: string[] }).items.join())).size).toBeGreaterThan(25);
+  });
 });

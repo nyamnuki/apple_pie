@@ -68,7 +68,7 @@ test('놀이: 짝이 될까, 하나 남을까? (한국어)', async ({ page, cont
   await page.getByRole('button', { name: '다음' }).click();
   await page.getByRole('button', { name: '다음' }).click();
   await choices.getByRole('button', { name: '짝수' }).click();
-  await expect(guide(page)).toHaveText('맞아요! 7쌍, 남은 것 0개예요.');
+  await expect(guide(page)).toHaveText('맞아요! 7쌍, 남은 것 0송이예요.');
   expect(await englishWords(page)).toBeNull();
 });
 

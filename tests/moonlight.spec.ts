@@ -57,7 +57,7 @@ test('놀이: 다음에 올 것은? (규칙 찾기)', async ({ page, context }) 
   await page.getByRole('button', { name: 'Next' }).click();
 
   // 해 보기: 힌트 1, 2 → 정답
-  await expect(guide(page)).toHaveText('Leaf, mushroom, acorn, owl… Which one comes next?');
+  await expect(guide(page)).toHaveText('Look at this pattern: leaf, mushroom, acorn, owl… Which one comes next?');
   await expect(choices.getByRole('button')).toHaveCount(4);
   await choices.getByRole('button', { name: 'Mushroom' }).click();
   await expect(guide(page)).toHaveText("Let's try another way! Look carefully. Which four things keep repeating?");

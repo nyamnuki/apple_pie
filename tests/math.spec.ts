@@ -30,9 +30,9 @@ const CASES: Case[] = [
     title: 'Which Has More?', tap: 'Make a pair', taps: 7,
     observe: 'Here are some acorns and some leaves. Which group has more?',
     manipulateDone: 'Some leaves have no partner. They are left over, so there are more leaves!',
-    guess: "They're the same", verifyStart: "Let's make pairs… Every flower has a butterfly partner.",
+    guess: "They're the same", verifyStart: "Let's make pairs… Every flower has one butterfly partner.",
     wrong: ['The cookies', "They're the same"], right: 'The blueberries',
-    hints: ['Look carefully. Can every blueberry find a cookie partner?', 'Tap to make pairs and see which group has some left over.'],
+    hints: ['Look carefully. Can every blueberry find one cookie partner?', 'Tap to make pairs and see which group has some left over.'],
     correct: 'Yes! Some blueberries are left over, so there are more blueberries.',
   },
   {
@@ -41,7 +41,7 @@ const CASES: Case[] = [
     manipulateDone: '8 flowers and 5 more make 13 flowers!',
     guess: '11', verifyStart: 'Here they come! Start at 9 and count on… 13 ladybugs!',
     wrong: ['13', '14', '16'], right: '15',
-    hints: ['Look carefully. How many frogs are on the log at the start?', 'Tap each frog that is hopping over. Count on as they join!', "Let's add them together, one by one."],
+    hints: ['Look carefully. How many frogs are on the log at the start?', 'Tap each frog that is coming over. Count on as they join!', "Let's add them together, one by one."],
     correct: 'Yes! 8 and 7 make 15 frogs.',
   },
   {

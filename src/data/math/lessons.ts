@@ -1,4 +1,4 @@
-import type { LessonId, LessonTextPart, MathLesson } from '../../types/math';
+import type { LessonId, LessonTextPart, MathItemId, MathLesson } from '../../types/math';
 import type { TranslationKey } from '../../i18n';
 
 // ===== 수학 놀이 목록 =====
@@ -7,9 +7,26 @@ import type { TranslationKey } from '../../i18n';
 // 정답은 장면 정보로 자동 계산한다 (src/features/math/answers.ts).
 // rewards: 끝까지 하면 받는 도토리 마을 재료, firstTimeBonus: 처음 끝냈을 때만 더 받는 재료.
 
+// ===== 다시 할 때 바꿔 넣는 물건 =====
+// 문장이 '날아가요', '루루가 먹어요'처럼 물건에 맞는 말을 하므로, 그 말이 어울리는 것끼리 묶어 둔다.
+// (꽃과 민들레는 그림이 같아서 둘을 견주는 묶음에는 함께 넣지 않는다)
+const COUNTABLE: MathItemId[] = ['pear', 'mushroom', 'acorn', 'leaf', 'flower', 'blueberry', 'cookie', 'ladybug', 'butterfly', 'shell', 'gem', 'pebble', 'star', 'snail'];
+const PAIRABLE: MathItemId[] = ['flower', 'butterfly', 'blueberry', 'cookie', 'pear', 'apple', 'mushroom', 'ladybug', 'bee', 'snail', 'shell', 'star', 'acorn'];
+const FLYERS: MathItemId[] = ['ladybug', 'butterfly', 'bee', 'bird', 'bat', 'duck']; // 날아오고 날아가는 것
+const ON_A_LOG: MathItemId[] = ['frog', 'snail', 'duck', 'bird', 'ladybug', 'owl']; // 통나무 위로 오는 것
+const FOODS: MathItemId[] = ['cookie', 'blueberry', 'apple', 'pear']; // 루루가 먹는 것
+const NIGHT: MathItemId[] = ['moon', 'star', 'owl', 'leaf', 'mushroom', 'acorn', 'bat', 'candle', 'gem'];
+const ANIMALS: MathItemId[] = ['owl', 'frog', 'ladybug', 'butterfly', 'snail', 'bat', 'bird', 'bee', 'duck', 'fish']; // 줄을 서는 동물
+const CAVE: MathItemId[] = ['gem', 'bat', 'candle', 'pebble', 'mushroom', 'star', 'shell'];
+const BOXABLE: MathItemId[] = ['gem', 'pebble', 'mushroom', 'candle', 'shell', 'star', 'acorn']; // 10개씩 상자에 담는 것
+const MEADOW: MathItemId[] = ['snail', 'sunflower', 'bee', 'ladybug', 'butterfly', 'dandelion'];
+const SHAREABLE: MathItemId[] = ['fish', 'lily', 'shell', 'cookie', 'apple', 'blueberry'];
+const BY_THE_LAKE: MathItemId[] = ['fish', 'shell', 'duck', 'frog', 'lily', 'bird'];
+
 export const LESSONS: MathLesson[] = [
   {
     id: 'counting1',
+    pools: { predict: COUNTABLE, apply: COUNTABLE },
     rewards: { acorn: 3, apple: 1 },
     firstTimeBonus: { goldenAcorn: 1 },
     area: 'counting',
@@ -23,6 +40,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'comparing1',
+    pools: { predict: PAIRABLE, apply: PAIRABLE },
     rewards: { acorn: 2, apple: 2 },
     firstTimeBonus: { goldenAcorn: 1 },
     area: 'comparing',
@@ -31,13 +49,12 @@ export const LESSONS: MathLesson[] = [
     explore: { kind: 'compare', itemA: 'acorn', itemB: 'leaf', a: 7, b: 9 },
     predict: { kind: 'compare', itemA: 'flower', itemB: 'butterfly', a: 8, b: 8 },
     predictChoices: ['a', 'b', 'same'],
-    predictLabels: { a: 'lessons.comparing1.predictA', b: 'lessons.comparing1.predictB' },
     apply: { kind: 'compare', itemA: 'blueberry', itemB: 'cookie', a: 11, b: 9 },
     applyChoices: ['a', 'b', 'same'],
-    applyLabels: { a: 'lessons.comparing1.applyA', b: 'lessons.comparing1.applyB' },
   },
   {
     id: 'addition1',
+    pools: { predict: FLYERS, apply: ON_A_LOG },
     rewards: { acorn: 1, apple: 3 },
     firstTimeBonus: { goldenAcorn: 1 },
     area: 'addition',
@@ -52,6 +69,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'subtraction1',
+    pools: { predict: FLYERS, apply: FOODS },
     rewards: { acorn: 2, apple: 2 },
     firstTimeBonus: { goldenAcorn: 1 },
     area: 'subtraction',
@@ -67,6 +85,7 @@ export const LESSONS: MathLesson[] = [
 
   {
     id: 'difference1',
+    pools: { predict: PAIRABLE, apply: PAIRABLE },
     rewards: { acorn: 2, apple: 1 },
     firstTimeBonus: { goldenAcorn: 1 },
     area: 'comparing',
@@ -83,6 +102,7 @@ export const LESSONS: MathLesson[] = [
   // ===== 달빛 숲 =====
   {
     id: 'patterns1',
+    pools: { predict: NIGHT, apply: NIGHT },
     rewards: { glowBranch: 2 },
     firstTimeBonus: { moonDew: 1 },
     area: 'patterns',
@@ -96,6 +116,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'ordinal1',
+    pools: { predict: ANIMALS, apply: ANIMALS },
     rewards: { glowBranch: 1, moonDew: 1 },
     firstTimeBonus: { glowBranch: 1 },
     area: 'ordinal',
@@ -194,6 +215,7 @@ export const LESSONS: MathLesson[] = [
   // ===== 수정 동굴 =====
   {
     id: 'skipCount1',
+    pools: { predict: CAVE, apply: CAVE },
     rewards: { crystal: 2 },
     firstTimeBonus: { mithril: 1 },
     area: 'skipCounting',
@@ -208,6 +230,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'skipCount5',
+    pools: { predict: CAVE, apply: CAVE },
     rewards: { crystal: 1, mithril: 1 },
     firstTimeBonus: { crystal: 1 },
     area: 'skipCounting',
@@ -222,6 +245,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'tens1',
+    pools: { predict: BOXABLE, apply: BOXABLE },
     rewards: { crystal: 1, mithril: 1 },
     firstTimeBonus: { mithril: 1 },
     area: 'placeValue',
@@ -252,6 +276,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'evenOdd1',
+    pools: { predict: MEADOW, apply: MEADOW },
     rewards: { sunflowerSeed: 1, honey: 1 },
     firstTimeBonus: { honey: 1 },
     area: 'evenOdd',
@@ -267,6 +292,7 @@ export const LESSONS: MathLesson[] = [
 
   {
     id: 'makeTen1',
+    pools: { predict: MEADOW, apply: MEADOW },
     rewards: { honey: 1, sunflowerSeed: 1 },
     firstTimeBonus: { sunflowerSeed: 1 },
     area: 'makingTen',
@@ -313,6 +339,7 @@ export const LESSONS: MathLesson[] = [
   // ===== 무지개 호수 =====
   {
     id: 'share1',
+    pools: { predict: SHAREABLE, apply: SHAREABLE },
     rewards: { lilyPad: 2 },
     firstTimeBonus: { pearl: 1 },
     area: 'sharing',
@@ -327,6 +354,7 @@ export const LESSONS: MathLesson[] = [
   },
   {
     id: 'double1',
+    pools: { predict: BY_THE_LAKE, apply: BY_THE_LAKE },
     rewards: { lilyPad: 1, pearl: 1 },
     firstTimeBonus: { pearl: 1 },
     area: 'doubling',

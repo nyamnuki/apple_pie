@@ -27,7 +27,6 @@ import { useSound } from '../../services/audio/SoundProvider';
 import type { LessonId, MathLesson, MathScene } from '../../types/math';
 import type { RegionId, ResourceBundle } from '../../types/resources';
 import type { Expression } from '../../data/characters/characters';
-import { itemNameKey } from '../../data/math/items';
 
 // 다시 보기 버튼이 나오는 단계 (살펴보기·만져 보기 중에는 이미 그 장면을 보고 있다)
 const WATCH_STAGES: Stage[] = ['predict', 'verify', 'discover', 'apply'];
@@ -98,7 +97,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
     dispatch({ type: 'next' });
   };
   const k = (part: Parameters<typeof lessonKey>[1]) => lessonKey(lessonId, part);
-  const vars = (scene: MathScene) => sceneVars(scene, formatNumber, (id) => tKey(itemNameKey(id)));
+  const vars = (scene: MathScene) => sceneVars(scene, formatNumber, tKey);
 
   const predictAnswer = answerOf(lesson.predict);
   const applyAnswer = answerOf(lesson.apply);
@@ -235,7 +234,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
             {state.stage === 'observe' && nextButton(true)}
             {state.stage === 'manipulate' && nextButton(state.manipulated)}
             {state.stage === 'predict' && (
-              <ChoiceButtons choices={lesson.predictChoices} labels={lesson.predictLabels} onChoose={(answer) => dispatch({ type: 'guess', answer })} />
+              <ChoiceButtons choices={lesson.predictChoices} scene={lesson.predict} onChoose={(answer) => dispatch({ type: 'guess', answer })} />
             )}
             {state.stage === 'verify' && nextButton(state.verified)}
             {state.stage === 'discover' && nextButton(true)}
@@ -243,7 +242,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
               <div className="flex flex-col gap-3">
                 <ChoiceButtons
                   choices={lesson.applyChoices}
-                  labels={lesson.applyLabels}
+                  scene={lesson.apply}
                   tried={state.wrong}
                   chosen={state.solved ? applyAnswer : null}
                   onChoose={(answer) => {

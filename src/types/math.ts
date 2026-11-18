@@ -1,4 +1,3 @@
-import type { TranslationKey } from '../i18n';
 import type { ResourceBundle, RegionId } from './resources';
 
 // 수학 놀이에 나오는 물건 종류 (그림은 src/data/math/items.ts)
@@ -60,12 +59,6 @@ export type MeasureThing = 'twig' | 'ribbon' | 'caterpillar';
 export type ClockTime = `${number}:${'00' | '30'}`;
 export type MathAnswer = number | 'a' | 'b' | 'same' | 'even' | 'odd' | MathItemId | ClockTime;
 
-// 비교 문제 선택지에 보일 그룹 이름 (번역 키)
-export interface CompareLabels {
-  a: TranslationKey;
-  b: TranslationKey;
-}
-
 // 수학 놀이 하나 (6단계: 살펴보기 → 만져 보기 → 예상하기 → 확인하기 → 발견하기 → 해 보기)
 export interface MathLesson {
   id: LessonId;
@@ -79,8 +72,8 @@ export interface MathLesson {
   applyChoices: MathAnswer[];
   rewards: ResourceBundle; // 끝까지 하면 받는 재료 (정답 여부와 상관없음)
   firstTimeBonus: ResourceBundle; // 처음 끝냈을 때만 더 받는 재료
-  predictLabels?: CompareLabels; // 비교 문제만
-  applyLabels?: CompareLabels; // 비교 문제만
+  // 다시 할 때 그 장면에 바꿔 넣을 수 있는 물건들 (문장에 어울리는 것만). 없으면 물건은 그대로
+  pools?: { predict?: MathItemId[]; apply?: MathItemId[] };
 }
 
 // 놀이 id 목록 (언어 파일의 lessons.<id> 와 같아야 한다)

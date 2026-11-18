@@ -3,12 +3,12 @@ import { en } from './locales/en';
 import { ko } from './locales/ko';
 import { translate } from './translate';
 import { LESSONS, lessonKey } from '../data/math/lessons';
-import { sceneVars } from '../features/math/answers';
+import { placeholderBase, sceneVars } from '../features/math/answers';
 import { FURNITURE } from '../data/furniture/furniture';
 import { RESOURCES } from '../data/resources/resources';
 import { REGIONS } from '../data/regions/regions';
 import { CHARACTERS } from '../data/characters/characters';
-import { MATH_ITEMS, itemNameKey } from '../data/math/items';
+import { MATH_ITEMS, itemCounterKey, itemManyKey, itemNameKey, itemOneKey } from '../data/math/items';
 import type { LessonTextPart, MathScene } from '../types/math';
 
 // 번역 점검: 키 누락, 빈 문장, 문장 속 자리({answer} 등) 불일치, 코드·데이터에서 쓰는 키의 존재
@@ -33,8 +33,14 @@ describe('영어·한국어 언어 파일', () => {
     for (const [k, v] of [...Object.entries(EN), ...Object.entries(KO)]) expect(v.trim(), k).not.toBe('');
   });
 
+  // 한국어의 조사 꼬리는 빼고 본다 ({itemGa} = {item}). 세는 말({itemUnit}: 개·마리·송이)은 한국어에만 있어도 된다
   it('문장 속 자리({answer} 등)가 두 언어에서 같다', () => {
-    for (const key of Object.keys(EN)) expect(placeholders(KO[key]), key).toEqual(placeholders(EN[key]));
+    const bases = (s: string) => [...new Set(placeholders(s).filter((p) => !/Unit[A-Z]?\w*$/.test(p)).map(placeholderBase))].sort();
+    for (const key of Object.keys(EN)) expect(bases(KO[key]), key).toEqual(bases(EN[key]));
+  });
+
+  it('한국어: 바뀌는 낱말 자리 바로 뒤에 모양이 바뀌는 조사를 글로 적지 않는다 ({itemGa} 처럼 받침에 맞춘 값을 쓴다)', () => {
+    for (const [k, v] of Object.entries(KO)) expect(/\}(은|는|이|가|을|를|과|와)(?![가-힣])/.test(v) || /\}(이에요|예요)/.test(v), `${k}: ${v}`).toBe(false);
   });
 
   it('한국어 파일에는 영어 문장이 그대로 남아 있지 않다 (Lulu 같은 이름 제외)', () => {
@@ -66,7 +72,9 @@ describe('코드와 데이터에서 쓰는 키가 모두 있다', () => {
       ...RESOURCES.map((r) => r.nameKey),
       ...REGIONS.flatMap((r) => [r.nameKey, r.topicsKey]),
       ...Object.values(CHARACTERS).flatMap((c) => [c.nameKey, c.descriptionKey]),
-      ...Object.keys(MATH_ITEMS).map((id) => itemNameKey(id as keyof typeof MATH_ITEMS)),
+      ...(Object.keys(MATH_ITEMS) as (keyof typeof MATH_ITEMS)[]).flatMap((id) => [itemNameKey(id), itemManyKey(id), itemOneKey(id), itemCounterKey(id)]),
+      ...['twig', 'ribbon', 'caterpillar'].map((t) => `measureThings.${t}`),
+      ...['circle', 'square', 'triangle'].flatMap((s) => [`shapesMany.${s}`, `shapeHints.${s}`]),
     ];
     for (const k of keys) expect(EN[k] !== undefined && KO[k] !== undefined, k).toBe(true);
   });
@@ -88,9 +96,6 @@ describe('코드와 데이터에서 쓰는 키가 모두 있다', () => {
           expect(text, key).toBeDefined();
           for (const p of placeholders(text)) expect(available, `${key} 의 {${p}}`).toContain(p);
         }
-      }
-      for (const labels of [lesson.predictLabels, lesson.applyLabels]) {
-        if (labels) for (const k of [labels.a, labels.b]) expect(EN[k] !== undefined && KO[k] !== undefined, k).toBe(true);
       }
     });
   }
