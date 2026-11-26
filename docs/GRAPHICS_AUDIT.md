@@ -148,7 +148,7 @@ public/assets/ 의 실제 파일  →  코드로 그린 SVG(수채화 필터)  �
 | 2 | `characters/{lulu,doto,momo}-{default,happy,thinking,cheer,surprised}` | **15** | 120×150, 머리 가운데 (60,72) |
 | 3 | `furniture/` 바닥 가구 | **19** | `width×height` 비율, 아래 가운데 = 바닥 영역 맨 아래 꼭짓점 |
 | 4 | `furniture/` 벽 장식 6 + 벽지 1 | **7** | 액자 100×80 · 가랜드 200×32 정면 / 벽지는 이음새 없는 정사각 |
-| 5 | `backgrounds/room-base.png` (벽+바닥만) | **1** | 760×640 |
+| 5 | `backgrounds/room-base.png` (벽+바닥만) | **1** | 1000×760 (8×8 칸) |
 | 6 | `backgrounds/window-sky-{day,evening,night}` | **3** | 신규 경로 |
 | 7 | `backgrounds/window-woods-{spring,summer,autumn,winter}` | **4** | 신규 경로 |
 | 8 | `backgrounds/title-scene.png` | **1** | 신규 경로 |

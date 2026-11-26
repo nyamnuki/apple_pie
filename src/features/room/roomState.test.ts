@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyRoomAction, DEFAULT_LAYOUT, type OwnedCounts } from './roomState';
 import type { RoomLayout } from '../../types/furniture';
+import { GRID } from './iso';
 
 // 방 배치 규칙: 잘못된 요청은 기존 상태를 '그대로'(같은 객체) 돌려준다
 
@@ -20,15 +21,15 @@ describe('바닥 가구 놓기', () => {
   });
 
   it.each([
-    ['방 밖', { gx: 6, gy: 0 }],
+    ['방 밖', { gx: GRID, gy: 0 }],
     ['음수 칸', { gx: -1, gy: 2 }],
     ['침대와 겹침', { gx: 1, gy: 1 }],
   ])('%s 이면 바뀌지 않는다', (_, pos) => {
     expect(apply(room, { type: 'place', item: { uid: 'c', furnitureId: 'toyChest', rotation: 0, ...pos } })).toBe(room);
   });
 
-  it('여러 칸 가구가 방 끝을 넘으면 바뀌지 않는다 (책장 2×1 을 가로 5번째 칸에)', () => {
-    expect(apply(room, { type: 'place', item: { uid: 's', furnitureId: 'forestBookshelf', gx: 5, gy: 4, rotation: 0 } })).toBe(room);
+  it('여러 칸 가구가 방 끝을 넘으면 바뀌지 않는다 (책장 2×1 을 가로 맨 끝 칸에)', () => {
+    expect(apply(room, { type: 'place', item: { uid: 's', furnitureId: 'forestBookshelf', gx: GRID - 1, gy: 4, rotation: 0 } })).toBe(room);
   });
 
   it('러그는 가구 아래에 깔 수 있다', () => {
@@ -54,14 +55,14 @@ describe('바닥 가구 옮기기·돌리기·치우기', () => {
 
   it('옮기기: 빈 자리는 되고, 방 밖·겹침은 안 된다', () => {
     expect(apply(withShelf, { type: 'move', uid: 's', gx: 3, gy: 4 }).placed.find((p) => p.uid === 's')).toMatchObject({ gx: 3, gy: 4 });
-    expect(apply(withShelf, { type: 'move', uid: 's', gx: 5, gy: 4 })).toBe(withShelf);
+    expect(apply(withShelf, { type: 'move', uid: 's', gx: GRID - 1, gy: 4 })).toBe(withShelf);
     expect(apply(withShelf, { type: 'move', uid: 's', gx: 1, gy: 0 })).toBe(withShelf);
     expect(apply(withShelf, { type: 'move', uid: 'nope', gx: 3, gy: 4 })).toBe(withShelf);
   });
 
   it('돌리기: 자리가 있으면 되고, 돌린 모양이 방 밖·겹침이면 안 된다', () => {
     expect(apply(withShelf, { type: 'rotate', uid: 's' }).placed.find((p) => p.uid === 's')?.rotation).toBe(1);
-    const atEdge = apply(room, { type: 'place', item: { uid: 'e', furnitureId: 'forestBookshelf', gx: 3, gy: 5, rotation: 0 } });
+    const atEdge = apply(room, { type: 'place', item: { uid: 'e', furnitureId: 'forestBookshelf', gx: 3, gy: GRID - 1, rotation: 0 } });
     expect(apply(atEdge, { type: 'rotate', uid: 'e' })).toBe(atEdge); // 1×2 로 돌리면 바닥 아래로 나간다
     const nextToBed = apply(room, { type: 'place', item: { uid: 'n', furnitureId: 'forestBookshelf', gx: 2, gy: 1, rotation: 1 } }); // 1×2
     expect(apply(nextToBed, { type: 'rotate', uid: 'n' }).placed.find((p) => p.uid === 'n')?.rotation).toBe(0);
@@ -94,7 +95,7 @@ describe('벽 장식', () => {
   });
 
   it('벽 밖, 가진 개수 초과, 바닥 가구는 걸 수 없다', () => {
-    expect(apply(room, { type: 'placeWall', item: { uid: 'g', furnitureId: 'acornGarland', wall: 'left', slot: 5 } })).toBe(room); // 2칸짜리
+    expect(apply(room, { type: 'placeWall', item: { uid: 'g', furnitureId: 'acornGarland', wall: 'left', slot: GRID - 1 } })).toBe(room); // 2칸짜리
     expect(apply(room, { type: 'placeWall', item: { uid: 's', furnitureId: 'starryFrame', wall: 'left', slot: 0 } }, { starryFrame: 0 })).toBe(room);
     expect(apply(room, { type: 'placeWall', item: { uid: 'c', furnitureId: 'toyChest', wall: 'left', slot: 0 } })).toBe(room);
   });
@@ -104,7 +105,7 @@ describe('벽 장식', () => {
     s = apply(s, { type: 'placeWall', item: { uid: 'f2', furnitureId: 'leafFrame', wall: 'left', slot: 3 } });
     expect(apply(s, { type: 'moveWall', uid: 'f1', wall: 'right', slot: 3 })).toBe(s);
     expect(apply(s, { type: 'moveWall', uid: 'f1', wall: 'left', slot: 3 })).toBe(s);
-    expect(apply(s, { type: 'moveWall', uid: 'f1', wall: 'left', slot: 6 })).toBe(s);
+    expect(apply(s, { type: 'moveWall', uid: 'f1', wall: 'left', slot: GRID })).toBe(s);
     expect(apply(s, { type: 'moveWall', uid: 'f1', wall: 'right', slot: 5 }).wallItems.find((w) => w.uid === 'f1')).toMatchObject({ wall: 'right', slot: 5 });
   });
 });

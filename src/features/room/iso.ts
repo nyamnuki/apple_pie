@@ -1,16 +1,18 @@
 import type { WallSide } from '../../types/furniture';
 
 // ===== 아이소메트릭(비스듬히 내려다본) 방의 좌표 계산 =====
-// 방 그림 전체는 760 × 640 크기의 '방 좌표'로 그리고, 화면 크기에 맞게 자동으로 늘리거나 줄인다.
+// 방 그림 전체는 '방 좌표'(8×8 칸이면 1000 × 760)로 그리고, 화면 크기에 맞게 자동으로 늘리거나 줄인다.
+// 칸 크기는 그대로 두고 칸 수만 바꾸면 방 그림판이 함께 커진다 (가구와 칸의 비율은 늘 같다).
 
-export const GRID = 6; // 바닥 칸 수 (6 × 6)
+export const GRID = 8; // 바닥 칸 수 (8 × 8, 예전에는 6 × 6. 저장된 가구 자리는 그대로 맞다)
 export const TILE_W = 120; // 바닥 한 칸의 화면 너비
 export const TILE_H = 60; // 바닥 한 칸의 화면 높이 (너비의 절반 = 2:1 아이소메트릭)
 export const WALL_H = 220; // 벽 높이
-export const VIEW_W = 760;
-export const VIEW_H = 640;
+const MARGIN = 20; // 바닥 둘레 여백
+const ORIGIN_Y = 240; // 바닥 맨 위 꼭짓점의 높이 (위로 벽이 올라갈 자리)
+export const VIEW_W = GRID * TILE_W + MARGIN * 2; // 1000
+export const VIEW_H = ORIGIN_Y + GRID * TILE_H + MARGIN * 2; // 760
 const ORIGIN_X = VIEW_W / 2; // 바닥 맨 위 꼭짓점 위치
-const ORIGIN_Y = 240;
 
 export interface Point {
   x: number;

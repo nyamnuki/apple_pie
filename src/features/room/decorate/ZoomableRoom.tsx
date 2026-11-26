@@ -16,7 +16,7 @@ export default function ZoomableRoom({ children, className = '' }: { children: R
   const pinch = useRef<number | null>(null);
 
   // 크게 보면 바닥 가운데가 화면 가운데에 오게 스크롤을 맞춘다.
-  // 방 그림(760×640)은 칸 안에 비율을 지켜 가운데 놓이므로, 그 크기와 위치로 바닥 가운데(380, 420)를 계산한다.
+  // 방 그림(VIEW_W×VIEW_H)은 칸 안에 비율을 지켜 가운데 놓이므로, 그 크기와 위치로 바닥 가운데(380, 420)를 계산한다.
   useLayoutEffect(() => {
     const el = scroller.current;
     if (!el) return;

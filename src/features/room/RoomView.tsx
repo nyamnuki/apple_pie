@@ -121,7 +121,7 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
           );
         })}
 
-        {/* 벽 칸 고르기: 벽마다 6칸을 누를 수 있고, 걸 수 있는 칸에는 '+' */}
+        {/* 벽 칸 고르기: 벽마다 GRID(8)칸을 누를 수 있고, 걸 수 있는 칸에는 '+' */}
         {validWallSpots &&
           WALLS.map((wall) =>
             Array.from({ length: GRID }, (_, slot) => {

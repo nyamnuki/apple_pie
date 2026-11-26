@@ -17,7 +17,7 @@
 
 | 폴더 | 내용 | 파일 이름 |
 |---|---|---|
-| `backgrounds/` | 방의 바닥과 벽 (760×640) | `room-base.png` |
+| `backgrounds/` | 방의 바닥과 벽 (1000×760, 바닥 8×8 칸) | `room-base.png` |
 | `backgrounds/` | 창밖 하늘 (시간대마다 한 장, 해·달·별 포함) | `window-sky-day.png`, `window-sky-evening.png`, `window-sky-night.png` |
 | `backgrounds/` | 창밖 숲 (계절마다 한 장, 날리는 꽃잎·나비·낙엽·눈 포함) | `window-woods-spring.png`, `window-woods-summer.png`, `window-woods-autumn.png`, `window-woods-winter.png` |
 | `backgrounds/` | 타이틀 화면 풍경 *(아직 화면에 연결되지 않음 — 6단계)* | `title-scene.png` |
