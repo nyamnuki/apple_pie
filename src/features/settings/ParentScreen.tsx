@@ -92,7 +92,7 @@ export default function ParentScreen({ onBack }: { onBack: () => void }) {
                       <p className="text-lg font-bold">{t(lessonKey(lesson.id, 'title'))}</p>
                       {s ? (
                         <p className="text-base">
-                          {t('parent.stats', { plays: formatNumber(s.plays), firstTry: formatNumber(s.firstTry), hints: formatNumber(s.hints) })}
+                          {t('parent.stats', { plays: formatNumber(s.plays), firstTry: formatNumber(s.firstTry), hints: formatNumber(s.hints), boost: formatNumber(s.boost ?? 0) })}
                           <br />
                           {t('parent.lastPlayed', { time: formatDateTime(new Date(s.lastPlayed)) })}
                         </p>

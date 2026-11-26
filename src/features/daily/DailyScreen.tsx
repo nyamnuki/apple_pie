@@ -37,7 +37,9 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
     } catch {
       // 기억이 없거나 읽을 수 없으면 새로 고른다
     }
-    return dailyLesson(today, game.completedLessons, keep, mathLevel);
+    return dailyLesson(today, game.completedLessons, keep, mathLevel, (id) => game.lessonStats[id]?.boost ?? 0);
+    // 도전 단계는 오늘 문제를 처음 고를 때 정한다 (풀고 나서 바뀌어도 같은 문제)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [today, key, game.completedLessons, mathLevel]);
   useEffect(() => {
     if (lesson) writeString(PICK_KEY, JSON.stringify({ date: key, lessonId: lesson.id }));

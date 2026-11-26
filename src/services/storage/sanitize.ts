@@ -11,6 +11,7 @@ import { DATE_KEY } from '../../utils/dates';
 import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';
 import type { LessonId } from '../../types/math';
+import { MAX_BOOST } from '../../features/math/variation';
 
 // ===== 저장 데이터 검사 =====
 // 저장본의 일부가 이상해도(없는 가구, 음수, 방 밖 위치 등) 그 부분만 버리고 나머지는 살린다.
@@ -51,7 +52,9 @@ export function sanitizeGame(raw: unknown): GameState {
     if (!isObject(s) || typeof s.lastPlayed !== 'string' || Number.isNaN(Date.parse(s.lastPlayed))) continue;
     const plays = toCount(s.plays);
     if (plays === 0) continue;
-    lessonStats[id] = { plays, firstTry: Math.min(toCount(s.firstTry), plays), hints: Math.min(toCount(s.hints), plays * 3), lastPlayed: s.lastPlayed };
+    // 도전 단계는 예전 저장본에 없다 (없으면 0)
+    const boost = Math.min(toCount(s.boost), MAX_BOOST);
+    lessonStats[id] = { plays, firstTry: Math.min(toCount(s.firstTry), plays), hints: Math.min(toCount(s.hints), plays * 3), lastPlayed: s.lastPlayed, ...(boost ? { boost } : {}) };
   }
 
   // 스티커 (예전 저장본에는 없다): 아는 스티커만, 겹치지 않게

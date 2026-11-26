@@ -19,6 +19,7 @@ import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState, type Stage } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { lessonForPlay } from './variation';
+import { nextBoost } from '../../app/gameState';
 import { nextLesson } from './nextLesson';
 import { newPet, type PetId } from '../pets/pets';
 import { getLesson, lessonKey } from '../../data/math/lessons';
@@ -68,10 +69,13 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
   // 몇 번째 판인지 (처음 = 0). 다시 하면 예상하기·해 보기의 수가 바뀐다 (variation.ts)
   const playsSoFar = game.lessonStats[lessonId]?.plays ?? 0;
   const [playNo, setPlayNo] = useState(playsSoFar);
+  // 도전 단계 (0~3): 이 놀이를 한 번에 맞힐수록 수가 커진다 (판을 시작할 때 정하고, 판 도중에는 바뀌지 않는다)
+  const boostNow = game.lessonStats[lessonId]?.boost ?? 0;
+  const [boost, setBoost] = useState(boostNow);
   const { play, mathLevel } = useSound();
-  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo, mathLevel), [lessonId, playNo, mathLevel]);
+  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo, mathLevel, boost), [lessonId, playNo, mathLevel, boost]);
   // 이번에 받은 보상 (보상 화면에 보여준다)
-  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null; regionComplete: boolean } | null>(null);
+  const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null; regionComplete: boolean; levelUp: number | null } | null>(null);
 
   // 한 판에 보상은 한 번만 (끝내기 버튼을 빠르게 두 번 눌러도 두 번 지급하지 않는다)
   const rewarded = useRef(false);
@@ -90,7 +94,8 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
     // 이 놀이로 그 마을 놀이를 처음 모두 끝냈는지
     const progress = regionProgress(lesson.region, after);
     const regionComplete = !game.completedLessons.includes(lesson.id) && progress.done === progress.total;
-    setEarned({ ...reward, newRegion, newPet: pet?.id ?? null, regionComplete });
+    const boostAfter = nextBoost(boost, state.wrong.length);
+    setEarned({ ...reward, newRegion, newPet: pet?.id ?? null, regionComplete, levelUp: boostAfter > boost ? boostAfter : null });
     play.reward();
     if (newRegion || regionComplete) play.unlock();
     gameDispatch({ type: 'completeLesson', lesson, wrongTries: state.wrong.length, at: new Date().toISOString() });
@@ -186,10 +191,12 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
           praise={playNo}
           newPet={earned.newPet}
           completedRegion={earned.regionComplete ? lesson.region : null}
+          levelUp={earned.levelUp}
           onWorkshop={onWorkshop}
           onAgain={() => {
             rewarded.current = false; // 다시 하면 새 판 (새 수)
             setPlayNo(playsSoFar);
+            setBoost(boostNow);
             dispatch({ type: 'restart' });
           }}
           onMoreGames={onExit}

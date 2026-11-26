@@ -4,6 +4,7 @@ import { nextSticker } from '../data/stickers/stickers';
 import { NO_OUTFIT, canWear, type Outfit, type OutfitSlot } from '../features/outfits/outfits';
 import { dateKey } from '../utils/dates';
 import type { LessonId, MathLesson } from '../types/math';
+import { MAX_BOOST } from '../features/math/variation';
 import type { ResourceBundle } from '../types/resources';
 
 // 놀이 하나의 기록 (부모 화면에서 보여준다. 이 기기에만 저장된다)
@@ -12,6 +13,15 @@ export interface LessonStats {
   firstTry: number; // '해 보기'를 한 번에 맞힌 횟수
   hints: number; // 본 힌트 수 (한 판에 최대 3)
   lastPlayed: string; // 마지막으로 끝낸 시각 (ISO 형식)
+  boost?: number; // 도전 단계 0~3: 한 번에 맞히면 +1, 두 번 넘게 틀리면 -1 (다음 판의 수가 커지거나 작아진다)
+}
+
+// 도전 단계 바꾸기: 한 번에 맞힘 → 한 단계 위, 두 번 넘게 틀림 → 한 단계 아래, 한 번 틀림 → 그대로
+export function nextBoost(boost: number | undefined, wrongTries: number): number {
+  const b = boost ?? 0;
+  if (wrongTries === 0) return Math.min(MAX_BOOST, b + 1);
+  if (wrongTries >= 2) return Math.max(0, b - 1);
+  return b;
 }
 
 // ===== 플레이어 상태: 가진 재료, 가진 가구, 끝낸 놀이 =====
@@ -56,7 +66,7 @@ function addBundle(have: ResourceBundle, add: ResourceBundle, sign = 1): Resourc
 
 function addPlay(prev: LessonStats | undefined, wrongTries: number, at: string): LessonStats {
   const s = prev ?? { plays: 0, firstTry: 0, hints: 0, lastPlayed: at };
-  return { plays: s.plays + 1, firstTry: s.firstTry + (wrongTries === 0 ? 1 : 0), hints: s.hints + Math.min(Math.max(wrongTries, 0), 3), lastPlayed: at };
+  return { plays: s.plays + 1, firstTry: s.firstTry + (wrongTries === 0 ? 1 : 0), hints: s.hints + Math.min(Math.max(wrongTries, 0), 3), lastPlayed: at, boost: nextBoost(s.boost, wrongTries) };
 }
 
 // 오늘의 문제 도장 n번째에 황금 도토리를 받는지 (3개마다)

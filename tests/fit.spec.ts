@@ -20,11 +20,11 @@ const spread = (s: MathScene): number =>
   : s.kind === 'measure' ? s.length
   : 0;
 // 다시 할 때 나오는 문제 가운데 가장 큰 판 (1~40판)
-function biggestPlay(lesson: MathLesson, level: 'normal' | 'hard') {
+function biggestPlay(lesson: MathLesson, level: 'normal' | 'hard', boost = 0) {
   let best = 1;
   let top = -1;
   for (let p = 1; p <= 40; p++) {
-    const v = lessonForPlay(lesson, p, level);
+    const v = lessonForPlay(lesson, p, level, boost);
     const size = Math.max(spread(v.predict), spread(v.apply));
     if (size > top) [best, top] = [p, size];
   }
@@ -39,10 +39,12 @@ test.use({ viewport: { width: 360, height: 740 } });
 // 처음 판과, 다시 할 때 나오는 가장 큰 판을 본다
 for (const level of ['normal', 'hard'] as const)
   for (const lesson of LESSONS)
-    for (const which of ['first', 'biggest'] as const)
-    test(`화면 맞춤: ${lesson.id} (${level}, ${which === 'first' ? '처음 판' : '가장 큰 판'})`, async ({ page, context }) => {
-      const plays = which === 'first' ? 0 : biggestPlay(lesson, level);
-      await seed(context, { save: makeSave({ completedLessons: LESSONS.map((l) => l.id), lessonStats: plays ? { [lesson.id]: { plays, firstTry: 0, hints: 0, lastPlayed: '2026-11-01T00:00:00Z' } } : undefined }) });
+    // 어려움은 도전 3단계(가장 큰 수)의 가장 큰 판도 본다
+    for (const which of (level === 'hard' ? ['first', 'biggest', 'boost3'] : ['first', 'biggest']) as ('first' | 'biggest' | 'boost3')[])
+    test(`화면 맞춤: ${lesson.id} (${level}, ${which === 'first' ? '처음 판' : which === 'biggest' ? '가장 큰 판' : '도전 3단계 가장 큰 판'})`, async ({ page, context }) => {
+      const boost = which === 'boost3' ? 3 : 0;
+      const plays = which === 'first' ? 0 : biggestPlay(lesson, level, boost);
+      await seed(context, { save: makeSave({ completedLessons: LESSONS.map((l) => l.id), lessonStats: plays ? { [lesson.id]: { plays, firstTry: 0, hints: 0, lastPlayed: '2026-11-01T00:00:00Z', boost } } : undefined }) });
       await context.addInitScript((lv) => localStorage.setItem('mathTown.settings', JSON.stringify({ voice: false, music: false, sound: false, breakMinutes: 0, mathLevel: lv })), level);
       await page.goto('/');
       await page.getByRole('button', { name: 'Start', exact: true }).click();

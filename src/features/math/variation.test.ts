@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { itemsOf, lessonForPlay, sameKey, sceneKey } from './variation';
+import { itemsOf, lessonForPlay, sameKey, sceneKey, sceneSize } from './variation';
 import { answerOf, sceneVars } from './answers';
 import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { sizeOk } from '../../data/math/sceneRules';
@@ -240,5 +240,55 @@ describe('확인하기 시범 속도', () => {
     expect(demoDelay(12)).toBe(800);
     for (const n of [16, 20, 32, 50]) expect(demoDelay(n) * n).toBeLessThanOrEqual(15000);
     expect(demoDelay(100)).toBe(300);
+  });
+});
+
+describe('도전 단계 (한 번에 맞힐수록 큰 수)', () => {
+  const SCALED = ['count', 'compare', 'add', 'subtract', 'groups', 'hops', 'pairs', 'share', 'double', 'difference'];
+  for (const level of ['normal', 'hard'] as const)
+    for (const boost of [1, 2, 3])
+      it(`${level} 도전 ${boost}: 범위 안, 정답이 선택지에 딱 한 번, 가르치는 점 그대로`, () => {
+        const tens = (n: number) => Math.floor(n / 10);
+        for (const lesson of LESSONS)
+          for (let p = 1; p <= 25; p++) {
+            const v = lessonForPlay(lesson, p, level, boost);
+            for (const [orig, scene, choices] of [[lesson.predict, v.predict, v.predictChoices], [lesson.apply, v.apply, v.applyChoices]] as const) {
+              expect(sizeOk(scene, level), `${lesson.id} ${JSON.stringify(scene)}`).toBe(true);
+              expect(scene.kind).toBe(orig.kind);
+              expect(choices.filter((c) => c === answerOf(scene))).toHaveLength(1);
+              expect(new Set(choices).size).toBe(choices.length);
+              // 보통: 10 을 넘는 덧셈·10 아래로 빼기 / 어려움: 십의 자리를 넘고 내려간다
+              if (scene.kind === 'add') {
+                if (level === 'hard') expect(tens(scene.start + scene.add)).toBeGreaterThan(tens(scene.start));
+                else expect(scene.start + scene.add).toBeGreaterThan(10);
+              }
+              if (scene.kind === 'subtract') {
+                if (level === 'hard') expect(tens(scene.start - scene.remove)).toBeLessThan(tens(scene.start));
+                else expect(scene.start - scene.remove).toBeLessThan(10);
+              }
+              if (orig.kind === 'compare') expect(answerOf(scene) === 'same').toBe(answerOf(orig) === 'same');
+            }
+          }
+      });
+
+  it('어려움: 도전 단계가 오를수록 큰 수가 나오고, 3단계는 100 가까이까지', () => {
+    const sizes = (lesson: (typeof LESSONS)[number], boost: number) =>
+      Array.from({ length: 30 }, (_, p) => lessonForPlay(lesson, p + 1, 'hard', boost)).map((v) => Math.max(sceneSize(v.predict), sceneSize(v.apply)));
+    const avg = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+    const top = (lesson: (typeof LESSONS)[number], boost: number) => Math.max(...sizes(lesson, boost));
+    for (const lesson of LESSONS.filter((l) => SCALED.includes(l.apply.kind))) {
+      expect(avg(sizes(lesson, 1)), lesson.id).toBeGreaterThan(avg(sizes(lesson, 0)));
+      expect(avg(sizes(lesson, 3)), lesson.id).toBeGreaterThan(avg(sizes(lesson, 1)));
+    }
+    const add = LESSONS.find((l) => l.id === 'addition1')!;
+    expect(top(add, 3)).toBeGreaterThanOrEqual(90);
+  });
+
+  it('보통: 도전 단계는 보통 범위(20) 안에서 큰 쪽으로', () => {
+    const avg = (boost: number) => {
+      const sizes = LESSONS.flatMap((l) => Array.from({ length: 30 }, (_, p) => sceneSize(lessonForPlay(l, p + 1, 'normal', boost).apply)));
+      return sizes.reduce((a, b) => a + b, 0) / sizes.length;
+    };
+    expect(avg(3)).toBeGreaterThan(avg(0));
   });
 });

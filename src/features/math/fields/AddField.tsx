@@ -1,5 +1,6 @@
 import { Plus } from '../../../components/icons';
 import ItemToken from './ItemToken';
+import TenBox, { BOX_FROM } from './TenBox';
 import CountBubble from './CountBubble';
 import { range, useSequence, type FieldMode } from './useSequence';
 import { useI18n } from '../../../i18n';
@@ -13,14 +14,20 @@ export default function AddField({ scene, mode, onDone }: { scene: Scene; mode: 
   const compact = scene.start + scene.add > 10; // 물건이 많으면 조금 작게
   const { picked, pick } = useSequence({ steps: scene.add, mode, demoOrder: range(scene.add), onDone });
   const showNumbers = mode !== 'static';
+  // 처음 묶음이 크면 꽉 찬 10 묶음은 10 상자로 (큰 수에서도 화면에 들어오게)
+  const boxes = scene.start >= BOX_FROM ? Math.floor(scene.start / 10) : 0;
+  const ones = scene.start - boxes * 10;
 
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="flex w-full flex-wrap items-center justify-center gap-3">
         {/* 처음 묶음 + 옮겨 온 물건 */}
         <div className="flex min-h-[88px] max-w-xs flex-wrap justify-center gap-2 rounded-3xl bg-moss/70 p-3">
-          {range(scene.start).map((i) => (
-            <ItemToken compact={compact} key={`s${i}`} item={scene.item} badge={showNumbers ? formatNumber(i + 1) : undefined} />
+          {range(boxes).map((b) => (
+            <TenBox key={`b${b}`} item={scene.item} badge={showNumbers ? formatNumber((b + 1) * 10) : undefined} />
+          ))}
+          {range(ones).map((i) => (
+            <ItemToken compact={compact} key={`s${i}`} item={scene.item} badge={showNumbers ? formatNumber(boxes * 10 + i + 1) : undefined} />
           ))}
           {picked.map((i, n) => (
             <ItemToken compact={compact} key={`a${i}`} item={scene.item} badge={formatNumber(scene.start + n + 1)} />

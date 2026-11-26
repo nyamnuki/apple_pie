@@ -26,6 +26,7 @@ interface Props {
   praise?: number; // 칭찬 말 번호 (판마다 달라진다)
   newPet?: PetId | null; // 이번에 방에 찾아온 친구
   completedRegion?: RegionId | null; // 이번에 놀이를 모두 끝낸 마을 (처음일 때만)
+  levelUp?: number | null; // 이번 판으로 오른 도전 단계 (1~3). 내려갈 때는 알리지 않는다
   onWorkshop: () => void;
   onAgain: () => void;
   onMoreGames: () => void;
@@ -35,8 +36,8 @@ interface Props {
 const PRAISE: TranslationKey[] = ['reward.praise1', 'reward.praise2', 'reward.praise3', 'reward.praise4', 'reward.praise5'];
 
 // 보상 화면: 받은 재료를 크게 보여주고, 발견한 원리를 다시 짚어 준다. (화려한 효과는 쓰지 않는다)
-export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, completedRegion, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames, next }: Props) {
-  const { t, tKey } = useI18n();
+export default function RewardPanel({ rewards, bonus, discovery, newRegion, sticker, newPet, completedRegion, levelUp, guide = 'lulu', praise = 0, onWorkshop, onAgain, onMoreGames, next }: Props) {
+  const { t, tKey, formatNumber } = useI18n();
   const bonusEntries = bundleEntries(bonus);
   const stickerDef = sticker ? getSticker(sticker) : undefined;
   const petDef = newPet ? PETS.find((p) => p.id === newPet) : undefined;
@@ -130,6 +131,12 @@ export default function RewardPanel({ rewards, bonus, discovery, newRegion, stic
             <span className="text-left text-xl font-bold">{t('reward.regionComplete', { region: tKey(getRegion(completedRegion).nameKey) })}</span>
           </div>
         )}
+
+        {levelUp ? (
+          <p role="status" data-level-up={levelUp} className="w-full max-w-md animate-rise rounded-3xl bg-apricot/80 p-4 text-xl font-bold" style={{ animationDelay: '560ms' }}>
+            {t('reward.levelUp', { n: formatNumber(levelUp) })}
+          </p>
+        ) : null}
 
         {newRegion && (
           <p role="status" className="w-full max-w-md animate-rise rounded-3xl bg-lavender p-4 text-xl font-bold" style={{ animationDelay: '600ms' }}>

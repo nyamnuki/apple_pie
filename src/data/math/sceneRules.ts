@@ -1,17 +1,19 @@
 import type { MathScene } from '../../types/math';
 
 // ===== 어려움 단계 =====
-// '보통'은 20 까지의 수 (5~7세 기준), '어려움'은 50 까지의 수를 쓴다.
-// 가르치는 내용과 화면 모양은 같고, 수만 커진다. 타이틀 화면에서 고른다.
+// '보통'은 20 까지의 수 (5~7세 기준), '어려움'은 50 까지의 수를 쓴다. 타이틀 화면에서 고른다.
+// 가르치는 내용과 화면 모양은 같고, 수만 커진다.
+// 놀이마다 '도전 단계'(0~3)가 있어 한 번에 맞힐수록 수가 커진다. 어려움의 도전 단계는 100 가까이까지 (variation.ts)
 export type Level = 'normal' | 'hard';
 export const LEVELS = ['normal', 'hard'] as const;
 
 // 단계마다 쓰는 가장 큰 수
-export const MAX: Record<Level, number> = { normal: 20, hard: 50 };
+// 어려움은 기본 50, 도전 단계가 오르면 100 까지 (src/features/math/variation.ts 의 boostedHard)
+export const MAX: Record<Level, number> = { normal: 20, hard: 100 };
 // 묶어 세기는 더 큰 수까지 (10 묶음을 여러 개 세기 때문에)
 export const GROUP_MAX: Record<Level, number> = { normal: 50, hard: 100 };
 // 짝 짓기·똑같이 나누기는 물건을 화면에 다 늘어놓아야 해서 따로 둔다 (좁은 휴대폰에서도 보이게)
-export const SPREAD_MAX: Record<Level, number> = { normal: 16, hard: 32 };
+export const SPREAD_MAX: Record<Level, number> = { normal: 16, hard: 50 };
 
 // 장면의 수가 그 단계의 범위 안인지 (테스트에서 레슨 데이터와 '다시 할 때 바뀐 문제'를 같이 검사한다)
 export function sizeOk(scene: MathScene, level: Level = 'normal'): boolean {
