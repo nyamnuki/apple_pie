@@ -107,39 +107,41 @@ export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): 
   const hard = level === 'hard';
   switch (scene.kind) {
     case 'count':
-      // 어려움도 하나씩 세는 놀이라 30 까지 (그보다 많으면 세다가 지친다. 큰 수는 묶어 세기에서)
-      return { ...scene, total: hard ? int(rng, 21, 30) : int(rng, 11, 19) };
+      // 보통 14~20, 어려움 24~32 (하나씩 세는 놀이라 더 많으면 세다가 지친다. 큰 수는 묶어 세기에서)
+      return { ...scene, total: hard ? int(rng, 24, 32) : int(rng, 14, 20) };
     case 'compare': {
       if (scene.a === scene.b) {
-        const n = hard ? int(rng, 13, 25) : int(rng, 6, 14);
+        const n = hard ? int(rng, 16, 25) : int(rng, 9, 16);
         return { ...scene, a: n, b: n };
       }
-      // 똑같지 않은 문제: 어느 쪽이 많은지도 판마다 바뀐다. 차이는 1~3 (가까울수록 세어 봐야 안다)
+      // 똑같지 않은 문제: 어느 쪽이 많은지도 판마다 바뀐다. 차이는 1~2 (가까울수록 짝을 지어 봐야 안다)
       // 어려움: 두 묶음을 한 화면에 모두 늘어놓으므로 25 까지
-      const small = hard ? int(rng, 13, 24) : int(rng, 6, 12);
-      const big = small + int(rng, 1, 3);
+      const small = hard ? int(rng, 16, 23) : int(rng, 9, 17);
+      const big = small + int(rng, 1, 2);
       return rng() < 0.5 ? { ...scene, a: big, b: small } : { ...scene, a: small, b: big };
     }
     case 'add': {
       // 십의 자리를 넘는 덧셈 (보통 20 까지 / 어려움 50 까지)
       if (hard) {
-        const start = int(rng, 12, 28);
-        const add = int(rng, 11 - (start % 10), Math.min(19, 50 - start)); // 다음 십의 자리를 넘도록
+        const start = int(rng, 15, 38);
+        const add = int(rng, Math.max(4, 11 - (start % 10)), Math.min(19, 50 - start)); // 다음 십의 자리를 넘도록
         return { ...scene, start, add };
       }
+      // 모두 13 이상 (10 을 넉넉히 넘게 이어 센다), 더하는 수는 3 이상
       const start = int(rng, 6, 10);
-      const add = int(rng, Math.max(2, 11 - start), Math.min(9, 20 - start)); // 문장이 '{add} more are coming' 이라 2 이상
+      const add = int(rng, Math.max(3, 13 - start), Math.min(9, 20 - start));
       return { ...scene, start, add };
     }
     case 'subtract': {
       // 십의 자리 아래로 내려가는 뺄셈
       if (hard) {
-        const start = int(rng, 22, 48);
+        const start = int(rng, 25, 49);
         const remove = int(rng, Math.max(2, (start % 10) + 1), Math.min(19, start - 2)); // 아래 십의 자리로 내려가도록 (문장이 '{remove} fly away' 라 2 이상)
         return { ...scene, start, remove };
       }
-      const start = int(rng, 11, 18);
-      const remove = int(rng, start - 9, Math.min(9, start - 2));
+      // 13~19 에서 빼서 10 아래로 (빼는 수는 4 이상)
+      const start = int(rng, 13, 19);
+      const remove = int(rng, Math.max(4, start - 9), Math.min(9, start - 2));
       return { ...scene, start, remove };
     }
     case 'groups':
@@ -151,12 +153,12 @@ export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): 
         if (ones === groups) ones = ones === 9 ? 8 : ones + 1;
         return { ...scene, groups, ones };
       }
-      // 5 묶음 (보통 15~35 / 어려움 40~75), 따로 있는 것은 원래대로 (문장이 그것을 말한다)
-      if (scene.size === 5) return { ...scene, groups: hard ? int(rng, 8, 15) : int(rng, 3, 7) };
+      // 5 묶음 (보통 20~40 / 어려움 50~80), 따로 있는 것은 원래대로 (문장이 그것을 말한다)
+      if (scene.size === 5) return { ...scene, groups: hard ? int(rng, 10, 16) : int(rng, 4, 8) };
       // 짝 (보통 20 / 어려움 50 을 넘지 않게), 혼자 있는 것은 원래대로 (문장이 그것을 말한다)
-      return { ...scene, groups: int(rng, hard ? 11 : 5, Math.floor(((hard ? 50 : 20) - scene.ones) / 2)) };
+      return { ...scene, groups: int(rng, hard ? 14 : 6, Math.floor(((hard ? 50 : 20) - scene.ones) / 2)) };
     case 'shapes': {
-      // 찾는 도형 4~7 개 + 다른 도형 5~8 개, 색·크기·돌림·순서를 새로
+      // 찾는 도형 5~8 개 + 다른 도형 6~9 개, 색·크기·돌림·순서를 새로
       // 찾는 도형도 세모·네모 중에서 바뀐다 (동그라미는 살펴보기에서 이미 찾았다)
       const target: ShapeId = scene.target === 'circle' ? 'circle' : pick(rng, ['square', 'triangle'] as const);
       const others = SHAPES.filter((s) => s !== target);
@@ -166,28 +168,28 @@ export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): 
         size: Math.round((0.6 + rng() * 0.5) * 100) / 100,
         rotate: shape === 'circle' ? undefined : [0, 0, 15, 30, 45, 90, 180][int(rng, 0, 6)] || undefined,
       });
-      const list = [...Array.from({ length: int(rng, 4, 7) }, () => spec(target)), ...Array.from({ length: int(rng, 5, 8) }, () => spec(others[int(rng, 0, 1)]))];
+      const list = [...Array.from({ length: int(rng, 5, 8) }, () => spec(target)), ...Array.from({ length: int(rng, 6, 9) }, () => spec(others[int(rng, 0, 1)]))];
       return { ...scene, target, shapes: shuffle(rng, list) };
     }
     case 'measure':
       // 블록 (좁은 휴대폰에서도 한 줄에 보이게 10 개까지)
       // 재는 물건도 바뀐다 (나뭇가지·리본·애벌레)
-      return { ...scene, thing: pick(rng, THINGS), length: hard ? int(rng, 6, 10) : int(rng, 4, 9) };
+      return { ...scene, thing: pick(rng, THINGS), length: hard ? int(rng, 6, 10) : int(rng, 5, 10) };
     case 'hops': {
       // 앞으로 뛰기: 끝이 범위를 넘지 않게. 뒤로 뛰기: 0 아래로 가지 않게 (한 번에 9 칸까지)
       const top = hard ? 50 : 20;
-      const n = int(rng, 3, hard ? 9 : 7);
+      const n = int(rng, hard ? 5 : 4, 9);
       return scene.hop > 0 ? { ...scene, start: int(rng, 2, top - n), hop: n } : { ...scene, start: int(rng, n + 1, top - 2), hop: -n };
     }
     case 'pairs':
-      return { ...scene, total: hard ? int(rng, 17, 24) : int(rng, 6, 15) };
+      return { ...scene, total: hard ? int(rng, 19, 28) : int(rng, 9, 16) };
     case 'clock':
       return { ...scene, hour: int(rng, 1, 12) };
     case 'share':
-      return { ...scene, total: (hard ? int(rng, 9, 16) : int(rng, 3, 8)) * 2 };
+      return { ...scene, total: (hard ? int(rng, 10, 16) : int(rng, 4, 8)) * 2 };
     case 'double':
       // 어려움: 물가와 물속에 모두 그리므로 15 까지 (모두 30)
-      return { ...scene, n: hard ? int(rng, 10, 15) : int(rng, 2, 9) };
+      return { ...scene, n: hard ? int(rng, 11, 15) : int(rng, 4, 10) };
     case 'makeTen':
       return { ...scene, have: int(rng, 2, 8) };
     case 'ordinal':
@@ -195,8 +197,8 @@ export function varyScene(scene: MathScene, rng: Rng, level: Level = 'normal'): 
     case 'difference': {
       // 어려움: 위아래 짝을 한 칸씩 늘어놓으므로 많은 쪽이 20 을 넘지 않게
       // 차이는 2 이상 (문장이 '{diff} mushrooms have no partner' 처럼 여럿을 말한다)
-      const b = hard ? int(rng, 9, 14) : int(rng, 3, 8);
-      return { ...scene, b, a: b + int(rng, 2, hard ? 6 : 5) };
+      const b = hard ? int(rng, 10, 13) : int(rng, 5, 9);
+      return { ...scene, b, a: b + (hard ? int(rng, 3, 7) : int(rng, 2, 5)) };
     }
     case 'pattern':
       // 되풀이 묶음은 그대로 두고 멈추는 자리만 바꾼다 (묶음이 두 번 넘게 보이게) → 다음에 올 것이 판마다 달라진다

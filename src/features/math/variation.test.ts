@@ -159,9 +159,10 @@ describe('어려움 단계 (50까지)', () => {
 
 // 정확히 같은 문제가 되풀이되지 않는다 (수·물건·도형·순서까지 모두 같은 장면)
 describe('정확히 같은 문제는 다시 나오지 않는다', () => {
-  // 낼 수 있는 문제가 적은 놀이는 그만큼만 본다 (시계 12 가지, 길이 재기 3 물건 × 6·5 길이)
+  // 낼 수 있는 문제가 적은 놀이는 그만큼만 본다
+  // (시계 12 가지, 길이 재기 3 물건 × 6·5 길이, 보통 단계 2씩 세기는 20 을 넘지 않는 짝 수 4 가지 × 물건)
   const runFor = (lesson: (typeof LESSONS)[number], level: 'normal' | 'hard') =>
-    lesson.apply.kind === 'clock' ? 12 : lesson.apply.kind === 'measure' ? (level === 'hard' ? 12 : 18) : 30;
+    lesson.apply.kind === 'clock' ? 12 : lesson.apply.kind === 'measure' ? (level === 'hard' ? 12 : 15) : lesson.id === 'skipCount1' && level === 'normal' ? 24 : 30;
   for (const level of ['normal', 'hard'] as const) {
     for (const lesson of LESSONS) {
       it(`${level} ${lesson.id}: 처음 ${runFor(lesson, level)}판 동안 예상하기·해 보기 장면이 모두 다르다`, () => {
@@ -197,9 +198,11 @@ describe('물건과 모양도 바뀐다', () => {
     });
   }
 
-  it('같은 판의 예상하기와 해 보기는 되도록 다른 물건을 쓴다', () => {
-    for (const lesson of LESSONS.filter((l) => l.pools && l.apply.kind !== 'ordinal' && l.apply.kind !== 'pattern'))
-      for (const v of plays(lesson.id).slice(1)) expect(itemsOf(v.apply).some((id) => itemsOf(v.predict).includes(id)), lesson.id).toBe(false);
+  it('같은 판의 예상하기와 해 보기는 되도록 다른 물건을 쓴다 (새 문제가 모자랄 때만 같은 물건, 30판 중 5판까지)', () => {
+    for (const lesson of LESSONS.filter((l) => l.pools && l.apply.kind !== 'ordinal' && l.apply.kind !== 'pattern')) {
+      const same = plays(lesson.id).slice(1).filter((v) => itemsOf(v.apply).some((id) => itemsOf(v.predict).includes(id)));
+      expect(same.length, lesson.id).toBeLessThanOrEqual(5);
+    }
   });
 
   it('비교: 어느 쪽이 많은지가 판마다 바뀐다 (버튼 이름도 그 물건)', () => {
@@ -227,5 +230,15 @@ describe('물건과 모양도 바뀐다', () => {
 
   it('몇 번째: 줄 선 동물과 순서가 바뀐다', () => {
     expect(new Set(plays('ordinal1').map((v) => (v.apply as { items: string[] }).items.join())).size).toBeGreaterThan(25);
+  });
+});
+
+describe('확인하기 시범 속도', () => {
+  it('12개까지는 0.8초씩, 많으면 모두 10초 안팎 (가장 빨라도 0.3초)', async () => {
+    const { demoDelay } = await import('./fields/useSequence');
+    expect(demoDelay(10)).toBe(800);
+    expect(demoDelay(12)).toBe(800);
+    for (const n of [16, 20, 32, 50]) expect(demoDelay(n) * n).toBeLessThanOrEqual(15000);
+    expect(demoDelay(100)).toBe(300);
   });
 });

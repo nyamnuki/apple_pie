@@ -15,7 +15,9 @@ interface Options {
   onDone?: () => void; // 끝났을 때 한 번 불린다
 }
 
-const DEMO_DELAY = 800; // 자동 진행 간격 (ms)
+// 자동 진행 간격 (ms): 12개까지는 0.8초씩, 그보다 많으면 모두 10초 안팎에 끝나도록 빨리 (가장 빨라도 0.3초)
+// (어려운 문제처럼 30개를 넘게 세면 0.8초씩은 25초가 넘어 기다리다 지친다)
+export const demoDelay = (steps: number) => (steps <= 12 ? 800 : Math.max(300, Math.round(9600 / steps)));
 
 // '몇 번째 물건을 눌렀는지'를 기억하는 도우미. 모든 수학 장면이 같이 쓴다.
 export function useSequence({ steps, mode, demoOrder, onDone }: Options) {
@@ -32,9 +34,9 @@ export function useSequence({ steps, mode, demoOrder, onDone }: Options) {
     if (mode !== 'demo' || finished) return;
     const next = demoOrder.find((i) => !picked.includes(i));
     if (next === undefined) return;
-    const timer = setTimeout(() => pick(next), DEMO_DELAY);
+    const timer = setTimeout(() => pick(next), demoDelay(steps));
     return () => clearTimeout(timer);
-  }, [mode, finished, picked, demoOrder, pick]);
+  }, [mode, finished, picked, demoOrder, pick, steps]);
 
   // 하나 누를 때마다 음이 한 칸씩 올라간다 (처음부터 끝난 모습일 때는 소리 없음)
   const { play } = useSound();
