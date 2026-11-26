@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { seed, makeSave, readSave, guide, goToRegion } from './helpers';
+import { seed, makeSave, readSave, guide, goToRegion, playCountingApples } from './helpers';
 
 // 효과음, 벽 장식, 저장 버전 변환, 도토·모모
 
@@ -53,6 +53,29 @@ test.describe('효과음', () => {
     await countApples(page);
     expect(await page.evaluate(() => (window as unknown as { __osc: number }).__osc)).toBe(0);
   });
+});
+
+test('맞히면 녹음한 효과음(ElevenLabs)을 재생한다 (파일은 앱 안에 있다)', async ({ page, context }) => {
+  await seed(context, { save: makeSave() });
+  await context.addInitScript(() => {
+    localStorage.setItem('mathTown.settings', '{"sound":true,"music":false}');
+    const w = window as unknown as { __buf: number };
+    w.__buf = 0;
+    const original = AudioContext.prototype.createBufferSource;
+    AudioContext.prototype.createBufferSource = function (this: AudioContext) {
+      w.__buf++;
+      return original.call(this);
+    };
+  });
+  const files: string[] = [];
+  page.on('response', (r) => r.url().endsWith('.mp3') && r.ok() && files.push(r.url()));
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Start' }).click();
+  await page.getByRole('button', { name: 'Play' }).click();
+  await goToRegion(page, /^Acorn Village/);
+  await playCountingApples(page);
+  expect(files.length).toBeGreaterThanOrEqual(5); // 첫 소리를 낼 때 모두 불러 둔다 (아주 작은 것은 코드 안에 들어 있다)
+  expect(await page.evaluate(() => (window as unknown as { __buf: number }).__buf)).toBeGreaterThanOrEqual(1);
 });
 
 test.describe('배경 음악', () => {
