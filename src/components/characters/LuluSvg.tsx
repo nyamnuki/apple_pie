@@ -1,5 +1,6 @@
 import Face from './Face';
 import type { Expression } from '../../data/characters/characters';
+import { BakedSvg } from '../art/Baked';
 
 // 루루: 크림색 토끼. 한쪽 귀가 살짝 접혀 있고(알아보기 쉬운 모양), 잎사귀 망토와 귀에 꽂은 분홍 꽃이 상징.
 // 수채화 효과(#wc-small)와 둥근 빛(#wc-ball)은 src/components/art/WatercolorDefs.tsx
@@ -19,7 +20,7 @@ const C = {
 
 export default function LuluSvg({ expression }: { expression: Expression }) {
   return (
-    <svg viewBox="0 0 120 150" className="h-full w-full overflow-visible" aria-hidden="true">
+    <BakedSvg bakeKey={`lulu:${expression}`} viewBox="0 0 120 150" className="h-full w-full" pad={0.08}>
       <g filter="url(#wc-small)">
         <g stroke={C.line} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round">
           {/* 잎사귀 망토 (몸 뒤): 잎 세 장이 겹친 모양 */}
@@ -87,6 +88,6 @@ export default function LuluSvg({ expression }: { expression: Expression }) {
           </g>
         )}
       </g>
-    </svg>
+    </BakedSvg>
   );
 }

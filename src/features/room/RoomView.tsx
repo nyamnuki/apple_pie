@@ -92,7 +92,8 @@ export default function RoomView({ layout, selectedUid, validSpots, onTileClick,
     // 바닥·벽은 뒤쪽 그림(SVG)에 따로 그린다: 수채화 효과가 무거워서, 가구를 고르거나 옮길 때마다
     // 배경까지 다시 그리지 않게 한다. 두 그림은 같은 좌표·같은 크기로 정확히 겹친다.
     <div className="relative h-full w-full">
-      <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full" aria-hidden="true">
+      {/* 바닥·벽은 따로 한 층(will-change)에 그려 둔다: 가구를 고를 때 화살표·빛이 움직여도 이 무거운 수채화 그림은 다시 그리지 않는다 */}
+      <svg viewBox={`0 0 ${VIEW_W} ${VIEW_H}`} preserveAspectRatio="xMidYMid meet" className="absolute inset-0 h-full w-full will-change-transform" aria-hidden="true">
         <RoomBackground wallpaperId={layout.wallpaperId} time={time} season={season} />
       </svg>
       <svg

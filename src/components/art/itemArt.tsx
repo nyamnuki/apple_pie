@@ -1,3 +1,4 @@
+import { BakedSvg } from './Baked';
 import type { ReactElement } from 'react';
 
 // ===== 수학 물건·재료 그림 (수채화 동화책 스타일, 64×64) =====
@@ -545,10 +546,11 @@ export function ItemArt({ path, size }: { path: string; size: number }) {
   const Art = ITEM_ART[path];
   if (!Art) return null;
   return (
-    <svg viewBox="0 0 64 64" width={size} height={size} aria-hidden="true" className="overflow-visible">
+    // 한 번 구워 두고 사진으로 쓴다 (놀이 화면에 같은 물건이 수십 개 나와도 가볍게)
+    <BakedSvg bakeKey={`item:${path}`} viewBox="0 0 64 64" width={size} height={size} pad={0.1}>
       <g filter="url(#wc-small)">
         <Art />
       </g>
-    </svg>
+    </BakedSvg>
   );
 }

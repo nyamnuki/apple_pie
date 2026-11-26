@@ -1,5 +1,6 @@
 import { footprintCorners, lift, toPoints, type Point } from '../iso';
 import type { FurnitureDef, PlaceholderShape } from '../../../types/furniture';
+import { BakedG } from '../../../components/art/Baked';
 
 // ===== 그림 파일이 없을 때 그리는 가구 모양 =====
 // 모든 가구가 같은 각도(2:1 아이소메트릭)와 같은 조명(왼쪽 위에서 빛)으로 보이도록
@@ -424,7 +425,10 @@ export default function FurniturePlaceholder({ def, area }: { def: FurnitureDef;
       {/* 바닥 그림자 */}
       {def.placeholder.shape !== 'rug' && <polygon points={toPoints([c.top, c.right, c.bottom, c.left])} fill={SHADE} fillOpacity="0.12" />}
       {/* 수채화 효과 (src/components/art/WatercolorDefs.tsx) */}
-      <g filter="url(#wc-furniture)">{(PAINTERS[def.placeholder.shape] ?? PAINTERS.box!)(area)}</g>
+      {/* 한 번 구워 사진으로 놓는다: 가구를 고를 때 방 안에서 화살표·빛이 계속 움직여도 가구는 다시 계산하지 않는다 */}
+      <BakedG bakeKey={`furniture:${def.id}:${area.gx},${area.gy},${area.w},${area.d}`}>
+        <g filter="url(#wc-furniture)">{(PAINTERS[def.placeholder.shape] ?? PAINTERS.box!)(area)}</g>
+      </BakedG>
     </g>
   );
 }

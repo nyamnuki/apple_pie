@@ -1,5 +1,6 @@
 import Face from './Face';
 import type { Expression } from '../../data/characters/characters';
+import { BakedSvg } from '../art/Baked';
 
 // 도토: 동그란 고슴도치. 공방 주인이라 생각이 깊다 → 동그란 안경, 도토리 가방이 상징.
 const C = {
@@ -24,7 +25,7 @@ export default function DotoSvg({ expression }: { expression: Expression }) {
       return `${60 + Math.cos(a) * r1},${70 + Math.sin(a) * r1} ${60 + Math.cos(a2) * r2},${70 + Math.sin(a2) * r2}`;
     }).join(' ');
   return (
-    <svg viewBox="0 0 120 150" className="h-full w-full overflow-visible" aria-hidden="true">
+    <BakedSvg bakeKey={`doto:${expression}`} viewBox="0 0 120 150" className="h-full w-full" pad={0.08}>
       <g filter="url(#wc-small)">
         <g stroke={C.line} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round">
           {/* 도토리 가방 (몸 뒤 오른쪽) */}
@@ -86,6 +87,6 @@ export default function DotoSvg({ expression }: { expression: Expression }) {
           </g>
         )}
       </g>
-    </svg>
+    </BakedSvg>
   );
 }

@@ -1,4 +1,5 @@
 import type { FurnitureDef } from '../../../types/furniture';
+import { BakedG } from '../../../components/art/Baked';
 
 // ===== 그림 파일이 없을 때 그리는 벽 장식 =====
 // 정면에서 본 그림처럼 그리면, 바깥에서 wallTransform 으로 벽 각도에 맞게 비스듬히 바뀐다.
@@ -119,7 +120,11 @@ function Garland({ w, h }: { w: number; h: number }) {
 }
 
 export default function WallPlaceholder({ def, w, h }: { def: FurnitureDef; w: number; h: number }) {
-  return <g filter="url(#wc-furniture)">{wallArt(def, w, h)}</g>;
+  return (
+    <BakedG bakeKey={`wall:${def.id}:${w}x${h}`}>
+      <g filter="url(#wc-furniture)">{wallArt(def, w, h)}</g>
+    </BakedG>
+  );
 }
 
 function wallArt(def: FurnitureDef, w: number, h: number) {

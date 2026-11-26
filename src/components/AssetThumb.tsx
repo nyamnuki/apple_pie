@@ -6,6 +6,7 @@ import { WALL_BANDS, footprintCorners } from '../features/room/iso';
 import { assetUrl } from '../data/assets/assetRegistry';
 import { useAssetStatus } from '../services/assets/useAssetStatus';
 import type { FurnitureDef } from '../types/furniture';
+import { NoBake } from './art/Baked';
 
 // 목록(꾸미기·공방·가방)에 쓰는 작은 가구 그림.
 // 그림 파일이 없으면 방에 그려지는 것과 같은 모양(같은 각도·조명)을 작게 그린다.
@@ -35,7 +36,9 @@ export default function AssetThumb({ def, size = 64 }: { def: FurnitureDef; size
     const side = Math.max(w, h) * 1.15; // 정사각형 칸 가운데에
     return (
       <svg aria-hidden="true" viewBox={`${(w - side) / 2} ${(h - side) / 2} ${side} ${side}`} className={frame} style={style}>
-        <WallPlaceholder def={def} w={w} h={h} />
+        <NoBake>
+          <WallPlaceholder def={def} w={w} h={h} />
+        </NoBake>
       </svg>
     );
   }
@@ -49,7 +52,10 @@ export default function AssetThumb({ def, size = 64 }: { def: FurnitureDef; size
   const cy = c.bottom.y - h / 2 + 4;
   return (
     <svg aria-hidden="true" viewBox={`${cx - side / 2} ${cy - side / 2} ${side} ${side}`} className={frame} style={style}>
-      <FurniturePlaceholder def={def} area={{ gx: 0, gy: 0, w: def.gridWidth, d: def.gridHeight }} />
+      {/* 움직이지 않는 작은 미리 보기는 굽지 않는다 (src/components/art/Baked.tsx) */}
+      <NoBake>
+        <FurniturePlaceholder def={def} area={{ gx: 0, gy: 0, w: def.gridWidth, d: def.gridHeight }} />
+      </NoBake>
     </svg>
   );
 }

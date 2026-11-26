@@ -13,7 +13,10 @@ function Tree({ x, y, s, color }: { x: number; y: number; s: number; color: stri
 
 export default function TitleScene() {
   return (
-    <svg aria-hidden="true" viewBox="0 0 800 420" preserveAspectRatio="xMidYMax slice" className="pointer-events-none fixed inset-x-0 bottom-0 h-[58%] w-full">
+    <>
+    {/* 풍경과 반짝이는 반딧불이를 서로 다른 층에 그린다 (will-change): 반딧불이가 반짝일 때마다
+        화면 절반을 덮은 수채화 효과(무거운 필터)를 다시 계산하지 않게 */}
+    <svg aria-hidden="true" viewBox="0 0 800 420" preserveAspectRatio="xMidYMax slice" className="pointer-events-none fixed inset-x-0 bottom-0 h-[58%] w-full will-change-transform">
       <g filter="url(#wc-room)">
         {/* 먼 언덕 */}
         <path d="M-40 250 L0 250 C120 190 230 210 330 230 C450 180 600 190 800 240 L840 250 L840 440 L-40 440 Z" fill="#D5E4C8" />
@@ -52,10 +55,13 @@ export default function TitleScene() {
           </g>
         ))}
       </g>
+    </svg>
+    <svg aria-hidden="true" viewBox="0 0 800 420" preserveAspectRatio="xMidYMax slice" className="pointer-events-none fixed inset-x-0 bottom-0 h-[58%] w-full will-change-transform">
       {/* 반딧불이 (반짝임은 움직임 줄이기 설정을 따른다) */}
       {[[260, 250], [520, 220], [180, 200], [640, 170]].map(([x, y], i) => (
         <circle key={i} cx={x} cy={y} r="4" fill="#FFF0B8" className="animate-pulse" style={{ animationDelay: `${i * 0.6}s` }} />
       ))}
     </svg>
+    </>
   );
 }

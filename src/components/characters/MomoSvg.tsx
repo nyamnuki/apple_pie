@@ -1,5 +1,6 @@
 import Face from './Face';
 import type { Expression } from '../../data/characters/characters';
+import { BakedSvg } from '../art/Baked';
 
 // 모모: 모험을 좋아하는 다람쥐. 머리 위까지 말려 올라간 큰 꼬리, 세이지색 스카프, 도토리 모자가 상징.
 const C = {
@@ -16,7 +17,7 @@ const C = {
 
 export default function MomoSvg({ expression }: { expression: Expression }) {
   return (
-    <svg viewBox="0 0 120 150" className="h-full w-full overflow-visible" aria-hidden="true">
+    <BakedSvg bakeKey={`momo:${expression}`} viewBox="0 0 120 150" className="h-full w-full" pad={0.08}>
       <g filter="url(#wc-small)">
         <g stroke={C.line} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round">
           {/* 큰 꼬리: 몸 뒤에서 머리 위까지 S 자로 */}
@@ -75,6 +76,6 @@ export default function MomoSvg({ expression }: { expression: Expression }) {
           </g>
         )}
       </g>
-    </svg>
+    </BakedSvg>
   );
 }

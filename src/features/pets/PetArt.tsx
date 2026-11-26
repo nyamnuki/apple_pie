@@ -1,4 +1,5 @@
 import type { PetId } from './pets';
+import { BakedG } from '../../components/art/Baked';
 
 // 반려 친구 그림 (64×64, 수채화). 발 아래 가운데가 (32, 60).
 const L = { stroke: '#6B5444', strokeOpacity: 0.7, strokeWidth: 1.8, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
@@ -97,8 +98,11 @@ const ART: Record<PetId, () => JSX.Element> = { duckling: Duckling, foxKit: FoxK
 export default function PetArt({ id }: { id: PetId }) {
   const Art = ART[id];
   return (
-    <g filter="url(#wc-small)">
-      <Art />
-    </g>
+    // 한 번 구워 사진으로 (친구가 걸어 다닐 때마다 수채화 효과를 다시 계산하지 않게)
+    <BakedG bakeKey={`pet:${id}`}>
+      <g filter="url(#wc-small)">
+        <Art />
+      </g>
+    </BakedG>
   );
 }

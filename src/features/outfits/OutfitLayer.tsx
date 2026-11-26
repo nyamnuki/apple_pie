@@ -3,6 +3,7 @@ import { useOutfit } from './OutfitContext';
 import { assetUrl, outfitPath } from '../../data/assets/assetRegistry';
 import { useAssetStatus } from '../../services/assets/useAssetStatus';
 import type { OutfitId } from './outfits';
+import { BakedSvg } from '../../components/art/Baked';
 
 // ===== 루루가 입은 모자·스카프 겹 =====
 // 루루 그림 위에 따로 얹는다. 루루가 그림 파일(PNG)이든 코드로 그린 SVG 든
@@ -20,11 +21,12 @@ export default function OutfitLayer() {
   const outfit = useOutfit();
   if (!outfit.hat && !outfit.scarf) return null;
   return (
-    <svg viewBox="0 0 120 150" className="pointer-events-none absolute inset-0 h-full w-full overflow-visible" aria-hidden="true">
+    // 한 번 구워 사진으로 (루루 그림과 같은 방식: src/components/art/Baked.tsx)
+    <BakedSvg bakeKey={`outfit:${outfit.hat ?? '-'}:${outfit.scarf ?? '-'}`} viewBox="0 0 120 150" className="pointer-events-none absolute inset-0 h-full w-full" pad={0.08}>
       <g filter="url(#wc-small)">
         {outfit.scarf && <Piece id={outfit.scarf} />}
         {outfit.hat && <Piece id={outfit.hat} />}
       </g>
-    </svg>
+    </BakedSvg>
   );
 }
