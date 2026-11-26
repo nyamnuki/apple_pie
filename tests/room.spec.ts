@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { VIEW_W, VIEW_H } from '../src/features/room/iso';
 import { seed, makeSave, guide, readSave } from './helpers';
 
 // 방 꾸미기: 놓기, 겹침 막기, 옆 칸 보정, 옮기기, 돌리기, 치우기
@@ -170,8 +171,8 @@ test('방 사진 찍기: 꾸민 방을 그림 파일(PNG)로 내려받는다', a
   expect(download.suggestedFilename()).toMatch(/^my-room-\d{4}-\d{2}-\d{2}\.png$/);
   const bytes = Buffer.concat(await (await download.createReadStream()).toArray());
   expect(bytes.subarray(1, 4).toString()).toBe('PNG');
-  expect(bytes.readUInt32BE(16)).toBe(1768); // 너비 (760 + 여백 80 + 액자 44) × 2
-  expect(bytes.readUInt32BE(20)).toBe(1656); // 높이 (640 + 여백 80 + 액자 44 + 글 띠 64) × 2
+  expect(bytes.readUInt32BE(16)).toBe((VIEW_W + 80 + 44) * 2); // 너비 (방 그림판 + 여백 80 + 액자 44) × 2
+  expect(bytes.readUInt32BE(20)).toBe((VIEW_H + 80 + 44 + 64) * 2); // 높이 (방 그림판 + 여백 80 + 액자 44 + 글 띠 64) × 2
   if (process.env.SHOT_DIR) await download.saveAs(`${process.env.SHOT_DIR}/room-photo.png`);
   expect(bytes.length).toBeGreaterThan(50_000); // 빈 그림이 아니다
 });

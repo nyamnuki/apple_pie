@@ -7,10 +7,12 @@ import { useSound } from '../../services/audio/SoundProvider';
 import { speak } from '../../services/speech/speech';
 import { useCanSpeak } from '../../services/speech/useCanSpeak';
 import type { RoomLayout } from '../../types/furniture';
+import { VIEW_W } from '../room/iso';
 
 const SIZE = 64; // 방 좌표에서 친구 그림 크기
-// 누르는 자리 크기 (방 그림 좌표). 방은 휴대폰에서 반쯤 줄어 보이므로 그림 크기의 두 배쯤
-const HIT = 100;
+// 누르는 자리 크기 (방 그림 좌표). 방은 휴대폰에서 줄어 보이므로 그림보다 크게.
+// 방 그림판이 넓을수록 더 많이 줄어 보이므로 그만큼 키운다 (6×6 방(760)일 때 100)
+const HIT = Math.round((100 * VIEW_W) / 760);
 const WALK_MS = 3200; // 몇 초마다 한 친구가 한 칸 걷는지
 
 // 방의 반려 친구들: 빈 칸을 천천히 돌아다니고, 누르면 폴짝 뛰며 하트를 보여준다.
