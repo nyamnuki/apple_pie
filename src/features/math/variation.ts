@@ -441,9 +441,12 @@ function findFresh(make: (relaxed: boolean) => MathScene, seen: Set<string>, ok:
 //   (그 장면으로 낼 수 있는 문제를 다 냈으면 그때부터 새 바퀴: 다시 처음부터 한 번씩)
 // - 바로 앞 판과는 '해 보기' 정답도 다르게 (또 같은 문제라고 느끼지 않게)
 // 보통 단계의 0 판은 lessons.ts 에 적힌 그대로, 어려움 단계는 0 판부터 바꾼다.
-export function lessonForPlay(lesson: MathLesson, play: number, level: Level = 'normal', boost = 0): MathLesson {
+// recent: 이 놀이에서 최근에 실제로 낸 문제 표시 (놀이 기록에 저장, sceneMark). 도전 단계나 난이도가 바뀌어
+//   판마다 만드는 방식이 달라져도, 아이가 본 문제는 다시 내지 않는다
+export function lessonForPlay(lesson: MathLesson, play: number, level: Level = 'normal', boost = 0, recent: readonly string[] = []): MathLesson {
   const want = Math.max(play, 0);
   if (level === 'normal' && want === 0) return lesson;
+  if (recent.length > 0) return avoidingRecent(lesson, want, level, boost, new Set(recent));
   boost = Math.max(0, Math.min(MAX_BOOST, Math.floor(boost)));
   const key = `${level}:${boost}:${lesson.id}`;
   let entry = cache.get(key);
@@ -464,6 +467,24 @@ export function lessonForPlay(lesson: MathLesson, play: number, level: Level = '
     plays.push(withScenes(lesson, predict, apply, rng));
   }
   return plays[want];
+}
+
+// 문제 표시: 장면의 짧은 지문 ('p:' 예상하기 / 'a:' 해 보기). 놀이 기록에 최근 것만 남긴다
+export const sceneMark = (part: 'p' | 'a', scene: MathScene) => `${part}:${hash(sceneKey(scene)).toString(36)}`;
+export const RECENT_KEPT = 80;
+
+// 최근에 낸 문제를 피해 play 번째 판을 만든다 (앞 판들의 기록은 그대로 쓰고, 이번 판만 새로)
+function avoidingRecent(lesson: MathLesson, want: number, level: Level, boost: number, recent: Set<string>): MathLesson {
+  if (want > 0) lessonForPlay(lesson, want - 1, level, boost); // 앞 판까지의 기록을 만들어 둔다
+  const plays = cache.get(`${level}:${Math.max(0, Math.min(MAX_BOOST, Math.floor(boost)))}:${lesson.id}`)?.plays ?? [];
+  const before = plays.slice(0, want);
+  const seenP = new Set(before.map((v) => sceneKey(v.predict)));
+  const seenA = new Set(before.map((v) => sceneKey(v.apply)));
+  const rng = makeRng(hash(lesson.id) + want * 7919 + levelSeed(level) + boost * 104_729);
+  const prev = sameKey((before[want - 1] ?? lesson).apply);
+  const predict = findFresh((relaxed) => predictScene(lesson, rng, level, boost, relaxed), seenP, (s) => !recent.has(sceneMark('p', s)));
+  const apply = findFresh((relaxed) => applyScene(lesson, predict, rng, level, boost, relaxed), seenA, (s) => sameKey(s) !== prev && !recent.has(sceneMark('a', s)));
+  return withScenes(lesson, predict, apply, rng);
 }
 
 // 판 번호와 상관없는 한 번짜리 문제 (오늘의 문제: 날짜로 seed 를 정한다)

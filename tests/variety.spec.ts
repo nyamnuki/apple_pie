@@ -1,5 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { seed, makeSave, readSave, answersFor, waitLastButtonEnabled, goToRegion } from './helpers';
+import { sceneMark } from '../src/features/math/variation';
 
 // 다시 할 때 바뀌는 문제 · 그림 지도 · 방 크게 보기
 
@@ -8,7 +9,8 @@ test('다시 할 때마다 해 보기 문제의 수가 바뀌고, 정답을 고�
   await seed(context, { save: makeSave({ completedLessons: ['counting1'], lessonStats: { counting1: { plays: 2, firstTry: 2, hints: 0, lastPlayed: at } } }) });
   const first = answersFor('counting1', 0).lesson;
   const second = answersFor('counting1', 2);
-  const third = answersFor('counting1', 3);
+  // 두 번째 판을 한 번에 맞혀 도전 1단계가 되고, 두 번째 판의 문제는 '최근 문제'로 기록된다
+  const third = answersFor('counting1', 3, 1, [sceneMark('p', second.lesson.predict), sceneMark('a', second.lesson.apply)]);
   // 테스트가 의미 있으려면 판마다 문제가 달라야 한다
   expect(JSON.stringify(second.lesson.apply)).not.toBe(JSON.stringify(first.apply));
   expect(JSON.stringify(third.lesson.apply)).not.toBe(JSON.stringify(second.lesson.apply));

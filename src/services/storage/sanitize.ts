@@ -11,7 +11,7 @@ import { DATE_KEY } from '../../utils/dates';
 import type { PlacedFurniture, RoomLayout, WallItem } from '../../types/furniture';
 import type { ResourceBundle } from '../../types/resources';
 import type { LessonId } from '../../types/math';
-import { MAX_BOOST } from '../../features/math/variation';
+import { MAX_BOOST, RECENT_KEPT } from '../../features/math/variation';
 
 // ===== 저장 데이터 검사 =====
 // 저장본의 일부가 이상해도(없는 가구, 음수, 방 밖 위치 등) 그 부분만 버리고 나머지는 살린다.
@@ -54,7 +54,9 @@ export function sanitizeGame(raw: unknown): GameState {
     if (plays === 0) continue;
     // 도전 단계는 예전 저장본에 없다 (없으면 0)
     const boost = Math.min(toCount(s.boost), MAX_BOOST);
-    lessonStats[id] = { plays, firstTry: Math.min(toCount(s.firstTry), plays), hints: Math.min(toCount(s.hints), plays * 3), lastPlayed: s.lastPlayed, ...(boost ? { boost } : {}) };
+    // 최근에 낸 문제 표시 ('p:…' / 'a:…' 짧은 글자만, 최근 것만)
+    const recent = Array.isArray(s.recent) ? s.recent.filter((m): m is string => typeof m === 'string' && /^[pa]:[0-9a-z]{1,12}$/.test(m)).slice(-RECENT_KEPT) : [];
+    lessonStats[id] = { plays, firstTry: Math.min(toCount(s.firstTry), plays), hints: Math.min(toCount(s.hints), plays * 3), lastPlayed: s.lastPlayed, ...(boost ? { boost } : {}), ...(recent.length ? { recent } : {}) };
   }
 
   // 스티커 (예전 저장본에는 없다): 아는 스티커만, 겹치지 않게

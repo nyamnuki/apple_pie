@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { itemsOf, lessonForPlay, sameKey, sceneKey, sceneSize } from './variation';
+import { itemsOf, lessonForPlay, sameKey, sceneKey, sceneMark, sceneSize } from './variation';
 import { answerOf, sceneVars } from './answers';
 import { LESSONS, lessonKey } from '../../data/math/lessons';
 import { sizeOk } from '../../data/math/sceneRules';
@@ -291,4 +291,23 @@ describe('도전 단계 (한 번에 맞힐수록 큰 수)', () => {
     };
     expect(avg(3)).toBeGreaterThan(avg(0));
   });
+});
+
+describe('도전 단계가 바뀌어도 같은 문제는 다시 나오지 않는다 (최근 문제 기록)', () => {
+  for (const level of ['normal', 'hard'] as const)
+    it(`${level}: 판마다 도전 단계가 오르내려도 30판 동안 해 보기 장면이 모두 다르다`, () => {
+      const boosts = [0, 1, 2, 3, 3, 2, 1, 2, 3, 3];
+      for (const lesson of LESSONS.filter((l) => l.apply.kind !== 'clock' && l.apply.kind !== 'measure')) {
+        const recent: string[] = [];
+        const seen = new Set<string>();
+        // 보통 단계 2씩 세기·똑같이 나누기는 20 을 넘지 않는 문제가 30가지 안팎이라 20판까지만
+        const runs = level === 'normal' && (lesson.id === 'skipCount1' || lesson.id === 'share1') ? 20 : 30;
+        for (let p = 0; p < runs; p++) {
+          const v = lessonForPlay(lesson, p, level, p === 0 ? 0 : boosts[p % boosts.length], recent);
+          expect(seen.has(sceneKey(v.apply)), `${lesson.id} 판 ${p}`).toBe(false);
+          seen.add(sceneKey(v.apply));
+          recent.push(sceneMark('p', v.predict), sceneMark('a', v.apply));
+        }
+      }
+    });
 });

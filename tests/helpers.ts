@@ -5,8 +5,9 @@ import { getLesson } from '../src/data/math/lessons';
 import type { LessonId } from '../src/types/math';
 
 // play 번째 판(0 = 처음)의 예상하기 첫 선택지와 해 보기 정답 — 다시 할 때는 수가 바뀌므로 앱과 같은 규칙으로 계산한다
-export function answersFor(id: LessonId, play = 0) {
-  const lesson = lessonForPlay(getLesson(id), play);
+// boost: 그 놀이의 도전 단계 (한 번에 맞힐 때마다 오른다. 저장된 기록에서 읽는다: savedBoost)
+export function answersFor(id: LessonId, play = 0, boost = 0, recent: string[] = []) {
+  const lesson = lessonForPlay(getLesson(id), play, 'normal', boost, recent);
   return { firstPredict: String(lesson.predictChoices[0]), apply: String(answerOf(lesson.apply)), lesson };
 }
 
@@ -104,7 +105,8 @@ export async function playLesson(page: Page, title: RegExp, tapLabel: string, ri
 
 // '사과 세기' 놀이를 처음부터 끝까지 (예상은 첫 선택지, 해 보기는 정답). play: 몇 번째 판인지 (0 = 처음)
 export async function playCountingApples(page: Page, fromMenu = true, play = 0) {
-  const { firstPredict, apply } = answersFor('counting1', play);
+  const { boost, recent } = await savedStats(page, 'counting1', play);
+  const { firstPredict, apply } = answersFor('counting1', play, boost, recent);
   if (fromMenu) await page.getByRole('button', { name: /Counting Apples/ }).click();
   await page.getByRole('button', { name: 'Next' }).click();
   const apple = page.getByRole('button', { name: 'Count this one' });
@@ -117,4 +119,17 @@ export async function playCountingApples(page: Page, fromMenu = true, play = 0) 
   await page.getByRole('button', { name: 'Next' }).click();
   await page.getByRole('group', { name: 'Answer choices' }).getByRole('button', { name: apply, exact: true }).click();
   await page.getByRole('button', { name: 'Finish' }).click();
+}
+
+// 저장된 놀이 기록의 도전 단계와 최근 문제. 앞 판의 기록이 저장될 때까지(끝낸 횟수가 play 가 될 때까지) 기다린다
+export async function savedStats(page: Page, id: LessonId, play = 0): Promise<{ boost: number; recent: string[] }> {
+  if (play > 0)
+    await page.waitForFunction(
+      ([lessonId, n]) => (JSON.parse(localStorage.getItem('mathTown.save') ?? '{}')?.game?.lessonStats?.[lessonId]?.plays ?? 0) >= n,
+      [id, play] as const,
+    );
+  return page.evaluate((lessonId) => {
+    const s = JSON.parse(localStorage.getItem('mathTown.save') ?? '{}')?.game?.lessonStats?.[lessonId];
+    return { boost: s?.boost ?? 0, recent: s?.recent ?? [] };
+  }, id);
 }

@@ -1,3 +1,4 @@
+import { sceneMark } from '../features/math/variation';
 import { describe, expect, it } from 'vitest';
 import { createInitialGameState, gameReducer, rewardFor, type GameState, nextBoost } from './gameState';
 import { getLesson } from '../data/math/lessons';
@@ -87,9 +88,10 @@ describe('루루 옷장', () => {
 describe('놀이 기록 (부모 화면)', () => {
   it('끝낼 때마다 횟수·한 번에 맞힘·본 힌트·마지막 시각을 쌓는다', () => {
     let s = gameReducer(createInitialGameState(), finish(counting, 0, AT));
-    expect(s.lessonStats.counting1).toEqual({ plays: 1, firstTry: 1, hints: 0, lastPlayed: AT, boost: 1 });
+    expect(s.lessonStats.counting1).toMatchObject({ plays: 1, firstTry: 1, hints: 0, lastPlayed: AT, boost: 1 });
+    expect(s.lessonStats.counting1?.recent).toEqual([sceneMark('p', counting.predict), sceneMark('a', counting.apply)]);
     s = gameReducer(s, finish(counting, 2, '2026-10-26T10:00:00.000Z'));
-    expect(s.lessonStats.counting1).toEqual({ plays: 2, firstTry: 1, hints: 2, lastPlayed: '2026-10-26T10:00:00.000Z', boost: 0 });
+    expect(s.lessonStats.counting1).toMatchObject({ plays: 2, firstTry: 1, hints: 2, lastPlayed: '2026-10-26T10:00:00.000Z', boost: 0 });
     // 힌트는 3단계까지만 있으므로 한 판에 3개까지만 센다
     s = gameReducer(s, finish(counting, 5));
     expect(s.lessonStats.counting1?.hints).toBe(5);

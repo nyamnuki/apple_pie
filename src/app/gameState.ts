@@ -4,7 +4,7 @@ import { nextSticker } from '../data/stickers/stickers';
 import { NO_OUTFIT, canWear, type Outfit, type OutfitSlot } from '../features/outfits/outfits';
 import { dateKey } from '../utils/dates';
 import type { LessonId, MathLesson } from '../types/math';
-import { MAX_BOOST } from '../features/math/variation';
+import { MAX_BOOST, RECENT_KEPT, sceneMark } from '../features/math/variation';
 import type { ResourceBundle } from '../types/resources';
 
 // 놀이 하나의 기록 (부모 화면에서 보여준다. 이 기기에만 저장된다)
@@ -13,6 +13,7 @@ export interface LessonStats {
   firstTry: number; // '해 보기'를 한 번에 맞힌 횟수
   hints: number; // 본 힌트 수 (한 판에 최대 3)
   lastPlayed: string; // 마지막으로 끝낸 시각 (ISO 형식)
+  recent?: string[]; // 최근에 낸 문제 표시 (같은 문제를 다시 내지 않으려고, variation.ts 의 sceneMark)
   boost?: number; // 도전 단계 0~3: 한 번에 맞히면 +1, 두 번 넘게 틀리면 -1 (다음 판의 수가 커지거나 작아진다)
 }
 
@@ -64,9 +65,10 @@ function addBundle(have: ResourceBundle, add: ResourceBundle, sign = 1): Resourc
   return next;
 }
 
-function addPlay(prev: LessonStats | undefined, wrongTries: number, at: string): LessonStats {
+function addPlay(prev: LessonStats | undefined, wrongTries: number, at: string, lesson: MathLesson): LessonStats {
   const s = prev ?? { plays: 0, firstTry: 0, hints: 0, lastPlayed: at };
-  return { plays: s.plays + 1, firstTry: s.firstTry + (wrongTries === 0 ? 1 : 0), hints: s.hints + Math.min(Math.max(wrongTries, 0), 3), lastPlayed: at, boost: nextBoost(s.boost, wrongTries) };
+  const recent = [...(s.recent ?? []), sceneMark('p', lesson.predict), sceneMark('a', lesson.apply)].slice(-RECENT_KEPT);
+  return { plays: s.plays + 1, firstTry: s.firstTry + (wrongTries === 0 ? 1 : 0), hints: s.hints + Math.min(Math.max(wrongTries, 0), 3), lastPlayed: at, boost: nextBoost(s.boost, wrongTries), recent };
 }
 
 // 오늘의 문제 도장 n번째에 황금 도토리를 받는지 (3개마다)
@@ -115,7 +117,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         resources: addBundle(addBundle(state.resources, rewards), bonus),
         completedLessons: state.completedLessons.includes(action.lesson.id) ? state.completedLessons : [...state.completedLessons, action.lesson.id],
-        lessonStats: { ...state.lessonStats, [action.lesson.id]: addPlay(state.lessonStats[action.lesson.id], action.wrongTries, action.at) },
+        lessonStats: { ...state.lessonStats, [action.lesson.id]: addPlay(state.lessonStats[action.lesson.id], action.wrongTries, action.at, action.lesson) },
         stickers: sticker ? [...state.stickers, sticker] : state.stickers,
         playDays: addDay(state.playDays, dateKey(new Date(action.at))),
       };

@@ -72,8 +72,11 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
   // 도전 단계 (0~3): 이 놀이를 한 번에 맞힐수록 수가 커진다 (판을 시작할 때 정하고, 판 도중에는 바뀌지 않는다)
   const boostNow = game.lessonStats[lessonId]?.boost ?? 0;
   const [boost, setBoost] = useState(boostNow);
+  // 최근에 낸 문제 (도전 단계가 바뀌어도 같은 문제를 다시 내지 않게. 판을 시작할 때 정한다)
+  const recentNow = game.lessonStats[lessonId]?.recent;
+  const [recent, setRecent] = useState(recentNow);
   const { play, mathLevel } = useSound();
-  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo, mathLevel, boost), [lessonId, playNo, mathLevel, boost]);
+  const lesson = useMemo(() => lessonForPlay(getLesson(lessonId), playNo, mathLevel, boost, recent), [lessonId, playNo, mathLevel, boost, recent]);
   // 이번에 받은 보상 (보상 화면에 보여준다)
   const [earned, setEarned] = useState<{ rewards: ResourceBundle; bonus: ResourceBundle; sticker: string | null; newRegion: RegionId | null; newPet: PetId | null; regionComplete: boolean; levelUp: number | null } | null>(null);
 
@@ -197,6 +200,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
             rewarded.current = false; // 다시 하면 새 판 (새 수)
             setPlayNo(playsSoFar);
             setBoost(boostNow);
+            setRecent(recentNow);
             dispatch({ type: 'restart' });
           }}
           onMoreGames={onExit}
