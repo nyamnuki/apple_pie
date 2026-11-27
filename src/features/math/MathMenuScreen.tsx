@@ -53,7 +53,7 @@ export default function MathMenuScreen({ regionId, onPick, onBack }: Props) {
       </p>
       {/* 그 마을 안내 친구의 소개 (자동 읽기를 켜면 소리로도) */}
       <div className="mb-4">
-        <GuideBubble compact speaker={GUIDE_OF[region.id]} expression="happy" text={`${t(`regions.intro.${region.id}`)} ${t('math.chooseLesson')}`} />
+        <GuideBubble compact speaker={GUIDE_OF[region.id]} expression="happy" text={`${t(`regions.intro.${region.id}`)} ${t('math.chooseLesson')}`} say={[t(`regions.intro.${region.id}`), t('math.chooseLesson')]} />
       </div>
 
       <ul className="grid gap-3 sm:grid-cols-2">

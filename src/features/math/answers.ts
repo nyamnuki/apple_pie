@@ -100,7 +100,8 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string,
     case 'pairs':
       return { ...vars, ...itemWords('item', scene.item, tr), total: formatNumber(scene.total), pairs: formatNumber(Math.floor(scene.total / 2)), left: formatNumber(scene.total % 2) };
     case 'clock':
-      return { ...vars, hour: formatNumber(scene.hour) };
+      // hourWord: 소리로 읽는 말 ('세' 시 / 'three' o'clock)
+      return { ...vars, hour: formatNumber(scene.hour), hourWord: tr(`hourWords.h${scene.hour}`) };
     case 'share':
       return { ...vars, ...itemWords('item', scene.item, tr), total: formatNumber(scene.total), each: formatNumber(scene.total / 2) };
     case 'double':
@@ -110,7 +111,8 @@ export function sceneVars(scene: MathScene, formatNumber: (n: number) => string,
     case 'difference':
       return { ...vars, ...itemWords('itemA', scene.itemA, tr), ...itemWords('itemB', scene.itemB, tr), a: formatNumber(scene.a), b: formatNumber(scene.b), diff: formatNumber(scene.a - scene.b) };
     case 'ordinal':
-      return { ...vars, nth: formatNumber(scene.position), total: formatNumber(scene.items.length) };
+      // nthWord: 소리로 읽는 말 ('두' 번째 / 'second')
+      return { ...vars, nth: formatNumber(scene.position), nthWord: tr(`ordinalWords.n${scene.position}`), total: formatNumber(scene.items.length) };
   }
 }
 

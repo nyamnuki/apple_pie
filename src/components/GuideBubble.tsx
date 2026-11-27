@@ -12,20 +12,23 @@ interface Props {
   expression?: Expression;
   speaker?: CharacterId; // 말하는 캐릭터 (기본: 루루)
   compact?: boolean; // 작은 말풍선 (방 화면처럼 자리가 좁을 때)
+  say?: string[]; // 소리로 읽을 글 조각 (없으면 text). 조각마다 녹음된 목소리를 찾는다 (services/speech/clips.ts)
 }
 
 // 캐릭터의 말풍선. 상황에 맞는 표정을 함께 보여준다.
 // 화면 읽기 프로그램이 바뀐 말을 읽어 주도록 aria-live 를 쓴다.
 // 스피커 버튼을 누르면 소리 내어 읽어 주고, 설정의 '읽어 주기'가 켜져 있으면 말이 바뀔 때마다 자동으로 읽는다.
-export default function GuideBubble({ text, expression = 'default', speaker = 'lulu', compact = false }: Props) {
+export default function GuideBubble({ text, expression = 'default', speaker = 'lulu', compact = false, say }: Props) {
   const { t, tKey, locale } = useI18n();
   const { voiceOn, interacted } = useSound();
   const speakable = useCanSpeak(locale);
 
   // 자동 읽기: 아이가 화면을 한 번 누른 뒤부터 (브라우저 규칙)
+  const spoken = say ?? [text];
+  const spokenKey = spoken.join('\n');
   useEffect(() => {
-    if (speakable && voiceOn && interacted) speak(text, locale);
-  }, [text, locale, voiceOn, interacted, speakable]);
+    if (speakable && voiceOn && interacted) speak(spokenKey.split('\n'), locale);
+  }, [spokenKey, locale, voiceOn, interacted, speakable]);
   // 화면을 떠나면 읽던 것을 멈춘다
   useEffect(() => () => stopSpeaking(), []);
 
@@ -42,7 +45,7 @@ export default function GuideBubble({ text, expression = 'default', speaker = 'l
         {speakable && (
           <button
             type="button"
-            onClick={() => speak(text, locale)}
+            onClick={() => speak(spoken, locale)}
             aria-label={t('a11y.readAloud')}
             className="absolute bottom-1 right-1 flex h-12 w-12 items-center justify-center rounded-full bg-sage/70 text-bark shadow-pop-sm active:translate-y-0.5"
           >

@@ -19,6 +19,7 @@ import type { FieldMode } from './fields/useSequence';
 import { hintLevel, initialLessonState, lessonReducer, type LessonState, type Stage } from './lessonFlow';
 import { answerOf, sceneVars } from './answers';
 import { lessonForPlay } from './variation';
+import { spokenPart } from './speech';
 import { nextBoost } from '../../app/gameState';
 import { nextLesson } from './nextLesson';
 import { newPet, type PetId } from '../pets/pets';
@@ -133,6 +134,26 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
         return t('math.completeTitle');
     }
   })();
+  // 소리로 읽을 글 (조각마다 녹음된 목소리를 찾는다. 수·물건이 바뀌는 문장은 짧은 '듣기용 문장'으로: speech.ts)
+  const say = (part: Parameters<typeof lessonKey>[1], scene: MathScene) => spokenPart(lessonId, part, vars(scene), t as (key: string, v?: Record<string, string | number>) => string);
+  const guideSay: string[] = (() => {
+    switch (state.stage) {
+      case 'observe':
+      case 'manipulate':
+      case 'discover':
+      case 'complete':
+        return [guide];
+      case 'predict':
+        return [say('predict', lesson.predict)];
+      case 'verify':
+        if (!state.verified) return [guide];
+        return [say('verify', lesson.predict), t(state.guess === predictAnswer ? 'math.guessRight' : 'math.guessGood')];
+      case 'apply':
+        if (state.solved) return [say('correct', lesson.apply)];
+        if (level === 0) return [say('apply', lesson.apply)];
+        return [t('math.tryAgain'), say(`hint${level}` as 'hint1', lesson.apply)];
+    }
+  })();
 
   // 루루의 표정: 예상할 땐 생각 중, 틀렸을 땐 응원, 맞혔을 땐 기쁨, 예상과 다르면 '와!' 놀람
   const expression: Expression = (() => {
@@ -230,7 +251,7 @@ export default function LessonScreen({ lessonId, onExit, onWorkshop, onNext }: P
             )}
           </div>
           <div className="[grid-area:guide]">
-            <GuideBubble text={guide} expression={expression} speaker={speaker} />
+            <GuideBubble text={guide} say={guideSay} expression={expression} speaker={speaker} />
           </div>
 
           {/* 놀이판: 장면이 크면(어려움 단계 등) 이 안에서만 스크롤된다. m-auto 로 가운데 두되 넘치면 위가 잘리지 않게 */}

@@ -71,7 +71,10 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
     play.place();
   };
   const counting = Boolean(quiz && (quiz.solved || quiz.tried.length > 0)); // 한 번 답하면 같이 세어 본다
+  // 소리로 읽을 글: 가구·마을 이름이 들어가는 안내는 이름을 뺀 짧은 문장 (녹음된 목소리로 읽기 위해)
+  const SAY_TIP: Record<string, string> = { 'room.tips.newRegion': 'say.room.newRegion', 'room.tips.place': 'say.room.place', 'room.tips.canCraft': 'say.room.canCraft' };
   const tipText = t(tip.key, { name: tip.nameKey ? tKey(tip.nameKey) : '', region: tip.regionKey ? tKey(tip.regionKey) : '' });
+  const tipSay = SAY_TIP[tip.key] ? t(SAY_TIP[tip.key] as 'say.room.place') : tipText;
   return (
     <AppShell background="bg-gradient-to-b from-cream to-moss">
       <ScreenHeader
@@ -90,10 +93,11 @@ export default function RoomScreen({ onPlay, onDecorate, onWorkshop, onInventory
           <GuideBubble
             compact
             text={quiz.solved ? t('room.quiz.right', { n: formatNumber(quiz.q.answer) }) : quiz.tried.length > 0 ? `${t('room.quiz.countTogether')} ${t(quiz.q.question)}` : t(quiz.q.question)}
+            say={quiz.solved ? [t('say.room.quizRight')] : quiz.tried.length > 0 ? [t('room.quiz.countTogether'), t(quiz.q.question)] : [t(quiz.q.question)]}
             expression={quiz.solved ? 'happy' : quiz.tried.length > 0 ? 'cheer' : 'thinking'}
           />
         ) : (
-          <GuideBubble compact text={lightMsg ? t(lightMsg) : tipText} expression={lightMsg ? 'happy' : tip.key === 'room.tips.firstGame' || tip.key.startsWith('room.tips.cozy') ? 'happy' : 'cheer'} />
+          <GuideBubble compact text={lightMsg ? t(lightMsg) : tipText} say={[lightMsg ? t(lightMsg) : tipSay]} expression={lightMsg ? 'happy' : tip.key === 'room.tips.firstGame' || tip.key.startsWith('room.tips.cozy') ? 'happy' : 'cheer'} />
         )}
       </div>
 

@@ -1,4 +1,5 @@
 import type { Locale } from '../../i18n/types';
+import { clipUrl, hasClips, isPlayingClip, playClips, stopClips } from './clips';
 
 // ===== 말풍선 읽어 주기 (브라우저에 들어 있는 음성, Web Speech API) =====
 // 서버로 아무것도 보내지 않는다. 기기에 해당 언어 음성이 없으면 읽기 버튼을 숨긴다.
@@ -9,6 +10,7 @@ const synth = () => (typeof window !== 'undefined' && 'speechSynthesis' in windo
 
 // 이 기기에서 읽어 줄 수 있는지 (음성 목록은 늦게 채워지는 브라우저가 있어 목록이 비어도 일단 가능으로 본다)
 export function canSpeak(locale: Locale): boolean {
+  if (hasClips(locale)) return true; // 녹음된 목소리가 있으면 기기 음성이 없어도 읽을 수 있다
   const s = synth();
   if (!s || typeof SpeechSynthesisUtterance === 'undefined') return false;
   const voices = s.getVoices();
@@ -32,12 +34,24 @@ export const setSlowSpeech = (on: boolean) => {
 let lineActive = false;
 
 // 읽기 (앞에 읽던 것은 멈춘다). 아이가 따라오기 쉽게 조금 천천히, 조금 높게.
-export function speak(text: string, locale: Locale) {
+// 글 조각마다 녹음된 목소리가 모두 있으면 그것을 차례로 틀고 (clips.ts), 하나라도 없으면 기기 음성으로 전부 읽는다
+// (한 문장 안에서 목소리가 바뀌지 않게)
+export function speak(text: string | string[], locale: Locale) {
+  const parts = (Array.isArray(text) ? text : [text]).map((p) => p.trim()).filter(Boolean);
+  if (parts.length === 0) return;
+  const urls = parts.map((p) => clipUrl(p, locale));
+  if (urls.every((u): u is string => u !== null)) {
+    synth()?.cancel();
+    lineActive = true;
+    playClips(urls, { rate: slow ? 0.85 : 1, onDone: () => (lineActive = false) });
+    return;
+  }
   const s = synth();
-  if (!s || !text.trim()) return;
+  if (!s) return;
+  stopClips();
   s.cancel();
   lineActive = false;
-  say(s, text, locale, 'line');
+  say(s, parts.join(' '), locale, 'line');
 }
 
 // 물건을 셀 때 쓰는 말: 한국어는 '하나, 둘, 셋…' (1~99), 그 밖에는 숫자 그대로
@@ -51,6 +65,12 @@ export function countWord(n: number, locale: Locale): string {
 // 세는 수 읽기 ('하나, 둘, 셋'): 앞의 수는 끊고 바로 다음 수를 읽지만,
 // 안내 문장이 끝나지 않았으면 끊지 않고 그 뒤에 이어서 읽는다 (빠르게 여러 번 눌러도).
 export function speakNumber(n: number, locale: Locale) {
+  const clip = clipUrl(countWord(n, locale), locale);
+  if (clip) {
+    // 안내 문장을 읽는 중이면 그 뒤에, 아니면 앞의 수를 끊고 바로
+    playClips([clip], { append: lineActive && isPlayingClip(), rate: 1, onDone: () => (lineActive = false) });
+    return;
+  }
   const s = synth();
   if (!s) return;
   if (!lineActive) s.cancel();
@@ -79,5 +99,6 @@ function say(s: SpeechSynthesis, text: string, locale: Locale, kind: 'line' | 'n
 
 export function stopSpeaking() {
   lineActive = false;
+  stopClips();
   synth()?.cancel();
 }

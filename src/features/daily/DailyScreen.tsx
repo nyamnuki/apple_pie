@@ -9,6 +9,7 @@ import ChoiceButtons from '../math/components/ChoiceButtons';
 import SceneField from '../math/fields/SceneField';
 import { GUIDE_OF } from '../../data/regions/guides';
 import { answerOf, sceneVars } from '../math/answers';
+import { spokenPart } from '../math/speech';
 import { lessonKey } from '../../data/math/lessons';
 import { streak, dailyLesson } from './daily';
 import { dateKey } from '../../utils/dates';
@@ -54,6 +55,10 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
   const level = Math.min(wrong.length, 3);
   const k = (part: Parameters<typeof lessonKey>[1]) => t(lessonKey(lesson.id, part), vars);
   const text = solved ? `${k('correct')} ${t('daily.stamp')}` : level === 0 ? k('apply') : `${t('math.tryAgain')} ${k(`hint${level}` as 'hint1')}`;
+  // 소리로 읽을 글 (수·물건이 바뀌는 문장은 짧은 듣기용 문장: math/speech.ts)
+  const tr = t as (key: string, v?: Record<string, string | number>) => string;
+  const sayPart = (part: 'apply' | 'correct' | 'hint1' | 'hint2' | 'hint3') => spokenPart(lesson.id, part, vars, tr);
+  const say = solved ? [sayPart('correct'), t('daily.stamp')] : level === 0 ? [sayPart('apply')] : [t('math.tryAgain'), sayPart(`hint${level}` as 'hint1')];
 
   const days = streak(game.dailyDone, today); // 연속으로 푼 날
 
@@ -75,7 +80,7 @@ export default function DailyScreen({ onBack }: { onBack: () => void }) {
       <ScreenHeader title={t('daily.title')} onBack={onBack} />
       <div className="flex flex-1 flex-col gap-4">
         <p className="text-lg font-semibold text-wood">{t('daily.from', { lesson: t(lessonKey(lesson.id, 'title')) })}</p>
-        <GuideBubble text={text} speaker={GUIDE_OF[lesson.region]} expression={solved ? 'happy' : level > 0 ? 'cheer' : 'thinking'} />
+        <GuideBubble text={text} say={say} speaker={GUIDE_OF[lesson.region]} expression={solved ? 'happy' : level > 0 ? 'cheer' : 'thinking'} />
         <section className="flex min-h-[200px] items-center justify-center rounded-[2rem] border-2 border-bark/10 bg-cream/85 p-4">
           <SceneField key={`${level}-${solved}`} scene={lesson.apply} mode={solved ? 'revealed' : level >= 3 ? 'demo' : level >= 2 ? 'interactive' : 'static'} />
         </section>
