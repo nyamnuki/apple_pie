@@ -14,7 +14,7 @@ export default function AssetThumb({ def, size = 64 }: { def: FurnitureDef; size
   const url = assetUrl(def.assetPath);
   const status = useAssetStatus(url);
   const patternId = `thumb-wp-${useId().replace(/:/g, '')}`;
-  if (status === 'ok') return <img src={url} alt="" width={size} height={size} className="object-contain" />;
+  if (status === 'ok') return <img src={url} alt="" width={size} height={size} className="shrink-0 object-contain" style={{ width: size, height: size }} />;
 
   const frame = 'shrink-0 rounded-2xl';
   const style = { width: size, height: size, background: `${def.placeholder.color}66` };

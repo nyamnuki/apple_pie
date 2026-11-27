@@ -143,9 +143,8 @@ test('주요 화면에 그림 문자(이모지)가 남아 있지 않다 (물건�
   await page.getByRole('button', { name: /Counting Apples/ }).click();
   await page.getByRole('button', { name: 'Next' }).click();
   expect(await emoji(), 'lesson').toBeNull();
-  // 사과는 그린 그림: 처음엔 SVG, 곧 한 번 구운 그림(사진)으로 바뀐다 (src/components/art/Baked.tsx)
-  await expect(page.getByRole('button', { name: 'Count this one' }).first().locator('svg, [data-baked]').first()).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Count this one' }).first().locator('[data-baked]')).toBeVisible();
+  // 사과는 그림: 그림 파일(public/assets/items/apple.webp)이 있으면 그 그림, 없으면 코드로 그린 그림(SVG → 구운 사진)
+  await expect(page.getByRole('button', { name: 'Count this one' }).first().locator('img[src*="apple"], svg, [data-baked]').first()).toBeVisible();
 });
 
 test('그림 모아 보기(#gallery)에 캐릭터 15장, 가구, 물건·재료가 모두 그려진다', async ({ page }) => {

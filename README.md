@@ -64,6 +64,9 @@ npm run dev      # 개발 서버 실행 → 터미널에 나오는 주소를 브
   - 물건·재료: `src/components/art/itemArt.tsx`
   - 타이틀 풍경: `src/components/art/TitleScene.tsx`
 - `public/assets/` 에 같은 이름의 PNG 를 넣으면 그 그림이 우선합니다.
+- **들어 있는 그림 (2026-11-27):** 그록으로 만든 물건 30 · 재료 13 · 루루 표정 5장 (`public/assets/items`, `characters`, 모두 합쳐 0.54MB). 나머지는 코드 그림입니다.
+  - 그림 만들기: 클로드 웹에 [docs/GROK_BROWSER_TASK.md](docs/GROK_BROWSER_TASK.md) 를 붙여 넣으면 그록으로 만들어 PC 에 저장합니다.
+  - 넣기: `scripts/prepare-art.py` 가 바탕을 지웁니다. 테두리에서 이어진 흰(크림) 바탕은 투명하게, 바닥 그림자·빛 번짐처럼 바탕보다 조금 어두운 곳은 반투명하게 바꿉니다.
 - **그록(Grok)으로 그림 만들기:** 영어 지시문 모음 [docs/GROK_PROMPTS.md](docs/GROK_PROMPTS.md). 받은 그림은
   `python3 scripts/prepare-art.py <그림> items/apple` 로 흰 바탕을 지우고 256×256 WebP 로 넣습니다.
 - **가볍게 그리기 (렉 줄이기):** 수채화 효과(SVG 필터)는 무거워서, 주변이 움직일 때마다 다시 계산되면 휴대폰이 버벅입니다.
